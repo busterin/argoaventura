@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aventura Grafica - Prueba</title>
+    <style>
+      :root {
+        --inventory-width: clamp(180px, 20vw, 270px);
+        --inventory-height: clamp(110px, 15vw, 170px);
+      }
+
+      * {
+        box-sizing: border-box;
+        user-select: none;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Trebuchet MS", Verdana, sans-serif;
+      }
+
+      #scene {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: linear-gradient(180deg, #8fb7db 0%, #d8ecff 42%, #7a9569 100%);
+      }
+
+      #background {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+
+      .entity {
+        position: absolute;
+        z-index: 2;
+        cursor: pointer;
+      }
+
+      #risko {
+        width: clamp(120px, 16vw, 220px);
+        left: 4vw;
+        bottom: 10vh;
+        transition: left 0.9s ease, top 0.9s ease, bottom 0.9s ease;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      #gaston {
+        width: clamp(120px, 15vw, 210px);
+        left: 50%;
+        top: 38%;
+        transform: translate(-50%, -50%);
+      }
+
+      #bate-world {
+        width: clamp(80px, 10vw, 130px);
+        right: 6vw;
+        top: 54%;
+        transform: translateY(-50%);
+      }
+
+      #speech {
+        position: absolute;
+        z-index: 4;
+        display: none;
+        padding: 12px 16px;
+        max-width: 190px;
+        background: #fff;
+        color: #111;
+        border: 3px solid #111;
+        border-radius: 20px;
+        font-weight: 700;
+      }
+
+      #speech::after {
+        content: "";
+        position: absolute;
+        left: 20px;
+        bottom: -16px;
+        width: 24px;
+        height: 24px;
+        background: #fff;
+        border-right: 3px solid #111;
+        border-bottom: 3px solid #111;
+        transform: rotate(45deg);
+      }
+
+      #inventory {
+        position: absolute;
+        width: var(--inventory-width);
+        height: var(--inventory-height);
+        right: 18px;
+        bottom: 18px;
+        z-index: 5;
+      }
+
+      #inventory-bg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      #inventory-slot {
+        position: absolute;
+        left: 15%;
+        top: 22%;
+        width: 70%;
+        height: 62%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #bate-item {
+        width: 52%;
+        max-height: 100%;
+        object-fit: contain;
+        cursor: grab;
+        display: none;
+      }
+
+      #bate-item:active {
+        cursor: grabbing;
+      }
+
+      .fallback {
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px dashed #333;
+        color: #111;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .buzz {
+        animation: buzz 0.2s linear 0s 2;
+      }
+
+      @keyframes buzz {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-4px) rotate(-3deg); }
+        75% { transform: translateX(4px) rotate(3deg); }
+        100% { transform: translateX(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scene" aria-label="Escena">
+      <img id="background" src="images/fondo1.png" alt="Fondo" />
+
+      <img id="risko" class="entity" src="images/risko.png" alt="Risko" />
+      <img id="gaston" class="entity" src="images/gaston.png" alt="Gaston" />
+      <img id="bate-world" class="entity" src="images/bate.png" alt="Bate" />
+
+      <div id="speech">PRUEBA</div>
+
+      <div id="inventory" aria-label="Inventario">
+        <img id="inventory-bg" src="images/inventario.png" alt="Inventario" />
+        <div id="inventory-slot">
+          <img id="bate-item" src="images/bate.png" alt="Bate en inventario" draggable="true" />
+        </div>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
