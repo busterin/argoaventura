@@ -6,12 +6,14 @@ const bateItem = document.getElementById("bate-item");
 const speech = document.getElementById("speech");
 const inventory = document.getElementById("inventory");
 const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
+const GASTON_GAP = 12;
 
 const VALID_DROP_ZONES = [
   { x1: 0.45, y1: 0.33, x2: 0.58, y2: 0.58 }
 ];
 
 let hasBate = false;
+let speechAnchor = null;
 
 function addFallbackOnError(id, label) {
   const el = document.getElementById(id);
@@ -30,51 +32,48 @@ addFallbackOnError("background", "fondo1.png no encontrado");
 addFallbackOnError("bate-world", "bate.png no encontrado");
 addFallbackOnError("bate-item", "bate.png no encontrado");
 
-function moveRiskoTo(targetX, targetY) {
+function setRiskoFacing(targetX) {
+  const riskoRect = risko.getBoundingClientRect();
+  const currentCenterX = riskoRect.left + riskoRect.width / 2;
+  risko.style.transform = targetX >= currentCenterX ? "scaleX(1)" : "scaleX(-1)";
+}
+
+function getWalkLineTop(sceneRect, riskoRect) {
+  const gastonRect = gaston.getBoundingClientRect();
+  const walkLineFeetY = gastonRect.bottom;
+  return Math.min(
+    sceneRect.height - riskoRect.height,
+    Math.max(0, walkLineFeetY - sceneRect.top - riskoRect.height)
+  );
+}
+
+function moveRiskoTo(targetX) {
   const sceneRect = scene.getBoundingClientRect();
   const riskoRect = risko.getBoundingClientRect();
   const gastonRect = gaston.getBoundingClientRect();
-  const currentCenterX = riskoRect.left + riskoRect.width / 2;
-  const gap = 12;
+  const gastonCenterX = gastonRect.left + gastonRect.width / 2;
 
-  // Place risko's feet at the target point to keep interactions grounded.
+  setRiskoFacing(targetX);
+
   let clampedX = Math.min(
     sceneRect.width - riskoRect.width,
     Math.max(0, targetX - sceneRect.left - riskoRect.width * 0.5)
   );
-  let clampedY = Math.min(
-    sceneRect.height - riskoRect.height,
-    Math.max(0, targetY - sceneRect.top - riskoRect.height)
-  );
+  const clampedY = getWalkLineTop(sceneRect, riskoRect);
 
-  const candidate = {
-    left: clampedX + sceneRect.left,
-    right: clampedX + sceneRect.left + riskoRect.width,
-    top: clampedY + sceneRect.top,
-    bottom: clampedY + sceneRect.top + riskoRect.height
-  };
+  const candidateLeft = clampedX + sceneRect.left;
+  const candidateRight = candidateLeft + riskoRect.width;
+  const blockedLeft = gastonRect.left - GASTON_GAP;
+  const blockedRight = gastonRect.right + GASTON_GAP;
+  const overlapsGastonHorizontally = candidateRight > blockedLeft && candidateLeft < blockedRight;
 
-  const overlapsGaston = !(
-    candidate.right <= gastonRect.left ||
-    candidate.left >= gastonRect.right ||
-    candidate.bottom <= gastonRect.top ||
-    candidate.top >= gastonRect.bottom
-  );
-
-  if (overlapsGaston) {
-    const goLeft = currentCenterX < gastonRect.left + gastonRect.width / 2;
-    const sideX = goLeft
-      ? gastonRect.left - riskoRect.width / 2 - gap
-      : gastonRect.right + riskoRect.width / 2 + gap;
-    const feetY = gastonRect.bottom;
-
+  if (overlapsGastonHorizontally) {
+    const sideX = targetX < gastonCenterX
+      ? gastonRect.left - riskoRect.width / 2 - GASTON_GAP
+      : gastonRect.right + riskoRect.width / 2 + GASTON_GAP;
     clampedX = Math.min(
       sceneRect.width - riskoRect.width,
       Math.max(0, sideX - sceneRect.left - riskoRect.width * 0.5)
-    );
-    clampedY = Math.min(
-      sceneRect.height - riskoRect.height,
-      Math.max(0, feetY - sceneRect.top - riskoRect.height)
     );
   }
 
@@ -86,26 +85,17 @@ function moveRiskoTo(targetX, targetY) {
 function moveRiskoInFrontOf(el) {
   const targetRect = el.getBoundingClientRect();
   const riskoRect = risko.getBoundingClientRect();
-  const gap = 12;
   const riskoCenter = riskoRect.left + riskoRect.width / 2;
   const targetCenter = targetRect.left + targetRect.width / 2;
 
   const x = riskoCenter < targetCenter
-    ? targetRect.left - riskoRect.width / 2 - gap
-    : targetRect.right + riskoRect.width / 2 + gap;
-  const y = targetRect.bottom;
-  moveRiskoTo(x, y);
-}
-
-function centerOf(el) {
-  const rect = el.getBoundingClientRect();
-  return {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height / 2
-  };
+    ? targetRect.left - riskoRect.width / 2 - GASTON_GAP
+    : targetRect.right + riskoRect.width / 2 + GASTON_GAP;
+  moveRiskoTo(x);
 }
 
 function showSpeechAt(el, text) {
+  speechAnchor = el;
   const targetRect = el.getBoundingClientRect();
   const sceneRect = scene.getBoundingClientRect();
 
@@ -113,11 +103,6 @@ function showSpeechAt(el, text) {
   speech.style.left = `${targetRect.left - sceneRect.left - 8}px`;
   speech.style.top = `${targetRect.top - sceneRect.top - 80}px`;
   speech.style.display = "block";
-
-  window.clearTimeout(showSpeechAt._timer);
-  showSpeechAt._timer = window.setTimeout(() => {
-    speech.style.display = "none";
-  }, 2200);
 }
 
 function pickupBate() {
@@ -190,9 +175,27 @@ scene.addEventListener("drop", (event) => {
   event.preventDefault();
 
   const { clientX, clientY } = event;
-  moveRiskoTo(clientX, clientY);
+  moveRiskoTo(clientX);
 
   if (!isValidDrop(clientX, clientY)) {
     buzz();
   }
+});
+
+speech.addEventListener("click", () => {
+  speech.style.display = "none";
+  speechAnchor = null;
+});
+
+window.addEventListener("resize", () => {
+  const riskoRect = risko.getBoundingClientRect();
+  moveRiskoTo(riskoRect.left + riskoRect.width / 2);
+  if (speechAnchor && speech.style.display !== "none") {
+    showSpeechAt(speechAnchor, speech.textContent);
+  }
+});
+
+window.addEventListener("load", () => {
+  const riskoRect = risko.getBoundingClientRect();
+  moveRiskoTo(riskoRect.left + riskoRect.width / 2);
 });
