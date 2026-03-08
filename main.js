@@ -5,6 +5,7 @@ const bateWorld = document.getElementById("bate-world");
 const bateItem = document.getElementById("bate-item");
 const speech = document.getElementById("speech");
 const inventory = document.getElementById("inventory");
+const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
 
 const VALID_DROP_ZONES = [
   { x1: 0.45, y1: 0.33, x2: 0.58, y2: 0.58 }
@@ -33,18 +34,26 @@ function moveRiskoTo(targetX, targetY) {
   const sceneRect = scene.getBoundingClientRect();
   const riskoRect = risko.getBoundingClientRect();
 
+  // Place risko's feet at the target point to keep interactions grounded.
   const clampedX = Math.min(
     sceneRect.width - riskoRect.width,
     Math.max(0, targetX - sceneRect.left - riskoRect.width * 0.5)
   );
   const clampedY = Math.min(
     sceneRect.height - riskoRect.height,
-    Math.max(0, targetY - sceneRect.top - riskoRect.height * 0.65)
+    Math.max(0, targetY - sceneRect.top - riskoRect.height)
   );
 
   risko.style.left = `${clampedX}px`;
   risko.style.top = `${clampedY}px`;
   risko.style.bottom = "auto";
+}
+
+function moveRiskoInFrontOf(el) {
+  const targetRect = el.getBoundingClientRect();
+  const x = targetRect.left + targetRect.width / 2;
+  const y = targetRect.bottom + 14;
+  moveRiskoTo(x, y);
 }
 
 function centerOf(el) {
@@ -73,6 +82,8 @@ function showSpeechAt(el, text) {
 function pickupBate() {
   hasBate = true;
   bateWorld.style.display = "none";
+  const firstEmptySlot = inventorySlots.find((slot) => !slot.querySelector(".inventory-item"));
+  if (firstEmptySlot) firstEmptySlot.appendChild(bateItem);
   bateItem.style.display = "block";
 }
 
@@ -112,14 +123,12 @@ function isValidDrop(clientX, clientY) {
 }
 
 gaston.addEventListener("click", () => {
-  const { x, y } = centerOf(gaston);
-  moveRiskoTo(x, y);
+  moveRiskoInFrontOf(gaston);
   showSpeechAt(gaston, "PRUEBA");
 });
 
 bateWorld.addEventListener("click", () => {
-  const { x, y } = centerOf(bateWorld);
-  moveRiskoTo(x, y);
+  moveRiskoInFrontOf(bateWorld);
   window.setTimeout(() => {
     pickupBate();
   }, 900);

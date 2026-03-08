@@ -6,8 +6,7 @@
     <title>Aventura Grafica - Prueba</title>
     <style>
       :root {
-        --inventory-width: clamp(180px, 20vw, 270px);
-        --inventory-height: clamp(110px, 15vw, 170px);
+        --inventory-width: clamp(320px, 36vw, 560px);
       }
 
       * {
@@ -48,25 +47,25 @@
       }
 
       #risko {
-        width: clamp(120px, 16vw, 220px);
+        width: clamp(85px, 10vw, 130px);
         left: 4vw;
-        bottom: 10vh;
+        bottom: 4vh;
         transition: left 0.9s ease, top 0.9s ease, bottom 0.9s ease;
         pointer-events: none;
         z-index: 3;
       }
 
       #gaston {
-        width: clamp(120px, 15vw, 210px);
+        width: clamp(95px, 11vw, 145px);
         left: 50%;
-        top: 38%;
+        top: 66%;
         transform: translate(-50%, -50%);
       }
 
       #bate-world {
         width: clamp(80px, 10vw, 130px);
         right: 6vw;
-        top: 54%;
+        top: 70%;
         transform: translateY(-50%);
       }
 
@@ -99,7 +98,7 @@
       #inventory {
         position: absolute;
         width: var(--inventory-width);
-        height: var(--inventory-height);
+        aspect-ratio: 1078 / 221;
         right: 18px;
         bottom: 18px;
         z-index: 5;
@@ -112,20 +111,23 @@
         display: block;
       }
 
-      #inventory-slot {
+      .inventory-slot {
         position: absolute;
-        left: 15%;
-        top: 22%;
-        width: 70%;
-        height: 62%;
+        top: 18%;
+        width: 12.5%;
+        height: 64%;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
+      #slot-1 { left: 6.8%; }
+      #slot-2 { left: 20.9%; }
+      #slot-3 { left: 35.1%; }
+
       #bate-item {
-        width: 52%;
-        max-height: 100%;
+        width: 90%;
+        max-height: 90%;
         object-fit: contain;
         cursor: grab;
         display: none;
@@ -169,9 +171,10 @@
 
       <div id="inventory" aria-label="Inventario">
         <img id="inventory-bg" src="images/inventario.png" alt="Inventario" />
-        <div id="inventory-slot">
-          <img id="bate-item" src="images/bate.png" alt="Bate en inventario" draggable="true" />
-        </div>
+        <div id="slot-1" class="inventory-slot"></div>
+        <div id="slot-2" class="inventory-slot"></div>
+        <div id="slot-3" class="inventory-slot"></div>
+        <img id="bate-item" class="inventory-item" src="images/bate.png" alt="Bate en inventario" draggable="true" />
       </div>
     </div>
 
