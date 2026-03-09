@@ -7,7 +7,7 @@
     <style>
       :root {
         --inventory-width: clamp(300px, 33vw, 520px);
-        --character-size: clamp(170px, 20vw, 290px);
+        --character-height: clamp(210px, 30vh, 360px);
       }
 
       * {
@@ -48,7 +48,8 @@
       }
 
       #guardian {
-        width: var(--character-size);
+        height: var(--character-height);
+        width: auto;
         left: 4vw;
         bottom: 4vh;
         transition: left 1.4s linear, top 1.4s linear, bottom 1.4s linear, transform 0.12s linear;
@@ -58,7 +59,8 @@
       }
 
       #gaston {
-        width: var(--character-size);
+        height: var(--character-height);
+        width: auto;
         left: 50%;
         top: 66%;
         transform: translate(-50%, -50%);
@@ -121,9 +123,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px dashed rgba(40, 28, 12, 0.45);
-        border-radius: 8px;
-        background: rgba(255, 245, 215, 0.14);
       }
 
       #slot-1 { left: 10.2%; }
