@@ -70,11 +70,6 @@ function setGuardianFacing(targetX) {
   guardian.style.transform = delta > 0 ? "scaleX(1)" : "scaleX(-1)";
 }
 
-function getWalkLineTop(sceneRect, guardianRect) {
-  // Lock movement to scene floor so image proportions never shift the walk line.
-  return Math.max(0, sceneRect.height - guardianRect.height);
-}
-
 function moveGuardianTo(targetX) {
   const sceneRect = scene.getBoundingClientRect();
   const guardianRect = guardian.getBoundingClientRect();
@@ -85,7 +80,6 @@ function moveGuardianTo(targetX) {
     sceneRect.width - guardianRect.width,
     Math.max(0, targetX - sceneRect.left - guardianRect.width * 0.5)
   );
-  const clampedY = getWalkLineTop(sceneRect, guardianRect);
 
   const candidateLeft = clampedX + sceneRect.left;
   const candidateRight = candidateLeft + guardianRect.width;
@@ -107,8 +101,8 @@ function moveGuardianTo(targetX) {
   setGuardianFacing(finalCenterX);
 
   guardian.style.left = `${clampedX}px`;
-  guardian.style.top = `${clampedY}px`;
-  guardian.style.bottom = "auto";
+  guardian.style.top = "auto";
+  guardian.style.bottom = "0";
 }
 
 function moveGuardianInFrontOf(el) {
