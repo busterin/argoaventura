@@ -68,7 +68,8 @@ function removeDragProxy() {
 function layoutScene() {
   const vw = sceneViewport.clientWidth;
   const vh = sceneViewport.clientHeight;
-  const scale = Math.min(vw / BASE_WIDTH, vh / BASE_HEIGHT);
+  // Cover mode: fill the whole viewport while preserving fixed scene coordinates.
+  const scale = Math.max(vw / BASE_WIDTH, vh / BASE_HEIGHT);
   const offsetX = (vw - BASE_WIDTH * scale) / 2;
   const offsetY = (vh - BASE_HEIGHT * scale) / 2;
   scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
