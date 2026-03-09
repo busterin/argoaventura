@@ -175,11 +175,13 @@ scene.addEventListener("drop", (event) => {
   event.preventDefault();
 
   const { clientX, clientY } = event;
-  moveGuardianTo(clientX);
-
-  if (!isValidDrop(clientX, clientY)) {
+  const validDrop = isValidDrop(clientX, clientY);
+  if (!validDrop) {
     buzz();
+    return;
   }
+
+  moveGuardianTo(clientX);
 });
 
 speech.addEventListener("click", () => {
