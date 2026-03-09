@@ -65,6 +65,34 @@ function removeDragProxy() {
   dragProxy = null;
 }
 
+function getSceneScale() {
+  const rect = scene.getBoundingClientRect();
+  return rect.width / BASE_WIDTH;
+}
+
+function clientToWorld(clientX, clientY) {
+  const rect = scene.getBoundingClientRect();
+  const scale = getSceneScale();
+  return {
+    x: (clientX - rect.left) / scale,
+    y: (clientY - rect.top) / scale
+  };
+}
+
+function getWorldRect(el) {
+  const rect = el.getBoundingClientRect();
+  const topLeft = clientToWorld(rect.left, rect.top);
+  const bottomRight = clientToWorld(rect.right, rect.bottom);
+  return {
+    left: topLeft.x,
+    top: topLeft.y,
+    right: bottomRight.x,
+    bottom: bottomRight.y,
+    width: bottomRight.x - topLeft.x,
+    height: bottomRight.y - topLeft.y
+  };
+}
+
 function layoutScene() {
   const vw = sceneViewport.clientWidth;
   const vh = sceneViewport.clientHeight;
@@ -75,41 +103,39 @@ function layoutScene() {
 }
 
 function setGuardianFacing(targetX) {
-  const guardianRect = guardian.getBoundingClientRect();
-  const currentCenterX = guardianRect.left + guardianRect.width / 2;
+  const currentCenterX = guardian.offsetLeft + guardian.offsetWidth / 2;
   const delta = targetX - currentCenterX;
   if (Math.abs(delta) < 2) return;
   guardian.style.transform = delta > 0 ? "scaleX(1)" : "scaleX(-1)";
 }
 
-function moveGuardianTo(targetX) {
-  const sceneRect = scene.getBoundingClientRect();
-  const guardianRect = guardian.getBoundingClientRect();
-  const gastonRect = gaston.getBoundingClientRect();
+function moveGuardianTo(targetWorldX) {
+  const guardianWidth = guardian.offsetWidth;
+  const gastonRect = getWorldRect(gaston);
   const gastonCenterX = gastonRect.left + gastonRect.width / 2;
 
   let clampedX = Math.min(
-    sceneRect.width - guardianRect.width,
-    Math.max(0, targetX - sceneRect.left - guardianRect.width * 0.5)
+    BASE_WIDTH - guardianWidth,
+    Math.max(0, targetWorldX - guardianWidth * 0.5)
   );
 
-  const candidateLeft = clampedX + sceneRect.left;
-  const candidateRight = candidateLeft + guardianRect.width;
+  const candidateLeft = clampedX;
+  const candidateRight = candidateLeft + guardianWidth;
   const blockedLeft = gastonRect.left - GASTON_GAP;
   const blockedRight = gastonRect.right + GASTON_GAP;
   const overlapsGastonHorizontally = candidateRight > blockedLeft && candidateLeft < blockedRight;
 
   if (overlapsGastonHorizontally) {
-    const sideX = targetX < gastonCenterX
-      ? gastonRect.left - guardianRect.width / 2 - GASTON_GAP
-      : gastonRect.right + guardianRect.width / 2 + GASTON_GAP;
+    const sideX = targetWorldX < gastonCenterX
+      ? gastonRect.left - guardianWidth / 2 - GASTON_GAP
+      : gastonRect.right + guardianWidth / 2 + GASTON_GAP;
     clampedX = Math.min(
-      sceneRect.width - guardianRect.width,
-      Math.max(0, sideX - sceneRect.left - guardianRect.width * 0.5)
+      BASE_WIDTH - guardianWidth,
+      Math.max(0, sideX - guardianWidth * 0.5)
     );
   }
 
-  const finalCenterX = clampedX + sceneRect.left + guardianRect.width / 2;
+  const finalCenterX = clampedX + guardianWidth / 2;
   setGuardianFacing(finalCenterX);
 
   guardian.style.left = `${clampedX}px`;
@@ -118,25 +144,24 @@ function moveGuardianTo(targetX) {
 }
 
 function moveGuardianInFrontOf(el) {
-  const targetRect = el.getBoundingClientRect();
-  const guardianRect = guardian.getBoundingClientRect();
-  const guardianCenter = guardianRect.left + guardianRect.width / 2;
+  const targetRect = getWorldRect(el);
+  const guardianWidth = guardian.offsetWidth;
+  const guardianCenter = guardian.offsetLeft + guardianWidth / 2;
   const targetCenter = targetRect.left + targetRect.width / 2;
 
   const x = guardianCenter < targetCenter
-    ? targetRect.left - guardianRect.width / 2 - GASTON_GAP
-    : targetRect.right + guardianRect.width / 2 + GASTON_GAP;
+    ? targetRect.left - guardianWidth / 2 - GASTON_GAP
+    : targetRect.right + guardianWidth / 2 + GASTON_GAP;
   moveGuardianTo(x);
 }
 
 function showSpeechAt(el, text) {
   speechAnchor = el;
-  const targetRect = el.getBoundingClientRect();
-  const sceneRect = scene.getBoundingClientRect();
+  const targetRect = getWorldRect(el);
 
   speech.textContent = text;
-  speech.style.left = `${targetRect.left - sceneRect.left - 8}px`;
-  speech.style.top = `${targetRect.top - sceneRect.top - 80}px`;
+  speech.style.left = `${targetRect.left - 8}px`;
+  speech.style.top = `${targetRect.top - 80}px`;
   speech.style.display = "block";
 }
 
@@ -226,7 +251,8 @@ scene.addEventListener("drop", (event) => {
     return;
   }
 
-  moveGuardianTo(clientX);
+  const worldPos = clientToWorld(clientX, clientY);
+  moveGuardianTo(worldPos.x);
 });
 
 speech.addEventListener("click", () => {
