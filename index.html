@@ -36,6 +36,9 @@
         height: 100vh;
         height: 100dvh;
         overflow: hidden;
+        background-image: url("images/fondo1.png");
+        background-size: cover;
+        background-position: center;
       }
 
       #scene {
@@ -45,7 +48,6 @@
         width: 1328px;
         height: 800px;
         transform-origin: top left;
-        background: linear-gradient(180deg, #8fb7db 0%, #d8ecff 42%, #7a9569 100%);
       }
 
       #background {
@@ -55,6 +57,7 @@
         height: 100%;
         object-fit: cover;
         z-index: 0;
+        display: none;
       }
 
       .entity {
