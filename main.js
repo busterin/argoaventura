@@ -1,9 +1,12 @@
 const scene = document.getElementById("scene");
 const sceneViewport = document.getElementById("scene-viewport");
+const background = document.getElementById("background");
 const guardian = document.getElementById("guardian");
 const gaston = document.getElementById("gaston");
 const anilloWorld = document.getElementById("anillo-world");
 const anilloItem = document.getElementById("anillo-item");
+const nextArrow = document.getElementById("next-arrow");
+const prevArrow = document.getElementById("prev-arrow");
 const speech = document.getElementById("speech");
 const inventory = document.getElementById("inventory");
 const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
@@ -12,6 +15,8 @@ const itemModalContent = document.getElementById("item-modal-content");
 const itemModalClose = document.getElementById("item-modal-close");
 const GASTON_GAP = 12;
 const GASTON_TEXT = "¡Hola, guardiana!";
+const INITIAL_GUARDIAN_LEFT =
+  getComputedStyle(document.documentElement).getPropertyValue("--guardian-left").trim() || "0px";
 
 const VALID_DROP_ZONES = [
   { x1: 0.45, y1: 0.33, x2: 0.58, y2: 0.58 }
@@ -37,7 +42,7 @@ function addFallbackOnError(id, label) {
   });
 }
 
-addFallbackOnError("background", "fondo1.png no encontrado");
+addFallbackOnError("background", "fondo no encontrado");
 addFallbackOnError("anillo-world", "anillo.png no encontrado");
 addFallbackOnError("anillo-item", "anillo.png no encontrado");
 
@@ -233,6 +238,46 @@ function closeItemModal() {
   itemModal.setAttribute("aria-hidden", "true");
 }
 
+function goToFondo2() {
+  closeItemModal();
+  speech.style.display = "none";
+  speechAnchor = null;
+  pendingSpeechForGaston = false;
+
+  guardian.style.left = INITIAL_GUARDIAN_LEFT;
+  guardian.style.top = "auto";
+  guardian.style.bottom = "0";
+
+  background.src = "images/fondo2.png";
+  background.alt = "Fondo 2";
+
+  gaston.style.display = "none";
+  anilloWorld.style.display = "none";
+  inventory.style.display = "none";
+  nextArrow.style.display = "none";
+  prevArrow.style.display = "block";
+}
+
+function goToFondo1() {
+  closeItemModal();
+  speech.style.display = "none";
+  speechAnchor = null;
+  pendingSpeechForGaston = false;
+
+  guardian.style.left = INITIAL_GUARDIAN_LEFT;
+  guardian.style.top = "auto";
+  guardian.style.bottom = "0";
+
+  background.src = "images/fondo1.png";
+  background.alt = "Fondo 1";
+
+  gaston.style.display = "block";
+  anilloWorld.style.display = hasAnillo ? "none" : "block";
+  inventory.style.display = "block";
+  nextArrow.style.display = "block";
+  prevArrow.style.display = "none";
+}
+
 gaston.addEventListener("click", () => {
   pendingSpeechForGaston = true;
   moveGuardianInFrontOf(gaston);
@@ -240,6 +285,14 @@ gaston.addEventListener("click", () => {
     showSpeechAt(gaston, GASTON_TEXT);
     pendingSpeechForGaston = false;
   }
+});
+
+nextArrow.addEventListener("click", () => {
+  goToFondo2();
+});
+
+prevArrow.addEventListener("click", () => {
+  goToFondo1();
 });
 
 anilloWorld.addEventListener("click", () => {

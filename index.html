@@ -191,10 +191,18 @@
       #item-modal-content {
         width: min(90vw, 440px);
         padding: 20px 18px 18px;
-        border: 3px solid #111;
+        border: 3px solid #4a2f1f;
         border-radius: 18px;
-        background: #f6f2e8;
-        color: #111;
+        background:
+          radial-gradient(circle at 22% 18%, rgba(255, 238, 190, 0.45), transparent 42%),
+          radial-gradient(circle at 82% 84%, rgba(110, 62, 28, 0.18), transparent 40%),
+          repeating-linear-gradient(
+            12deg,
+            rgba(92, 54, 31, 0.08) 0 2px,
+            rgba(227, 193, 137, 0.08) 2px 4px
+          ),
+          linear-gradient(160deg, #e4c79b 0%, #c89d67 50%, #b7854f 100%);
+        color: #2f1a0f;
         text-align: center;
         box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
       }
@@ -215,14 +223,73 @@
 
       #item-modal-close {
         margin-top: 14px;
-        border: 2px solid #111;
+        border: 2px solid #4a2f1f;
         border-radius: 10px;
-        background: #fff;
-        color: #111;
+        background: #f2d7ad;
+        color: #2f1a0f;
         padding: 6px 14px;
         font-size: 15px;
         font-weight: 700;
         cursor: pointer;
+      }
+
+      #next-arrow {
+        position: absolute;
+        right: 9.1%;
+        top: 70%;
+        transform: translateY(-50%);
+        z-index: 6;
+        width: clamp(34px, 4.8vw, 58px);
+        height: clamp(34px, 4.8vw, 58px);
+        border: 0;
+        padding: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+      }
+
+      #next-arrow::before {
+        content: "";
+        position: absolute;
+        left: 54%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-left: 14px solid rgba(255, 255, 255, 0.78);
+        transform: translate(-50%, -50%);
+      }
+
+      #prev-arrow {
+        position: absolute;
+        left: 9.1%;
+        top: 70%;
+        transform: translateY(-50%);
+        z-index: 6;
+        width: clamp(34px, 4.8vw, 58px);
+        height: clamp(34px, 4.8vw, 58px);
+        border: 0;
+        padding: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+        display: none;
+      }
+
+      #prev-arrow::before {
+        content: "";
+        position: absolute;
+        left: 46%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 14px solid rgba(255, 255, 255, 0.78);
+        transform: translate(-50%, -50%);
       }
 
       @keyframes buzz {
@@ -251,6 +318,9 @@
           <div id="slot-3" class="inventory-slot"></div>
           <img id="anillo-item" class="inventory-item" src="images/anillo.png" alt="Anillo en inventario" draggable="true" />
         </div>
+
+        <button id="next-arrow" type="button" aria-label="Ir a fondo 2"></button>
+        <button id="prev-arrow" type="button" aria-label="Volver a fondo 1"></button>
       </div>
     </div>
 
