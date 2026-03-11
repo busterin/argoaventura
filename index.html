@@ -11,7 +11,7 @@
         --guardian-left: 430px;
         --gaston-left: 860px;
         --anillo-left: 664px;
-        --anillo-top: 610px;
+        --anillo-top: 590px;
       }
 
       * {
@@ -174,6 +174,57 @@
         animation: buzz 0.2s linear 0s 2;
       }
 
+      #item-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 20;
+      }
+
+      #item-modal.open {
+        display: flex;
+      }
+
+      #item-modal-content {
+        width: min(90vw, 440px);
+        padding: 20px 18px 18px;
+        border: 3px solid #111;
+        border-radius: 18px;
+        background: #f6f2e8;
+        color: #111;
+        text-align: center;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      #item-modal-image {
+        width: min(52vw, 180px);
+        height: auto;
+        object-fit: contain;
+        margin-bottom: 14px;
+      }
+
+      #item-modal-text {
+        margin: 0;
+        line-height: 1.35;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      #item-modal-close {
+        margin-top: 14px;
+        border: 2px solid #111;
+        border-radius: 10px;
+        background: #fff;
+        color: #111;
+        padding: 6px 14px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
       @keyframes buzz {
         0% { transform: translateX(0); }
         25% { transform: translateX(-4px) rotate(-3deg); }
@@ -200,6 +251,14 @@
           <div id="slot-3" class="inventory-slot"></div>
           <img id="anillo-item" class="inventory-item" src="images/anillo.png" alt="Anillo en inventario" draggable="true" />
         </div>
+      </div>
+    </div>
+
+    <div id="item-modal" aria-hidden="true">
+      <div id="item-modal-content" role="dialog" aria-modal="true" aria-label="Detalle del objeto">
+        <img id="item-modal-image" src="images/anillo.png" alt="Anillo ampliado" />
+        <p id="item-modal-text">Un anillo de origen desconocido. Parece ser de gran valor.</p>
+        <button id="item-modal-close" type="button">Cerrar</button>
       </div>
     </div>
 

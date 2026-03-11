@@ -7,6 +7,9 @@ const anilloItem = document.getElementById("anillo-item");
 const speech = document.getElementById("speech");
 const inventory = document.getElementById("inventory");
 const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
+const itemModal = document.getElementById("item-modal");
+const itemModalContent = document.getElementById("item-modal-content");
+const itemModalClose = document.getElementById("item-modal-close");
 const GASTON_GAP = 12;
 
 const VALID_DROP_ZONES = [
@@ -16,6 +19,7 @@ const VALID_DROP_ZONES = [
 let hasAnillo = false;
 let speechAnchor = null;
 let dragProxy = null;
+let pendingSpeechForGaston = false;
 const BASE_WIDTH = 1328;
 const BASE_HEIGHT = 800;
 
@@ -155,6 +159,16 @@ function moveGuardianInFrontOf(el) {
   moveGuardianTo(x);
 }
 
+function isGuardianBeside(el) {
+  const guardianRect = getWorldRect(guardian);
+  const targetRect = getWorldRect(el);
+  const leftDistance = Math.abs(targetRect.left - guardianRect.right);
+  const rightDistance = Math.abs(guardianRect.left - targetRect.right);
+  const closeEnough = leftDistance <= GASTON_GAP + 8 || rightDistance <= GASTON_GAP + 8;
+  const verticalOverlap = guardianRect.bottom > targetRect.top && guardianRect.top < targetRect.bottom;
+  return closeEnough && verticalOverlap;
+}
+
 function showSpeechAt(el, text) {
   speechAnchor = el;
   const targetRect = getWorldRect(el);
@@ -208,9 +222,23 @@ function isValidDrop(clientX, clientY) {
   );
 }
 
+function openItemModal() {
+  itemModal.classList.add("open");
+  itemModal.setAttribute("aria-hidden", "false");
+}
+
+function closeItemModal() {
+  itemModal.classList.remove("open");
+  itemModal.setAttribute("aria-hidden", "true");
+}
+
 gaston.addEventListener("click", () => {
+  pendingSpeechForGaston = true;
   moveGuardianInFrontOf(gaston);
-  showSpeechAt(gaston, "PRUEBA");
+  if (isGuardianBeside(gaston)) {
+    showSpeechAt(gaston, "PRUEBA");
+    pendingSpeechForGaston = false;
+  }
 });
 
 anilloWorld.addEventListener("click", () => {
@@ -231,6 +259,11 @@ anilloItem.addEventListener("dragstart", (event) => {
 
 anilloItem.addEventListener("dragend", () => {
   removeDragProxy();
+});
+
+anilloItem.addEventListener("click", () => {
+  if (!hasAnillo) return;
+  openItemModal();
 });
 
 scene.addEventListener("dragover", (event) => {
@@ -258,6 +291,34 @@ scene.addEventListener("drop", (event) => {
 speech.addEventListener("click", () => {
   speech.style.display = "none";
   speechAnchor = null;
+});
+
+guardian.addEventListener("transitionend", (event) => {
+  if (event.propertyName !== "left") return;
+  if (!pendingSpeechForGaston) return;
+  if (!isGuardianBeside(gaston)) return;
+  showSpeechAt(gaston, "PRUEBA");
+  pendingSpeechForGaston = false;
+});
+
+itemModalClose.addEventListener("click", () => {
+  closeItemModal();
+});
+
+itemModal.addEventListener("click", (event) => {
+  if (event.target === itemModal) {
+    closeItemModal();
+  }
+});
+
+itemModalContent.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeItemModal();
+  }
 });
 
 window.addEventListener("resize", () => {
