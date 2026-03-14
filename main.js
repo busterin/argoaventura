@@ -1,30 +1,44 @@
 const scene = document.getElementById("scene");
 const sceneViewport = document.getElementById("scene-viewport");
 const background = document.getElementById("background");
-const guardian = document.getElementById("guardian");
-const gaston = document.getElementById("gaston");
-const tele = document.getElementById("tele");
-const ardillaGuardiana = document.getElementById("ardillaguardiana");
-const bici = document.getElementById("bici");
-const vendedora = document.getElementById("vendedora");
-const brebaje = document.getElementById("brebaje");
-const fondo2HotspotLeft = document.getElementById("fondo2-hotspot-left");
-const fondo3HotspotLeft = document.getElementById("fondo3-hotspot-left");
-const fondo3Hotspot = document.getElementById("fondo3-hotspot");
-const fondo4HotspotLeftBottom = document.getElementById("fondo4-hotspot-left-bottom");
-const fondo5HotspotLeft = document.getElementById("fondo5-hotspot-left");
-const fondo5HotspotCenter = document.getElementById("fondo5-hotspot-center");
+const evelyn = document.getElementById("evelyn");
+const jane = document.getElementById("jane");
+const helena = document.getElementById("helena");
+const camus = document.getElementById("camus");
+const darren = document.getElementById("darren");
+const mercenario = document.getElementById("mercenario");
 const anilloWorld = document.getElementById("anillo-world");
 const anilloItem = document.getElementById("anillo-item");
-const facturaItem = document.getElementById("factura-item");
-const llaveItem = document.getElementById("llave-item");
-const brebajeItem = document.getElementById("brebaje-item");
 const nextArrow = document.getElementById("next-arrow");
 const prevArrow = document.getElementById("prev-arrow");
 const speech = document.getElementById("speech");
 const speechText = document.getElementById("speech-text");
 const speechOptions = document.getElementById("speech-options");
 const speechNextBtn = document.getElementById("speech-next-btn");
+const ringSlotHighlight = document.getElementById("ring-slot-highlight");
+const alimentosDisplay = document.getElementById("alimentos-display");
+const dineroDisplay = document.getElementById("dinero-display");
+const puebloDisplay = document.getElementById("pueblo-display");
+const endDayIcon = document.getElementById("icono-fin-dia");
+const dayBanner = document.getElementById("day-banner");
+const dayBannerNumber = document.getElementById("day-banner-number");
+const dayEndModal = document.getElementById("day-end-modal");
+const dayEndYesBtn = document.getElementById("day-end-yes");
+const dayEndNoBtn = document.getElementById("day-end-no");
+const daySummaryModal = document.getElementById("day-summary-modal");
+const daySummaryTitle = document.getElementById("day-summary-title");
+const summaryComida = document.getElementById("summary-comida");
+const summaryDinero = document.getElementById("summary-dinero");
+const summaryPueblo = document.getElementById("summary-pueblo");
+const daySummaryNotes = document.getElementById("day-summary-notes");
+const daySummaryCloseBtn = document.getElementById("day-summary-close");
+const rewardToast = document.getElementById("reward-toast");
+const helenaOptionsModal = document.getElementById("helena-options-modal");
+const helenaOptionCards = [...document.querySelectorAll(".helena-option-card")];
+const helenaOptionsConfirmBtn = document.getElementById("helena-options-confirm");
+const helenaOptionsEmptyConfirm = document.getElementById("helena-options-empty-confirm");
+const helenaEmptyYesBtn = document.getElementById("helena-empty-yes");
+const helenaEmptyNoBtn = document.getElementById("helena-empty-no");
 const inventory = document.getElementById("inventory");
 const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
 const itemModal = document.getElementById("item-modal");
@@ -32,179 +46,200 @@ const itemModalContent = document.getElementById("item-modal-content");
 const itemModalClose = document.getElementById("item-modal-close");
 const itemModalImage = document.getElementById("item-modal-image");
 const itemModalText = document.getElementById("item-modal-text");
-const GASTON_GAP = 12;
-const GUARDIAN_IDLE_SRC = "images/guardian.png";
-const GUARDIAN_WALK_FRAMES = [
-  "images/guardian2.png",
-  "images/guardian3.png",
-  "images/guardian4.png"
+const ASSET_VERSION = "20260312";
+const asset = (path) => `${path}?v=${ASSET_VERSION}`;
+const JANE_GAP = 12;
+const EVELYN_IDLE_SRC = asset("images/evelyn.png");
+const EVELYN_WALK_FRAMES = [
+  asset("images/evelyn2.png"),
+  asset("images/evelyn3.png"),
+  asset("images/evelyn4.png")
 ];
-const GUARDIAN_WALK_FRAME_MS = 120;
-const GUARDIAN_MOVE_DURATION_LONG_MS = 1400;
-const GUARDIAN_MOVE_DURATION_SHORT_MS = 950;
-const GUARDIAN_SHORT_MOVE_DISTANCE_PX = 220;
+const EVELYN_WALK_FRAME_MS = 120;
+const WALK_SPRITES_ENABLED = false;
+const EVELYN_MOVE_DURATION_LONG_MS = 1400;
+const EVELYN_MOVE_DURATION_SHORT_MS = 950;
+const EVELYN_SHORT_MOVE_DISTANCE_PX = 220;
+const FONDO1_EVELYN_EXTRA_BOTTOM_PX = 30;
+const ALIMENTOS_MAX = 99;
+const DINERO_MAX = 99;
+const PUEBLO_MAX = 100;
 const DEFAULT_SPEECH_NEXT_LABEL = "Continuar";
 const TRAVEL_SPEECH_NEXT_LABEL = "Viajar";
 const ENTER_SPEECH_NEXT_LABEL = "Entrar";
-const TERMINAL_SPEECH_NEXT_LABEL = "Introducir número";
-const GASTON_DIALOGUE = [
-  "¡Hola, guardiana! Muchas gracias por acudir. Hoy es la Competición Financiera, un juego muy famoso en la ciudad de Aurópolis.",
-  "El objetivo es recorrer esta zona delimitada de la ciudad donde encontrarás distintos objetos como una factura o una llave, que os irán guiando hasta encontrar una sala oculta, la sala del tesoro.",
-  "Debemos ser los primeros en lograr entrar para hacernos con la victoria. ¡Un reto digno de los Guardianes del Tesoro!"
+const JANE_DIALOGUE = [
+  "¡Hola! Mi nombre es Jane, soy la alquimista del pueblo. ¿Así que tu vas a encargarte de administrar el pueblo a partir de ahora?",
+  "Tendrás que tener en cuenta tres factores al finalizar cada día: El nivel de comida del pueblo, la felicidad de sus habitantes y el dinero.",
+  "Pero tranquila, aquí nunca hay muchas complicaciones."
 ];
-const ARDILLA_GUARDIANA_DIALOGUE = {
-  prompt: "¿Necesitas información?",
-  options: [
-    {
-      label: "¿Que es una factura?",
-      response: "Es el comprobante oficial de que se ha realizado una compra o una venta. Su función principal es servir como prueba legal del intercambio y asegurar que se paguen los impuestos correspondientes."
-    },
-    {
-      label: "¿Que es un ticket?",
-      response: "A diferencia de la factura, el ticket es más sencillo: no suele incluir tus datos personales, solo lo que compraste y el precio. Sirve como justificante de pago para cambios o devoluciones rápidas, pero no tiene el mismo peso legal o fiscal que una factura completa."
-    }
-  ]
+const CAMUS_DIALOGUE = [
+  "Recorre el pueblo y conoce a sus habitantes para comprender mejor tus labores a partir de ahora.",
+  "Busca al viejo Darren. El te explicará cómo funciona todo."
+];
+const DARREN_DIALOGUE_SEQUENCE = [
+  {
+    speaker: "darren",
+    line: "Vaya, vaya. Así que tu eres la famosa Evelyn, la gran capitana de la guardia descartada por el Rey. Veo que nos mandan lo mejor de lo mejor.",
+    speechExtraTop: -56
+  },
+  { speaker: "evelyn", line: "Menos sorna...", speechExtraTop: 28 },
+  {
+    speaker: "darren",
+    line: "Soy Darren, antiguo alcalde del pueblo. Gestionar este sitio no es complicado pero tampoco se puede hacer a lo loco. Te explicaré los principios básicos. Aquí abajo verás la barra de inventario, ahí se guardarán todos los objetos que vayas encontrando por ahí. Para usarlos, arrastralos hacia el sitio correcto. Si te equivocas, te darás cuenta.",
+    highlight: "slot-1",
+    speechExtraTop: 0
+  },
+  {
+    speaker: "darren",
+    line: "Este es el contador de COMIDA, cada día que pase se irá descontando comida. Tienes que encargarte de que se produza o se compre comida para el pueblo. Si llegamos a 0 todo se acabó. No creo que el Rey te perdone más veces...",
+    highlight: "alimentos",
+    speechExtraTop: -26
+  },
+  {
+    speaker: "darren",
+    line: "Lo mismo pasa con el DINERO. Cuanto más consigas, más prospero será el pueblo. Pero que sea de forma legal, por favor. Ya te imaginas que pasará si el contador llega a 0 ¿no?",
+    highlight: "dinero",
+    speechExtraTop: 0
+  },
+  {
+    speaker: "darren",
+    line: "Y por último, el contador del PUEBLO. Aquí se refleja lo contentos que estamos los habitantes del pueblo, si estamos contentos con tu gestión y con la vida en este lugar en general. No quiero repetirme mucho. Tu no llegues a 0 ¿vale?",
+    highlight: "pueblo",
+    speechExtraTop: -84
+  },
+  { speaker: "darren", line: "¿Tienes alguna duda?", speechExtraTop: -84 },
+  { speaker: "evelyn", line: "No he entendido nada de nada...", speechExtraTop: 0 },
+  { speaker: "darren", line: "Ay... Preguntame lo que quieras, anda.", speechExtraTop: 0 }
+];
+const DARREN_DAYS_DIALOGUE = [
+  "Abajo tienes un icono que al pulsarlo finaliza el día. Ten en cuenta que al finalizar el día se gastarán recursos, así que antes de hacerlo asegurate de que has aprovechado el día al máximo."
+];
+const DARREN_HELP_DIALOGUE = [
+  "Mañana Helena te esperará en la plaza del pueblo, ella te ayudará a gestionarlo todo, aunque hay muchas cosas que solo podrás gestionar o descubrir recorriendo el pueblo y a veces, solo en días concretos."
+];
+const HELENA_DIALOGUE_SEQUENCE = [
+  {
+    speaker: "helena",
+    line: "¡Hola, Evelyn! Un gusto tenerte por aquí. Soy Helena, la escribana del pueblo. Solía ayudar a Darren y creo que también puedo ayudarte a ti. Antes de finalizar el día, ven a hablar conmigo y podemos discutir como distribuir los recursos del pueblo."
+  },
+  { speaker: "evelyn", line: "Muchas gracias, Helena. Tu ayuda va a venirme muy bien." },
+  {
+    speaker: "helena",
+    line: "No tienes que darlas, me pagan por esto. O al menos, eso espero... Todos los días debes recorrer el pueblo para ver como están sus habitantes, y la localidad en si, quizás puedas ayudarles directamente."
+  },
+  {
+    speaker: "helena",
+    line: "Yo te plantearé formas de administrar el dinero pero debes tener algo claro, Evelyn: Tus acciones tendrán consecuencias y no puedes contentar a todos. Tenlo muy presente. Hoy intenta familiarizarte con el pueblo y ya mañana comenzamos a trabajar. Me he tomado la libertad de gestionar yo los alimentos en esta ocasión."
+  },
+  { speaker: "evelyn", line: "Genial, muchas gracias. Aunque eso de las consecuencias no suena muy bien..." }
+];
+const HELENA_DAY2_INTRO = [
+  "¡Hola! Te muestro opciones acerca de como gestionar los recursos en el día de hoy. Recuerda que soy totalmente objetiva y algunas de las opciones que te ofrezco pueden ser erróneas. Queda a tu criterio escoger las más optimas."
+];
+const HELENA_DAY2_REST_DIALOGUE = [
+  "Descansa por hoy, mañana te traeré nuevas sugerencias."
+];
+const HELENA_DAY2_OPTION_COSTS = {
+  "day2-bandits": { alimentos: 0, dinero: 4, pueblo: 0 },
+  "day2-party": { alimentos: 5, dinero: 5, pueblo: 0 }
 };
-const BICI_DIALOGUE_TO_FONDO3 = ["¿Quieres viajar al parque?"];
-const BICI_DIALOGUE_TO_FONDO2 = ["¿Quieres viajar al distrito comercial?"];
-const TELE_DIALOGUE = [
-  "Es una terminal de juego de la Competición Financiera.\nMuestra la silueta de un reloj y pide introducir un número para continuar."
-];
-const TELE_CORRECT_CODE = "1031";
-const TELE_SUCCESS_DIALOGUE = ["Se ha abierto un compartimento donde se ocultaba una llave"];
-const TELE_FAIL_DIALOGUE = ["No ha pasado nada."];
-const TELE_INPUT_BUBBLE_OFFSET = 75;
-const TELE_RESULT_BUBBLE_OFFSET = -60;
-const FONDO2_HOTSPOT_DIALOGUE = [
-  "La calle está abarrotada, debería asegurarme de que he recopilado todas las pistas antes de irme."
-];
-const VENDEDORA_DIALOGUE = [
-  "¡Hola!",
-  "Puede que tenga una de esas facturas que buscas. Podría dartela a cambio de algo de valor."
-];
-const VENDEDORA_PAYMENT_DIALOGUE = [
-  "¡Me encanta! Esto servirá como pago por la factura. Ya estás más cerca de completar la Competición."
+const HELENA_DAY2_BANDITS_FAIL_NOTE = "Los bandidos siguen campando a sus anchas (-4 🍞 COMIDA)";
+const HELENA_DAY2_BANDITS_SUCCESS_NOTE = "Los mercenarios han ahuyentado a los bandidos, aunque temes que esto pueda tener consecuencias... (+5 🍞 COMIDA +5 PUEBLO)";
+const HELENA_DAY2_PARTY_NOTE = "¡Menudo fiestón has dado! Aunque quizás hayas derrochado demasiado y más teniendo en cuenta el poco tiempo que llevas aquí... (+10 PUEBLO)";
+const INTRO_DIALOGUE_SEQUENCE = [
+  { speaker: "evelyn", line: "Y así es como acabé aquí.", speechExtraTop: 0 },
+  { speaker: "camus", line: "¿Eras la Capitana de la guardia del Rey y te han mandado a este lugar? Si que tienes que haber hecho algo grave...", speechExtraTop: -28 },
+  { speaker: "evelyn", line: "Eh... bueno, según la opinión del Rey, si... En fin, ahora tengo que encargarme de gestionar este pueblo y hacer que todo funcione bien.", speechExtraTop: 34 },
+  { speaker: "camus", line: "No te preocupes, este es un pueblo muy tranquilo. Date una vuelta para entenderlo todo mejor", speechExtraTop: -28 }
 ];
 const FONDO3_HOTSPOT_DIALOGUE = [
   "El reloj parece estar parado a proposito. La hora que marca son las diez horas y treinta y un minutos."
 ];
-const FONDO4_HOTSPOT_DIALOGUE = [
-  "Parece que está cerrada con llave. ¿Será esta la Sala del Tesoro?"
-];
-const FONDO4_UNLOCK_DIALOGUE = ["La puerta se ha abierto."];
-const FONDO5_HOTSPOT_DIALOGUE = [
-  "En la estantería hay todo tipo de frascos, pociones y cachivaches pero hay un hueco vacío muy sospechoso..."
-];
-const FONDO5_BREBAJE_DIALOGUE = ["*Clik*"];
-const FONDO5_CENTER_HOTSPOT_DIALOGUE = [
-  "El cofre se ha abierto un poco pero aún no del todo. Sin embargo se ha iluminado una placa que dice \"La luz nos muestra lo que antes se ocultaba\""
-];
 const ANILLO_MODAL = {
-  imageSrc: "images/anillo.png",
+  imageSrc: asset("images/anillo.png"),
   imageAlt: "Anillo ampliado",
   textHtml: "Un anillo de origen desconocido.<br>Parece ser de gran valor."
 };
-const FACTURA_MODAL = {
-  imageSrc: "images/factura.png",
-  imageAlt: "Factura ampliada",
-  textHtml: "Una de las facturas necesarias para completar la Competición Financiera.<br>Es un recibo de la luz."
-};
-const FACTURA_MODAL_FONDO5 = {
-  imageSrc: "images/factura.png",
-  imageAlt: "Factura ampliada",
-  textHtml: "Con la luz de la sala del tesoro, podemos leer algo oculto en la factura: ¿?"
-};
-const LLAVE_MODAL = {
-  imageSrc: "images/llave.png",
-  imageAlt: "Llave ampliada",
-  textHtml: "¿Qué abrira esta llave?"
-};
-const BREBAJE_MODAL = {
-  imageSrc: "images/brebaje.png",
-  imageAlt: "Brebaje ampliado",
-  textHtml: "Un brebaje natural creado con flores silvestres."
-};
 const ANILLO_OBTAINED_MODAL = {
-  imageSrc: "images/anillo.png",
+  imageSrc: asset("images/anillo.png"),
   imageAlt: "Anillo obtenido",
   textHtml: "¡Has obtenido un anillo!"
 };
-const FACTURA_OBTAINED_MODAL = {
-  imageSrc: "images/factura.png",
-  imageAlt: "Factura obtenida",
-  textHtml: "¡Has obtenido una factura!"
-};
-const LLAVE_OBTAINED_MODAL = {
-  imageSrc: "images/llave.png",
-  imageAlt: "Llave obtenida",
-  textHtml: "¡Has obtenido una llave!"
-};
-const BREBAJE_OBTAINED_MODAL = {
-  imageSrc: "images/brebaje.png",
-  imageAlt: "Brebaje obtenido",
-  textHtml: "¡Has obtenido un brebaje!"
-};
-const INITIAL_GUARDIAN_LEFT =
-  getComputedStyle(document.documentElement).getPropertyValue("--guardian-left").trim() || "0px";
-const INITIAL_GUARDIAN_BOTTOM =
+const ANILLO_INVENTORY_WIDTH = "24%";
+const ANILLO_INVENTORY_MAX_HEIGHT = "18%";
+const ANILLO_INVENTORY_LEFT = "-34%";
+const ANILLO_INVENTORY_BOTTOM = "-32%";
+const INITIAL_EVELYN_LEFT =
+  getComputedStyle(document.documentElement).getPropertyValue("--evelyn-left").trim() || "0px";
+const FONDO0_EVELYN_LEFT =
+  getComputedStyle(document.documentElement).getPropertyValue("--evelyn-left-fondo0").trim() || "74%";
+const INITIAL_EVELYN_BOTTOM =
   getComputedStyle(document.documentElement).getPropertyValue("--character-bottom").trim() || "0px";
-const BICI_LEFT_FONDO2 =
-  getComputedStyle(document.documentElement).getPropertyValue("--bici-left-fondo2").trim() || "65%";
-const BICI_LEFT_FONDO3 =
-  getComputedStyle(document.documentElement).getPropertyValue("--bici-left-fondo3").trim() || "52%";
-const FONDO4_GUARDIAN_LEFT =
-  getComputedStyle(document.documentElement).getPropertyValue("--guardian-left-fondo4").trim() || "78%";
-const FONDO4_GUARDIAN_LEFT_FROM_FONDO5 =
-  getComputedStyle(document.documentElement).getPropertyValue("--guardian-left-fondo4-from-fondo5").trim() || "29%";
-const FONDO5_GUARDIAN_LEFT =
-  getComputedStyle(document.documentElement).getPropertyValue("--guardian-left-fondo5").trim() || "74%";
-
-const VALID_DROP_ZONES = [
-  { x1: 0.45, y1: 0.33, x2: 0.58, y2: 0.58 }
-];
-const FONDO2_HOTSPOT_ZONE = { x1: 0.34, y1: 0.30, x2: 0.66, y2: 0.72 };
+const FONDO4_EVELYN_LEFT =
+  getComputedStyle(document.documentElement).getPropertyValue("--evelyn-left-fondo4").trim() || "78%";
+const ENTRY_LEFT_EDGE = "8%";
+const ENTRY_RIGHT_EDGE = "86%";
+const ENTRY_CENTER = "50%";
+const ENTRY_FONDO1_FROM_FONDO0 = "66%";
+const ENTRY_FONDO2_FROM_FONDO1 = "14%";
+const FONDO2_EVELYN_EXTRA_BOTTOM_PX = 46;
+const FONDO0_EVELYN_EXTRA_BOTTOM_PX = 42;
+const SPEECH_LEFT_FROM_CENTER_PX = -24;
+const SPEECH_UP_OFFSET_PX = 18;
 
 let hasAnillo = false;
-let hasFactura = false;
-let hasLlave = false;
-let hasBrebaje = false;
-let hasCompletedVendedoraTrade = false;
-let hasUnlockedFondo4Door = false;
-let hasActivatedFondo5CenterHotspot = false;
-let pendingVendedoraDismissAfterDialogue = false;
+let ALIMENTOS = 10;
+let DINERO = 20;
+let PUEBLO = 50;
 let speechAnchor = null;
 let dragProxy = null;
-let pendingSpeechForGaston = false;
-let pendingSpeechForArdillaGuardiana = false;
-let pendingSpeechForBici = false;
-let pendingSpeechForTele = false;
-let pendingSpeechForFondo4Hotspot = false;
-let pendingSpeechForFondo5Hotspot = false;
-let pendingSpeechForFondo5CenterHotspot = false;
+let pendingSpeechForJane = false;
+let pendingSpeechForCamus = false;
+let pendingSpeechForDarren = false;
+let pendingSpeechForHelena = false;
+let pendingSceneChangeAction = null;
+let pendingSceneChangeArrow = null;
+let pendingSceneChangeTimeoutId = null;
+let pendingSceneEntryLeft = null;
+let pendingFondo2FromFondo1 = false;
 let activeDialogue = null;
 let activeDialogueIndex = 0;
+let activeScriptedDialogueSequence = null;
+let activeScriptedDialogueIndex = 0;
+let hasCompletedDarrenIntroDialogue = false;
+let hasReceivedHelenaFoodBonus = false;
+let hasCompletedHelenaDay2Dialogue = false;
+let hasQueuedDay2HelenaDecision = false;
+let selectedHelenaOptionIds = new Set();
+let spawnMercenaryOnDay10 = false;
+let pendingDailyAlimentosDelta = 0;
+let pendingDailyDineroDelta = 0;
+let pendingDailyPuebloDelta = 0;
+let pendingDaySummaryNotes = [];
+let isEndDayEnabled = false;
+let currentDay = 0;
+let isIntroSequenceActive = true;
+let introDialogueIndex = 0;
 let anilloPickupPending = false;
 let anilloPickupTimeoutId = null;
 let draggedInventoryItem = null;
-let guardianWalkIntervalId = null;
-let guardianWalkFrameIndex = 0;
+let evelynWalkIntervalId = null;
+let evelynWalkFrameIndex = 0;
 let draggedSourceElement = null;
+let rewardToastTimeoutId = null;
 const TRANSPARENT_DRAG_IMAGE = new Image();
 TRANSPARENT_DRAG_IMAGE.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 const BASE_WIDTH = 1328;
 const BASE_HEIGHT = 800;
 const INVENTORY_DRAGGABLE_IDS = new Set([
-  "anillo-item",
-  "factura-item",
-  "llave-item",
-  "brebaje-item"
+  "anillo-item"
 ]);
 const SCENE_BACKGROUND_CLASSES = [
+  "in-fondo0",
   "in-fondo1",
   "in-fondo2",
   "in-fondo3",
-  "in-fondo4",
-  "in-fondo5"
+  "in-fondo4"
 ];
 
 function addFallbackOnError(id, label) {
@@ -228,70 +263,517 @@ function setSceneBackgroundClass(className) {
   }
 }
 
-function updateFondo5CenterHotspotState() {
-  if (!fondo5HotspotCenter) return;
-  const activeInFondo5 = isInFondo5();
-  fondo5HotspotCenter.style.display = activeInFondo5 ? "block" : "none";
-  fondo5HotspotCenter.style.pointerEvents = activeInFondo5 && hasActivatedFondo5CenterHotspot ? "auto" : "none";
+function setArrowMode(arrowEl, mode) {
+  if (!arrowEl) return;
+  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center");
+  if (mode) {
+    arrowEl.classList.add(mode);
+  }
+}
+
+function isInteractionLocked() {
+  return isIntroSequenceActive;
+}
+
+function getFondo1EvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO1_EVELYN_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getFondo2FromFondo1EvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO2_EVELYN_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getFondo0EvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO0_EVELYN_EXTRA_BOTTOM_PX}px)`;
+}
+
+function clampAlimentos(value) {
+  return Math.max(0, Math.min(ALIMENTOS_MAX, Math.trunc(value)));
+}
+
+function renderAlimentos() {
+  if (!alimentosDisplay) return;
+  alimentosDisplay.textContent = `${ALIMENTOS}`;
+}
+
+function setALIMENTOS(value) {
+  ALIMENTOS = clampAlimentos(value);
+  renderAlimentos();
+  return ALIMENTOS;
+}
+
+function addALIMENTOS(delta) {
+  return setALIMENTOS(ALIMENTOS + delta);
+}
+
+function clampDinero(value) {
+  return Math.max(0, Math.min(DINERO_MAX, Math.trunc(value)));
+}
+
+function renderDinero() {
+  if (!dineroDisplay) return;
+  dineroDisplay.textContent = `${DINERO}`;
+}
+
+function setDINERO(value) {
+  DINERO = clampDinero(value);
+  renderDinero();
+  return DINERO;
+}
+
+function addDINERO(delta) {
+  return setDINERO(DINERO + delta);
+}
+
+function clampPueblo(value) {
+  return Math.max(0, Math.min(PUEBLO_MAX, Math.trunc(value)));
+}
+
+function renderPueblo() {
+  if (!puebloDisplay) return;
+  puebloDisplay.textContent = `${PUEBLO}`;
+}
+
+function setPUEBLO(value) {
+  PUEBLO = clampPueblo(value);
+  renderPueblo();
+  return PUEBLO;
+}
+
+function addPUEBLO(delta) {
+  return setPUEBLO(PUEBLO + delta);
+}
+
+function clearUiHighlight() {
+  if (ringSlotHighlight) ringSlotHighlight.classList.remove("ui-highlight");
+  if (alimentosDisplay) alimentosDisplay.classList.remove("ui-highlight");
+  if (dineroDisplay) dineroDisplay.classList.remove("ui-highlight");
+  if (puebloDisplay) puebloDisplay.classList.remove("ui-highlight");
+}
+
+function applyUiHighlight(target) {
+  clearUiHighlight();
+  if (target === "slot-1" && ringSlotHighlight) {
+    ringSlotHighlight.classList.add("ui-highlight");
+  } else if (target === "alimentos" && alimentosDisplay) {
+    alimentosDisplay.classList.add("ui-highlight");
+  } else if (target === "dinero" && dineroDisplay) {
+    dineroDisplay.classList.add("ui-highlight");
+  } else if (target === "pueblo" && puebloDisplay) {
+    puebloDisplay.classList.add("ui-highlight");
+  }
+}
+
+function getSpeakerAnchor(speaker) {
+  if (speaker === "evelyn") return evelyn;
+  if (speaker === "jane") return jane;
+  if (speaker === "camus") return camus;
+  if (speaker === "darren") return darren;
+  if (speaker === "helena") return helena;
+  return evelyn;
+}
+
+function clearScriptedDialogueSequence() {
+  activeScriptedDialogueSequence = null;
+  activeScriptedDialogueIndex = 0;
+}
+
+function renderScriptedDialogueStep() {
+  if (!activeScriptedDialogueSequence) return;
+  const step = activeScriptedDialogueSequence[activeScriptedDialogueIndex];
+  if (!step) {
+    clearScriptedDialogueSequence();
+    clearUiHighlight();
+    closeSpeech();
+    return;
+  }
+  applyUiHighlight(step.highlight);
+  startDialogue(getSpeakerAnchor(step.speaker), [step.line], step.speechExtraTop || 0);
+}
+
+function startScriptedDialogueSequence(sequence) {
+  if (!Array.isArray(sequence) || sequence.length === 0) return;
+  activeScriptedDialogueSequence = sequence;
+  activeScriptedDialogueIndex = 0;
+  renderScriptedDialogueStep();
+}
+
+function advanceScriptedDialogueSequence() {
+  if (!activeScriptedDialogueSequence) return false;
+  activeScriptedDialogueIndex += 1;
+  const hasNext = activeScriptedDialogueIndex < activeScriptedDialogueSequence.length;
+  if (!hasNext) {
+    if (activeScriptedDialogueSequence === DARREN_DIALOGUE_SEQUENCE) {
+      hasCompletedDarrenIntroDialogue = true;
+      setEndDayEnabled(true);
+    } else if (activeScriptedDialogueSequence === HELENA_DIALOGUE_SEQUENCE && !hasReceivedHelenaFoodBonus) {
+      hasReceivedHelenaFoodBonus = true;
+      addALIMENTOS(10);
+      showRewardToast("Alimentos +10");
+    }
+    clearScriptedDialogueSequence();
+    clearUiHighlight();
+    closeSpeech();
+    return true;
+  }
+  renderScriptedDialogueStep();
+  return true;
+}
+
+function startDarrenDialogue() {
+  startScriptedDialogueSequence(DARREN_DIALOGUE_SEQUENCE);
+}
+
+function startDarrenHelpChoiceDialogue() {
+  startChoiceDialogue(darren, "¿Que necesitas saber?", [
+    {
+      label: "¿Que me acabas de decir?",
+      onSelect: () => {
+        startDarrenDialogue();
+      }
+    },
+    {
+      label: "¿Cómo transcurren los días?",
+      onSelect: () => {
+        startDialogue(darren, DARREN_DAYS_DIALOGUE);
+      }
+    },
+    {
+      label: "¿Alguien va a ayudarme?",
+      onSelect: () => {
+        startDialogue(darren, DARREN_HELP_DIALOGUE);
+      }
+    },
+    {
+      label: "Eso es todo por ahora",
+      onSelect: () => {
+        closeSpeech();
+      }
+    }
+  ]);
+}
+
+function startDarrenInteractionDialogue() {
+  if (hasCompletedDarrenIntroDialogue) {
+    startDarrenHelpChoiceDialogue();
+    return;
+  }
+  startDarrenDialogue();
+}
+
+function queuePendingDailyDelta(alimentosDelta, dineroDelta, puebloDelta) {
+  pendingDailyAlimentosDelta += alimentosDelta;
+  pendingDailyDineroDelta += dineroDelta;
+  pendingDailyPuebloDelta += puebloDelta;
+}
+
+function queueDaySummaryNote(text) {
+  pendingDaySummaryNotes.push(text);
+}
+
+function consumePendingDaySummaryNotes() {
+  const notes = pendingDaySummaryNotes.slice();
+  pendingDaySummaryNotes = [];
+  return notes;
+}
+
+function getHelenaDay2SelectionCost(selectionSet) {
+  const total = { alimentos: 0, dinero: 0, pueblo: 0 };
+  for (const optionId of selectionSet) {
+    const cost = HELENA_DAY2_OPTION_COSTS[optionId];
+    if (!cost) continue;
+    total.alimentos += cost.alimentos || 0;
+    total.dinero += cost.dinero || 0;
+    total.pueblo += cost.pueblo || 0;
+  }
+  return total;
+}
+
+function canAffordHelenaDay2Selection(selectionSet) {
+  const totalCost = getHelenaDay2SelectionCost(selectionSet);
+  return ALIMENTOS >= totalCost.alimentos && DINERO >= totalCost.dinero;
+}
+
+function finalizeHelenaDay2Options(selectionSet) {
+  if (hasQueuedDay2HelenaDecision) return;
+  const selectedBandits = selectionSet.has("day2-bandits");
+  const selectedParty = selectionSet.has("day2-party");
+  const totalCost = getHelenaDay2SelectionCost(selectionSet);
+
+  if (totalCost.alimentos > 0) addALIMENTOS(-totalCost.alimentos);
+  if (totalCost.dinero > 0) addDINERO(-totalCost.dinero);
+
+  if (selectedBandits) {
+    spawnMercenaryOnDay10 = true;
+    queuePendingDailyDelta(5, 0, 5);
+    queueDaySummaryNote(HELENA_DAY2_BANDITS_SUCCESS_NOTE);
+  } else {
+    queuePendingDailyDelta(-4, 0, 0);
+    queueDaySummaryNote(HELENA_DAY2_BANDITS_FAIL_NOTE);
+  }
+
+  if (selectedParty) {
+    queuePendingDailyDelta(0, 0, 10);
+    queueDaySummaryNote(HELENA_DAY2_PARTY_NOTE);
+  }
+
+  hasQueuedDay2HelenaDecision = true;
+}
+
+function setSelectedHelenaOptions(selectionSet) {
+  selectedHelenaOptionIds = new Set(selectionSet);
+  for (const card of helenaOptionCards) {
+    card.classList.toggle("selected", selectedHelenaOptionIds.has(card.dataset.optionId));
+  }
+}
+
+function closeHelenaOptionsModal() {
+  if (!helenaOptionsModal) return;
+  helenaOptionsModal.classList.remove("open");
+  helenaOptionsModal.setAttribute("aria-hidden", "true");
+  if (helenaOptionsEmptyConfirm) {
+    helenaOptionsEmptyConfirm.classList.remove("open");
+    helenaOptionsEmptyConfirm.setAttribute("aria-hidden", "true");
+  }
+  setSelectedHelenaOptions(new Set());
+}
+
+function completeHelenaDay2Dialogue() {
+  hasCompletedHelenaDay2Dialogue = true;
+  closeHelenaOptionsModal();
+  closeSpeech();
+}
+
+function openHelenaOptionsModal() {
+  if (!helenaOptionsModal) return;
+  closeSpeech();
+  helenaOptionsModal.classList.add("open");
+  helenaOptionsModal.setAttribute("aria-hidden", "false");
+  if (helenaOptionsEmptyConfirm) {
+    helenaOptionsEmptyConfirm.classList.remove("open");
+    helenaOptionsEmptyConfirm.setAttribute("aria-hidden", "true");
+  }
+  setSelectedHelenaOptions(new Set());
+}
+
+function startHelenaDay2Dialogue() {
+  if (hasCompletedHelenaDay2Dialogue) {
+    startDialogue(helena, HELENA_DAY2_REST_DIALOGUE);
+    return;
+  }
+  startTravelDialogue(helena, HELENA_DAY2_INTRO, openHelenaOptionsModal, "Ver opciones");
+}
+
+function startHelenaDialogue() {
+  if (currentDay >= 2) {
+    startHelenaDay2Dialogue();
+    return;
+  }
+  startScriptedDialogueSequence(HELENA_DIALOGUE_SEQUENCE);
+}
+
+function showRewardToast(text) {
+  if (!rewardToast) return;
+  rewardToast.textContent = text;
+  rewardToast.classList.add("open");
+  if (rewardToastTimeoutId !== null) {
+    window.clearTimeout(rewardToastTimeoutId);
+  }
+  rewardToastTimeoutId = window.setTimeout(() => {
+    rewardToast.classList.remove("open");
+    rewardToastTimeoutId = null;
+  }, 1400);
+}
+
+function renderEndDayIconState() {
+  if (!endDayIcon) return;
+  endDayIcon.classList.toggle("enabled", isEndDayEnabled);
+}
+
+function setEndDayEnabled(enabled) {
+  isEndDayEnabled = Boolean(enabled);
+  renderEndDayIconState();
+}
+
+function renderDayBanner() {
+  if (!dayBanner || !dayBannerNumber) return;
+  if (currentDay <= 0) {
+    dayBanner.style.display = "none";
+    return;
+  }
+  dayBannerNumber.textContent = `${currentDay}`;
+  dayBanner.style.display = "block";
+}
+
+function openDayEndModal() {
+  if (!dayEndModal || !isEndDayEnabled) return;
+  dayEndModal.classList.add("open");
+  dayEndModal.setAttribute("aria-hidden", "false");
+}
+
+function closeDayEndModal() {
+  if (!dayEndModal) return;
+  dayEndModal.classList.remove("open");
+  dayEndModal.setAttribute("aria-hidden", "true");
+}
+
+function getPuebloStatusLabel(value) {
+  if (value >= 100) return { cls: "status-good", emoji: "😄" };
+  if (value >= 70) return { cls: "status-mid", emoji: "🙂" };
+  if (value >= 40) return { cls: "status-warn", emoji: "😐" };
+  return { cls: "status-bad", emoji: "☹️" };
+}
+
+function formatSignedDelta(delta) {
+  return delta >= 0 ? `+${delta}` : `${delta}`;
+}
+
+function openDaySummaryModal(dayNumber, dayDeltas, notes = []) {
+  if (!daySummaryModal) return;
+  if (daySummaryTitle) {
+    daySummaryTitle.textContent = `Pueblo de Orbis - Día ${dayNumber}`;
+  }
+  if (summaryComida) {
+    summaryComida.textContent = `${ALIMENTOS} (${formatSignedDelta(dayDeltas.alimentos)})`;
+  }
+  if (summaryDinero) {
+    summaryDinero.textContent = `${DINERO} (${formatSignedDelta(dayDeltas.dinero)})`;
+  }
+  if (summaryPueblo) {
+    const status = getPuebloStatusLabel(PUEBLO);
+    summaryPueblo.classList.remove("status-good", "status-mid", "status-warn", "status-bad");
+    summaryPueblo.classList.add(status.cls);
+    summaryPueblo.textContent = `${PUEBLO} (${formatSignedDelta(dayDeltas.pueblo)}) ${status.emoji}`;
+  }
+  if (daySummaryNotes) {
+    daySummaryNotes.innerHTML = "";
+    for (const note of notes) {
+      const p = document.createElement("p");
+      p.textContent = note;
+      daySummaryNotes.appendChild(p);
+    }
+  }
+  daySummaryModal.classList.add("open");
+  daySummaryModal.setAttribute("aria-hidden", "false");
+}
+
+function closeDaySummaryModal() {
+  if (!daySummaryModal) return;
+  daySummaryModal.classList.remove("open");
+  daySummaryModal.setAttribute("aria-hidden", "true");
+}
+
+function applyDayState(dayNumber) {
+  // Hook para cambios por día.
+  void dayNumber;
+}
+
+function applyDailyResourceChanges() {
+  // Regla global: los objetos no recogidos persisten entre días.
+  // Aquí solo se aplican cambios de recursos diarios.
+  const comidaBefore = ALIMENTOS;
+  const dineroBefore = DINERO;
+  const puebloBefore = PUEBLO;
+  addALIMENTOS(-1);
+  if (pendingDailyAlimentosDelta !== 0) addALIMENTOS(pendingDailyAlimentosDelta);
+  if (pendingDailyDineroDelta !== 0) addDINERO(pendingDailyDineroDelta);
+  if (pendingDailyPuebloDelta !== 0) addPUEBLO(pendingDailyPuebloDelta);
+  const deltas = {
+    alimentos: ALIMENTOS - comidaBefore,
+    dinero: DINERO - dineroBefore,
+    pueblo: PUEBLO - puebloBefore
+  };
+  pendingDailyAlimentosDelta = 0;
+  pendingDailyDineroDelta = 0;
+  pendingDailyPuebloDelta = 0;
+  return deltas;
+}
+
+function advanceToNextDay() {
+  closeDayEndModal();
+  const closingDayNumber = currentDay;
+  const dayDeltas = applyDailyResourceChanges();
+  const summaryNotes = consumePendingDaySummaryNotes();
+  currentDay += 1;
+  renderDayBanner();
+  applyDayState(currentDay);
+  closeSpeech();
+  closeHelenaOptionsModal();
+  closeItemModal();
+  clearPendingSceneChange();
+  pendingSceneEntryLeft = null;
+  pendingFondo2FromFondo1 = false;
+  goToFondo1();
+  openDaySummaryModal(closingDayNumber, dayDeltas, summaryNotes);
+}
+
+function applyAnilloInventoryStyle() {
+  if (!anilloItem) return;
+  anilloItem.style.position = "absolute";
+  anilloItem.style.width = ANILLO_INVENTORY_WIDTH;
+  anilloItem.style.maxHeight = ANILLO_INVENTORY_MAX_HEIGHT;
+  anilloItem.style.left = ANILLO_INVENTORY_LEFT;
+  anilloItem.style.bottom = ANILLO_INVENTORY_BOTTOM;
+  anilloItem.style.transform = "none";
 }
 
 addFallbackOnError("background", "fondo no encontrado");
 addFallbackOnError("anillo-world", "anillo.png no encontrado");
 addFallbackOnError("anillo-item", "anillo.png no encontrado");
-addFallbackOnError("factura-item", "factura.png no encontrado");
-addFallbackOnError("llave-item", "llave.png no encontrado");
-addFallbackOnError("brebaje-item", "brebaje.png no encontrado");
-addFallbackOnError("ardillaguardiana", "ardillaguardiana.png no encontrado");
-addFallbackOnError("bici", "bici.png no encontrado");
-addFallbackOnError("tele", "tele.png no encontrado");
-addFallbackOnError("vendedora", "vendedora.png no encontrado");
-addFallbackOnError("brebaje", "brebaje.png no encontrado");
+addFallbackOnError("camus", "camus.png no encontrado");
+addFallbackOnError("helena", "helena.png no encontrado");
+addFallbackOnError("darren", "darren.png no encontrado");
+addFallbackOnError("mercenario", "mercenario.png no encontrado");
 
-function preloadGuardianWalkFrames() {
-  for (const src of GUARDIAN_WALK_FRAMES) {
+function preloadEvelynWalkFrames() {
+  for (const src of EVELYN_WALK_FRAMES) {
     const img = new Image();
     img.src = src;
   }
 }
 
-function setGuardianFrame(src) {
-  if (!guardian || guardian.getAttribute("src") === src) return;
-  guardian.setAttribute("src", src);
+function setEvelynFrame(src) {
+  if (!evelyn || evelyn.getAttribute("src") === src) return;
+  evelyn.setAttribute("src", src);
 }
 
-function startGuardianWalkAnimation() {
-  if (!guardian || guardianWalkIntervalId !== null) return;
-  guardianWalkFrameIndex = 0;
-  setGuardianFrame(GUARDIAN_WALK_FRAMES[guardianWalkFrameIndex]);
-  guardianWalkFrameIndex = (guardianWalkFrameIndex + 1) % GUARDIAN_WALK_FRAMES.length;
-  guardianWalkIntervalId = window.setInterval(() => {
-    setGuardianFrame(GUARDIAN_WALK_FRAMES[guardianWalkFrameIndex]);
-    guardianWalkFrameIndex = (guardianWalkFrameIndex + 1) % GUARDIAN_WALK_FRAMES.length;
-  }, GUARDIAN_WALK_FRAME_MS);
-}
-
-function stopGuardianWalkAnimation() {
-  if (guardianWalkIntervalId !== null) {
-    window.clearInterval(guardianWalkIntervalId);
-    guardianWalkIntervalId = null;
+function startEvelynWalkAnimation() {
+  if (!WALK_SPRITES_ENABLED) {
+    setEvelynFrame(EVELYN_IDLE_SRC);
+    return;
   }
-  guardianWalkFrameIndex = 0;
-  setGuardianFrame(GUARDIAN_IDLE_SRC);
+  if (!evelyn || evelynWalkIntervalId !== null) return;
+  evelynWalkFrameIndex = 0;
+  setEvelynFrame(EVELYN_WALK_FRAMES[evelynWalkFrameIndex]);
+  evelynWalkFrameIndex = (evelynWalkFrameIndex + 1) % EVELYN_WALK_FRAMES.length;
+  evelynWalkIntervalId = window.setInterval(() => {
+    setEvelynFrame(EVELYN_WALK_FRAMES[evelynWalkFrameIndex]);
+    evelynWalkFrameIndex = (evelynWalkFrameIndex + 1) % EVELYN_WALK_FRAMES.length;
+  }, EVELYN_WALK_FRAME_MS);
 }
 
-function snapGuardianToInitialPosition() {
-  snapGuardianToPosition(INITIAL_GUARDIAN_LEFT, INITIAL_GUARDIAN_BOTTOM);
+function stopEvelynWalkAnimation() {
+  if (evelynWalkIntervalId !== null) {
+    window.clearInterval(evelynWalkIntervalId);
+    evelynWalkIntervalId = null;
+  }
+  evelynWalkFrameIndex = 0;
+  setEvelynFrame(EVELYN_IDLE_SRC);
 }
 
-function snapGuardianToPosition(left, bottom = INITIAL_GUARDIAN_BOTTOM) {
-  if (!guardian) return;
-  const previousTransition = guardian.style.transition;
-  guardian.style.transition = "none";
-  guardian.style.left = left;
-  guardian.style.top = "auto";
-  guardian.style.bottom = bottom;
-  void guardian.offsetWidth;
-  guardian.style.transition = previousTransition;
+function snapEvelynToInitialPosition() {
+  snapEvelynToPosition(INITIAL_EVELYN_LEFT, INITIAL_EVELYN_BOTTOM);
+}
+
+function snapEvelynToPosition(left, bottom = INITIAL_EVELYN_BOTTOM) {
+  if (!evelyn) return;
+  const previousTransition = evelyn.style.transition;
+  evelyn.style.transition = "none";
+  evelyn.style.left = left;
+  evelyn.style.top = "auto";
+  evelyn.style.bottom = bottom;
+  void evelyn.offsetWidth;
+  evelyn.style.transition = previousTransition;
 }
 
 function createDragProxy(sourceEl, clientX, clientY) {
@@ -323,11 +805,27 @@ function removeDragProxy() {
   dragProxy = null;
 }
 
+function triggerInventoryBuzz() {
+  if (!inventory) return;
+  inventory.classList.remove("buzz");
+  if (alimentosDisplay) alimentosDisplay.classList.remove("buzz-counter");
+  if (dineroDisplay) dineroDisplay.classList.remove("buzz-counter");
+  if (puebloDisplay) puebloDisplay.classList.remove("buzz-counter");
+  void inventory.offsetWidth;
+  inventory.classList.add("buzz");
+  if (alimentosDisplay) alimentosDisplay.classList.add("buzz-counter");
+  if (dineroDisplay) dineroDisplay.classList.add("buzz-counter");
+  if (puebloDisplay) puebloDisplay.classList.add("buzz-counter");
+  window.setTimeout(() => {
+    inventory.classList.remove("buzz");
+    if (alimentosDisplay) alimentosDisplay.classList.remove("buzz-counter");
+    if (dineroDisplay) dineroDisplay.classList.remove("buzz-counter");
+    if (puebloDisplay) puebloDisplay.classList.remove("buzz-counter");
+  }, 420);
+}
+
 function isItemOwned(itemType) {
   if (itemType === "anillo") return hasAnillo;
-  if (itemType === "factura") return hasFactura;
-  if (itemType === "llave") return hasLlave;
-  if (itemType === "brebaje") return hasBrebaje;
   return false;
 }
 
@@ -352,13 +850,36 @@ function setupInventoryItemDrag(itemEl, itemType) {
   });
 
   itemEl.addEventListener("dragend", () => {
+    const droppedOutsideScene = Boolean(draggedInventoryItem);
     draggedInventoryItem = null;
     if (draggedSourceElement) {
       draggedSourceElement.style.opacity = "";
       draggedSourceElement = null;
     }
     removeDragProxy();
+    if (droppedOutsideScene) {
+      triggerInventoryBuzz();
+    }
   });
+}
+
+function clearPendingSceneChange() {
+  pendingSceneChangeAction = null;
+  pendingSceneChangeArrow = null;
+  if (pendingSceneChangeTimeoutId !== null) {
+    window.clearTimeout(pendingSceneChangeTimeoutId);
+    pendingSceneChangeTimeoutId = null;
+  }
+}
+
+function setPendingSceneEntry(left) {
+  pendingSceneEntryLeft = left;
+}
+
+function consumePendingSceneEntry(fallbackLeft) {
+  const left = pendingSceneEntryLeft || fallbackLeft;
+  pendingSceneEntryLeft = null;
+  return left;
 }
 
 function getSceneScale() {
@@ -398,118 +919,187 @@ function layoutScene() {
   scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
 }
 
-function setGuardianFacing(targetX) {
-  const currentCenterX = guardian.offsetLeft + guardian.offsetWidth / 2;
+function setEvelynFacing(targetX) {
+  const currentCenterX = evelyn.offsetLeft + evelyn.offsetWidth / 2;
   const delta = targetX - currentCenterX;
   if (Math.abs(delta) < 2) return;
-  guardian.style.transform = delta > 0 ? "scaleX(1)" : "scaleX(-1)";
+  evelyn.style.transform = delta > 0 ? "scaleX(1)" : "scaleX(-1)";
 }
 
-function faceGuardianToward(el) {
+function faceEvelynToward(el) {
   if (!el) return;
-  const guardianRect = getWorldRect(guardian);
+  const evelynRect = getWorldRect(evelyn);
   const targetRect = getWorldRect(el);
-  const guardianCenter = guardianRect.left + guardianRect.width / 2;
+  const evelynCenter = evelynRect.left + evelynRect.width / 2;
   const targetCenter = targetRect.left + targetRect.width / 2;
-  guardian.style.transform = targetCenter >= guardianCenter ? "scaleX(1)" : "scaleX(-1)";
+  evelyn.style.transform = targetCenter >= evelynCenter ? "scaleX(1)" : "scaleX(-1)";
 }
 
-function faceArdillaTowardGuardian() {
-  if (!ardillaGuardiana || !guardian) return;
-  const guardianRect = getWorldRect(guardian);
-  const ardillaRect = getWorldRect(ardillaGuardiana);
-  const guardianCenter = guardianRect.left + guardianRect.width / 2;
-  const ardillaCenter = ardillaRect.left + ardillaRect.width / 2;
-  const scale = guardianCenter < ardillaCenter ? -1 : 1;
-  ardillaGuardiana.style.transform = `translateX(-330%) scaleX(${scale})`;
+function faceCamusTowardEvelyn() {
+  if (!camus || !evelyn) return;
+  const evelynRect = getWorldRect(evelyn);
+  const camusRect = getWorldRect(camus);
+  const evelynCenter = evelynRect.left + evelynRect.width / 2;
+  const camusCenter = camusRect.left + camusRect.width / 2;
+  const scale = evelynCenter < camusCenter ? 1 : -1;
+  camus.style.transform = `translateX(-50%) scaleX(${scale})`;
 }
 
-function moveGuardianTo(targetWorldX, avoidGaston = true) {
-  const guardianWidth = guardian.offsetWidth;
-  const gastonRect = getWorldRect(gaston);
-  const gastonCenterX = gastonRect.left + gastonRect.width / 2;
-  const currentLeft = guardian.offsetLeft;
+function faceJaneTowardEvelyn() {
+  if (!jane || !evelyn) return;
+  const evelynRect = getWorldRect(evelyn);
+  const janeRect = getWorldRect(jane);
+  const evelynCenter = evelynRect.left + evelynRect.width / 2;
+  const janeCenter = janeRect.left + janeRect.width / 2;
+  const scale = evelynCenter < janeCenter ? 1 : -1;
+  jane.style.transform = `translateX(-50%) scaleX(${scale})`;
+}
+
+function moveEvelynTo(targetWorldX, avoidJane = true) {
+  const evelynWidth = evelyn.offsetWidth;
+  const janeRect = getWorldRect(jane);
+  const janeCenterX = janeRect.left + janeRect.width / 2;
+  const currentLeft = evelyn.offsetLeft;
 
   let clampedX = Math.min(
-    BASE_WIDTH - guardianWidth,
-    Math.max(0, targetWorldX - guardianWidth * 0.5)
+    BASE_WIDTH - evelynWidth,
+    Math.max(0, targetWorldX - evelynWidth * 0.5)
   );
 
-  if (avoidGaston) {
+  if (avoidJane) {
     const candidateLeft = clampedX;
-    const candidateRight = candidateLeft + guardianWidth;
-    const blockedLeft = gastonRect.left - GASTON_GAP;
-    const blockedRight = gastonRect.right + GASTON_GAP;
-    const overlapsGastonHorizontally = candidateRight > blockedLeft && candidateLeft < blockedRight;
+    const candidateRight = candidateLeft + evelynWidth;
+    const blockedLeft = janeRect.left - JANE_GAP;
+    const blockedRight = janeRect.right + JANE_GAP;
+    const overlapsJaneHorizontally = candidateRight > blockedLeft && candidateLeft < blockedRight;
 
-    if (overlapsGastonHorizontally) {
-      const sideX = targetWorldX < gastonCenterX
-        ? gastonRect.left - guardianWidth / 2 - GASTON_GAP
-        : gastonRect.right + guardianWidth / 2 + GASTON_GAP;
+    if (overlapsJaneHorizontally) {
+      const sideX = targetWorldX < janeCenterX
+        ? janeRect.left - evelynWidth / 2 - JANE_GAP
+        : janeRect.right + evelynWidth / 2 + JANE_GAP;
       clampedX = Math.min(
-        BASE_WIDTH - guardianWidth,
-        Math.max(0, sideX - guardianWidth * 0.5)
+        BASE_WIDTH - evelynWidth,
+        Math.max(0, sideX - evelynWidth * 0.5)
       );
     }
   }
 
-  const finalCenterX = clampedX + guardianWidth / 2;
+  const finalCenterX = clampedX + evelynWidth / 2;
   const deltaLeft = clampedX - currentLeft;
   const moveDistance = Math.abs(deltaLeft);
-  const moveDurationMs = moveDistance <= GUARDIAN_SHORT_MOVE_DISTANCE_PX
-    ? GUARDIAN_MOVE_DURATION_SHORT_MS
-    : GUARDIAN_MOVE_DURATION_LONG_MS;
-  guardian.style.transition = `left ${moveDurationMs}ms linear, transform 0.12s linear`;
+  const moveDurationMs = moveDistance <= EVELYN_SHORT_MOVE_DISTANCE_PX
+    ? EVELYN_MOVE_DURATION_SHORT_MS
+    : EVELYN_MOVE_DURATION_LONG_MS;
+  evelyn.style.transition = `left ${moveDurationMs}ms linear, transform 0.12s linear`;
   if (Math.abs(deltaLeft) > 0.5) {
-    guardian.style.transform = deltaLeft > 0 ? "scaleX(1)" : "scaleX(-1)";
+    evelyn.style.transform = deltaLeft > 0 ? "scaleX(1)" : "scaleX(-1)";
   } else {
-    setGuardianFacing(finalCenterX);
+    setEvelynFacing(finalCenterX);
   }
   if (Math.abs(clampedX - currentLeft) > 1) {
-    startGuardianWalkAnimation();
+    startEvelynWalkAnimation();
   } else {
-    stopGuardianWalkAnimation();
+    stopEvelynWalkAnimation();
   }
 
-  guardian.style.left = `${clampedX}px`;
-  guardian.style.top = "auto";
-  guardian.style.bottom = INITIAL_GUARDIAN_BOTTOM;
+  evelyn.style.left = `${clampedX}px`;
+  evelyn.style.top = "auto";
+  evelyn.style.bottom = isInFondo1()
+    ? getFondo1EvelynBottom()
+    : isInFondo2()
+      ? getFondo2FromFondo1EvelynBottom()
+      : isInFondo0()
+        ? getFondo0EvelynBottom()
+        : INITIAL_EVELYN_BOTTOM;
+  return Math.abs(clampedX - currentLeft) > 1;
 }
 
-function moveGuardianInFrontOf(el, avoidGaston = true) {
+function moveEvelynInFrontOf(el, avoidJane = true) {
   const targetRect = getWorldRect(el);
-  const guardianWidth = guardian.offsetWidth;
-  const guardianCenter = guardian.offsetLeft + guardianWidth / 2;
+  const evelynWidth = evelyn.offsetWidth;
+  const evelynCenter = evelyn.offsetLeft + evelynWidth / 2;
   const targetCenter = targetRect.left + targetRect.width / 2;
 
-  const x = guardianCenter < targetCenter
-    ? targetRect.left - guardianWidth / 2 - GASTON_GAP
-    : targetRect.right + guardianWidth / 2 + GASTON_GAP;
-  moveGuardianTo(x, avoidGaston);
+  const x = evelynCenter < targetCenter
+    ? targetRect.left - evelynWidth / 2 - JANE_GAP
+    : targetRect.right + evelynWidth / 2 + JANE_GAP;
+  moveEvelynTo(x, avoidJane);
 }
 
-function isGuardianBeside(el) {
-  const guardianRect = getWorldRect(guardian);
+function moveEvelynToArrowAndChangeScene(arrowEl, onArrive) {
+  if (!arrowEl || typeof onArrive !== "function") return;
+  closeSpeech();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
+  pendingSpeechForHelena = false;
+  const arrowRect = getWorldRect(arrowEl);
+  const targetX = arrowRect.left + arrowRect.width / 2;
+  pendingSceneChangeAction = onArrive;
+  pendingSceneChangeArrow = arrowEl || null;
+  const didMove = moveEvelynTo(targetX, false);
+  if (!didMove && pendingSceneChangeAction) {
+    triggerPendingSceneChange();
+  }
+}
+
+function getArrowVerticalExitOffset(arrowEl) {
+  if (!arrowEl) return 0;
+  if (arrowEl.classList.contains("arrow-up-center") || arrowEl.classList.contains("arrow-up-fondo2-center")) {
+    return 20;
+  }
+  if (arrowEl.classList.contains("arrow-down-center")) {
+    return -20;
+  }
+  return 0;
+}
+
+function triggerPendingSceneChange() {
+  if (!pendingSceneChangeAction) return;
+  const action = pendingSceneChangeAction;
+  const arrowEl = pendingSceneChangeArrow;
+  const verticalOffset = getArrowVerticalExitOffset(arrowEl);
+  clearPendingSceneChange();
+  if (!evelyn || verticalOffset === 0) {
+    action();
+    return;
+  }
+  const currentBottom = parseFloat(window.getComputedStyle(evelyn).bottom || "0") || 0;
+  evelyn.style.transition = "bottom 170ms linear, left 0ms linear, transform 0.12s linear";
+  evelyn.style.bottom = `${currentBottom + verticalOffset}px`;
+  pendingSceneChangeTimeoutId = window.setTimeout(() => {
+    pendingSceneChangeTimeoutId = null;
+    action();
+  }, 180);
+}
+
+function isEvelynBeside(el) {
+  const evelynRect = getWorldRect(evelyn);
   const targetRect = getWorldRect(el);
-  const leftDistance = Math.abs(targetRect.left - guardianRect.right);
-  const rightDistance = Math.abs(guardianRect.left - targetRect.right);
-  const closeEnough = leftDistance <= GASTON_GAP + 8 || rightDistance <= GASTON_GAP + 8;
-  const verticalOverlap = guardianRect.bottom > targetRect.top && guardianRect.top < targetRect.bottom;
+  const leftDistance = Math.abs(targetRect.left - evelynRect.right);
+  const rightDistance = Math.abs(evelynRect.left - targetRect.right);
+  const closeEnough = leftDistance <= JANE_GAP + 8 || rightDistance <= JANE_GAP + 8;
+  const verticalOverlap = evelynRect.bottom > targetRect.top && evelynRect.top < targetRect.bottom;
   return closeEnough && verticalOverlap;
 }
 
 function positionSpeechAt(el) {
   const targetRect = getWorldRect(el);
-  const dialogueExtraTop = activeDialogue && Number.isFinite(activeDialogue.speechExtraTop)
-    ? activeDialogue.speechExtraTop
-    : 0;
-  const extraTopOffset = el && el.id === "ardillaguardiana"
-    ? 140
-    : el && el.id === "gaston"
-      ? 80
-      : 0;
-  speech.style.left = `${targetRect.left + 50}px`;
-  speech.style.top = `${targetRect.top - 150 - extraTopOffset - dialogueExtraTop}px`;
+  const anchorY = targetRect.top;
+  const previousDisplay = speech.style.display;
+  const previousVisibility = speech.style.visibility;
+  if (speech.style.display === "none") {
+    speech.style.visibility = "hidden";
+    speech.style.display = "block";
+  }
+  const bubbleHeight = speech.offsetHeight || 170;
+  const targetCenterX = targetRect.left + targetRect.width / 2;
+  speech.style.left = `${targetCenterX + SPEECH_LEFT_FROM_CENTER_PX}px`;
+  speech.style.top = `${anchorY - bubbleHeight - SPEECH_UP_OFFSET_PX}px`;
+  if (previousDisplay === "none") {
+    speech.style.display = "none";
+    speech.style.visibility = previousVisibility;
+  }
 }
 
 function positionSpeechCenter() {
@@ -520,6 +1110,8 @@ function positionSpeechCenter() {
 }
 
 function closeSpeech() {
+  clearScriptedDialogueSequence();
+  clearUiHighlight();
   speech.style.display = "none";
   speech.classList.remove("speech-centered");
   speechAnchor = null;
@@ -550,6 +1142,10 @@ function renderActiveDialogue() {
         btn.className = "speech-option-btn";
         btn.textContent = option.label;
         btn.addEventListener("click", () => {
+          if (typeof option.onSelect === "function") {
+            option.onSelect();
+            return;
+          }
           startDialogue(activeDialogue.anchor, [option.response]);
         });
         speechOptions.appendChild(btn);
@@ -557,28 +1153,6 @@ function renderActiveDialogue() {
     }
     if (speechNextBtn) {
       speechNextBtn.style.display = "none";
-    }
-  } else if (activeDialogue.type === "terminal") {
-    speech.classList.remove("speech-centered");
-    speechText.textContent = activeDialogue.lines[activeDialogueIndex] || "";
-    if (speechOptions) {
-      speechOptions.innerHTML = "";
-      speechOptions.style.display = "block";
-      const input = document.createElement("input");
-      input.type = "text";
-      input.inputMode = "numeric";
-      input.autocomplete = "off";
-      input.placeholder = "Introduce un número";
-      input.className = "speech-terminal-input";
-      input.id = "speech-terminal-input";
-      speechOptions.appendChild(input);
-      window.setTimeout(() => {
-        input.focus();
-      }, 0);
-    }
-    if (speechNextBtn) {
-      speechNextBtn.style.display = "block";
-      speechNextBtn.textContent = TERMINAL_SPEECH_NEXT_LABEL;
     }
   } else if (activeDialogue.type === "centered") {
     speech.classList.add("speech-centered");
@@ -620,12 +1194,6 @@ function startDialogue(anchor, lines, speechExtraTop = 0) {
   renderActiveDialogue();
 }
 
-function startTerminalDialogue(anchor, lines, expectedCode, speechExtraTop = 0) {
-  activeDialogue = { type: "terminal", anchor, lines, expectedCode, speechExtraTop };
-  activeDialogueIndex = 0;
-  renderActiveDialogue();
-}
-
 function startTravelDialogue(anchor, lines, onConfirm, nextLabel = TRAVEL_SPEECH_NEXT_LABEL) {
   activeDialogue = { type: "travel", anchor, lines, onConfirm, nextLabel };
   activeDialogueIndex = 0;
@@ -644,16 +1212,26 @@ function startCenteredDialogue(lines) {
   renderActiveDialogue();
 }
 
-function completeVendedoraTrade() {
-  hasCompletedVendedoraTrade = true;
-  pendingVendedoraDismissAfterDialogue = false;
-  if (vendedora) {
-    vendedora.style.display = "none";
+function renderIntroDialogueStep() {
+  const step = INTRO_DIALOGUE_SEQUENCE[introDialogueIndex];
+  if (!step) {
+    isIntroSequenceActive = false;
+    closeSpeech();
+    return;
   }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = "none";
-    fondo2HotspotLeft.style.pointerEvents = "none";
-  }
+  const anchor = step.speaker === "camus" ? camus : evelyn;
+  startDialogue(anchor, [step.line], step.speechExtraTop || 0);
+}
+
+function startIntroDialogueSequence() {
+  isIntroSequenceActive = true;
+  introDialogueIndex = 0;
+  renderIntroDialogueStep();
+}
+
+function advanceIntroDialogueSequence() {
+  introDialogueIndex += 1;
+  renderIntroDialogueStep();
 }
 
 function advanceActiveDialogue() {
@@ -666,22 +1244,8 @@ function advanceActiveDialogue() {
     }
     return;
   }
-  if (activeDialogue.type === "terminal") {
-    const input = document.getElementById("speech-terminal-input");
-    const value = input ? input.value.trim() : "";
-    if (value === activeDialogue.expectedCode) {
-      grantLlaveFromTerminal();
-      startDialogue(activeDialogue.anchor, TELE_SUCCESS_DIALOGUE, TELE_RESULT_BUBBLE_OFFSET);
-    } else {
-      startDialogue(activeDialogue.anchor, TELE_FAIL_DIALOGUE, TELE_RESULT_BUBBLE_OFFSET);
-    }
-    return;
-  }
   if (activeDialogue.type !== "linear" && activeDialogue.type !== "centered") return;
   if (activeDialogueIndex >= activeDialogue.lines.length - 1) {
-    if (pendingVendedoraDismissAfterDialogue && activeDialogue.anchor === vendedora) {
-      completeVendedoraTrade();
-    }
     closeSpeech();
     return;
   }
@@ -689,10 +1253,22 @@ function advanceActiveDialogue() {
   renderActiveDialogue();
 }
 
+function isInFondo1() {
+  if (!background) return false;
+  const src = background.getAttribute("src") || background.src || "";
+  return src.includes("images/fondo1.png");
+}
+
 function isInFondo2() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
   return src.includes("images/fondo2.png");
+}
+
+function isInFondo0() {
+  if (!background) return false;
+  const src = background.getAttribute("src") || background.src || "";
+  return src.includes("images/fondo0.png");
 }
 
 function isInFondo3() {
@@ -705,25 +1281,6 @@ function isInFondo4() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
   return src.includes("images/fondo4.png");
-}
-
-function isInFondo5() {
-  if (!background) return false;
-  const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo5.png");
-}
-
-function startBiciTravelDialogue() {
-  if (isInFondo3()) {
-    startTravelDialogue(guardian, BICI_DIALOGUE_TO_FONDO2, goToFondo2);
-  } else {
-    startTravelDialogue(guardian, BICI_DIALOGUE_TO_FONDO3, goToFondo3);
-  }
-}
-
-function setBiciLeft(leftValue) {
-  if (!bici) return;
-  bici.style.left = leftValue;
 }
 
 function cancelPendingAnilloPickup() {
@@ -750,117 +1307,9 @@ function pickupAnillo() {
   if (firstSlot) {
     firstSlot.appendChild(anilloItem);
   }
+  applyAnilloInventoryStyle();
   anilloItem.style.display = "block";
   openItemModal(ANILLO_OBTAINED_MODAL);
-}
-
-function grantLlaveFromTerminal() {
-  if (hasLlave || !llaveItem) return;
-  hasLlave = true;
-  const secondSlot = inventorySlots[1];
-  if (secondSlot) {
-    secondSlot.appendChild(llaveItem);
-  }
-  llaveItem.style.display = "block";
-  openItemModal(LLAVE_OBTAINED_MODAL);
-}
-
-function pickupBrebaje() {
-  if (hasBrebaje || !brebajeItem) return;
-  hasBrebaje = true;
-  if (brebaje) {
-    brebaje.style.display = "none";
-    brebaje.style.pointerEvents = "none";
-  }
-  const thirdSlot = inventorySlots[2];
-  if (thirdSlot) {
-    thirdSlot.appendChild(brebajeItem);
-  }
-  brebajeItem.style.display = "block";
-  openItemModal(BREBAJE_OBTAINED_MODAL);
-}
-
-function unlockFondo4DoorWithLlave() {
-  if (!hasLlave || !llaveItem) return;
-  hasLlave = false;
-  hasUnlockedFondo4Door = true;
-  llaveItem.style.display = "none";
-  llaveItem.style.pointerEvents = "none";
-  llaveItem.setAttribute("draggable", "false");
-  startTravelDialogue(guardian, FONDO4_UNLOCK_DIALOGUE, goToFondo5, ENTER_SPEECH_NEXT_LABEL);
-}
-
-function isPointInsideElement(clientX, clientY, el) {
-  if (!el) return false;
-  const rect = el.getBoundingClientRect();
-  return clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
-}
-
-function tradeAnilloForFactura() {
-  if (!hasAnillo || !anilloItem || !facturaItem || !vendedora) return;
-
-  const targetSlot = anilloItem.parentElement && anilloItem.parentElement.classList.contains("inventory-slot")
-    ? anilloItem.parentElement
-    : inventorySlots[0];
-
-  hasAnillo = false;
-  hasFactura = true;
-  anilloItem.style.display = "none";
-  anilloItem.style.pointerEvents = "none";
-  anilloItem.setAttribute("draggable", "false");
-
-  if (targetSlot) {
-    targetSlot.appendChild(facturaItem);
-  }
-  facturaItem.style.display = "block";
-  openItemModal(FACTURA_OBTAINED_MODAL);
-
-  pendingVendedoraDismissAfterDialogue = true;
-  closeSpeech();
-  startDialogue(vendedora, VENDEDORA_PAYMENT_DIALOGUE);
-}
-
-function buzz() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = "sawtooth";
-  osc.frequency.value = 130;
-  gain.gain.value = 0.06;
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start();
-  osc.stop(ctx.currentTime + 0.18);
-
-  inventory.classList.remove("buzz");
-  void inventory.offsetWidth;
-  inventory.classList.add("buzz");
-
-  window.setTimeout(() => {
-    inventory.classList.remove("buzz");
-    ctx.close();
-  }, 260);
-}
-
-function isValidDrop(clientX, clientY) {
-  const rect = scene.getBoundingClientRect();
-  const nx = (clientX - rect.left) / rect.width;
-  const ny = (clientY - rect.top) / rect.height;
-
-  return VALID_DROP_ZONES.some(
-    (z) => nx >= z.x1 && nx <= z.x2 && ny >= z.y1 && ny <= z.y2
-  );
-}
-
-function isClickInsideFondo2Hotspot(clientX, clientY) {
-  const rect = scene.getBoundingClientRect();
-  const nx = (clientX - rect.left) / rect.width;
-  const ny = (clientY - rect.top) / rect.height;
-  const z = FONDO2_HOTSPOT_ZONE;
-  return nx >= z.x1 && nx <= z.x2 && ny >= z.y1 && ny <= z.y2;
 }
 
 function openItemModal(content = ANILLO_MODAL) {
@@ -881,513 +1330,410 @@ function closeItemModal() {
 }
 
 function goToFondo2() {
+  clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
   cancelPendingAnilloPickup();
-  stopGuardianWalkAnimation();
-  pendingSpeechForGaston = false;
-  pendingSpeechForArdillaGuardiana = false;
-  pendingSpeechForBici = false;
-  pendingSpeechForTele = false;
-  pendingSpeechForFondo4Hotspot = false;
-  pendingSpeechForFondo5Hotspot = false;
-  pendingSpeechForFondo5CenterHotspot = false;
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
+  const fondo2Bottom = pendingFondo2FromFondo1
+    ? getFondo2FromFondo1EvelynBottom()
+    : INITIAL_EVELYN_BOTTOM;
+  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), fondo2Bottom);
+  pendingFondo2FromFondo1 = false;
 
-  snapGuardianToInitialPosition();
-
-  background.src = "images/fondo2.png";
+  background.src = asset("images/fondo2.png");
   background.alt = "Fondo 2";
   setSceneBackgroundClass("in-fondo2");
 
-  gaston.style.display = "none";
-  if (tele) {
-    tele.style.display = "none";
+  jane.style.display = "none";
+  if (helena) {
+    helena.style.display = "none";
   }
-  if (ardillaGuardiana) {
-    ardillaGuardiana.style.display = "none";
+  if (camus) {
+    camus.style.display = "none";
   }
-  if (bici) {
-    bici.style.display = "block";
-    setBiciLeft(BICI_LEFT_FONDO2);
+  if (darren) {
+    darren.style.display = "block";
   }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = hasCompletedVendedoraTrade ? "none" : "block";
-    fondo2HotspotLeft.style.pointerEvents = hasCompletedVendedoraTrade ? "none" : "auto";
-  }
-  if (vendedora) {
-    vendedora.style.display = "none";
-  }
-  if (fondo3Hotspot) {
-    fondo3Hotspot.style.display = "none";
-  }
-  if (fondo3HotspotLeft) {
-    fondo3HotspotLeft.style.display = "none";
-  }
-  if (fondo4HotspotLeftBottom) {
-    fondo4HotspotLeftBottom.style.display = "none";
-  }
-  if (fondo5HotspotLeft) {
-    fondo5HotspotLeft.style.display = "none";
-  }
-  updateFondo5CenterHotspotState();
-  if (brebaje) {
-    brebaje.style.display = "none";
+  if (mercenario) {
+    mercenario.style.display = "none";
   }
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
-  nextArrow.style.display = "none";
+  setArrowMode(nextArrow, "arrow-up-fondo2-center");
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Ir a fondo 3");
   prevArrow.style.display = "block";
   prevArrow.setAttribute("aria-label", "Volver a fondo 1");
 }
 
 function goToFondo3() {
+  clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
   cancelPendingAnilloPickup();
-  stopGuardianWalkAnimation();
-  pendingSpeechForGaston = false;
-  pendingSpeechForArdillaGuardiana = false;
-  pendingSpeechForBici = false;
-  pendingSpeechForTele = false;
-  pendingSpeechForFondo4Hotspot = false;
-  pendingSpeechForFondo5Hotspot = false;
-  pendingSpeechForFondo5CenterHotspot = false;
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
 
-  snapGuardianToInitialPosition();
+  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
 
-  background.src = "images/fondo3.png";
+  background.src = asset("images/fondo3.png");
   background.alt = "Fondo 3";
   setSceneBackgroundClass("in-fondo3");
 
-  gaston.style.display = "none";
-  if (tele) {
-    tele.style.display = "none";
+  jane.style.display = "none";
+  if (helena) {
+    helena.style.display = "none";
   }
-  if (ardillaGuardiana) {
-    ardillaGuardiana.style.display = "none";
+  if (camus) {
+    camus.style.display = "none";
   }
-  if (bici) {
-    bici.style.display = "block";
-    setBiciLeft(BICI_LEFT_FONDO3);
+  if (darren) {
+    darren.style.display = "none";
   }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = "none";
-  }
-  if (vendedora) {
-    vendedora.style.display = "none";
-  }
-  if (fondo3Hotspot) {
-    fondo3Hotspot.style.display = "block";
-  }
-  if (fondo3HotspotLeft) {
-    fondo3HotspotLeft.style.display = "block";
-  }
-  if (fondo4HotspotLeftBottom) {
-    fondo4HotspotLeftBottom.style.display = "none";
-  }
-  if (fondo5HotspotLeft) {
-    fondo5HotspotLeft.style.display = "none";
-  }
-  updateFondo5CenterHotspotState();
-  if (brebaje) {
-    brebaje.style.display = hasBrebaje ? "none" : "block";
+  if (mercenario) {
+    mercenario.style.display = "none";
   }
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
-  nextArrow.style.display = "none";
+  setArrowMode(nextArrow, null);
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Volver a fondo 2");
   prevArrow.style.display = "block";
   prevArrow.style.visibility = "visible";
   prevArrow.style.pointerEvents = "auto";
   prevArrow.setAttribute("aria-label", "Ir a fondo 4");
 }
 
-function goToFondo4(fromFondo5 = false) {
+function goToFondo4() {
+  clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
   cancelPendingAnilloPickup();
-  stopGuardianWalkAnimation();
-  pendingSpeechForGaston = false;
-  pendingSpeechForArdillaGuardiana = false;
-  pendingSpeechForBici = false;
-  pendingSpeechForTele = false;
-  pendingSpeechForFondo4Hotspot = false;
-  pendingSpeechForFondo5Hotspot = false;
-  pendingSpeechForFondo5CenterHotspot = false;
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
 
-  background.src = "images/fondo4.png";
+  background.src = asset("images/fondo4.png");
   background.alt = "Fondo 4";
   setSceneBackgroundClass("in-fondo4");
 
-  snapGuardianToPosition(
-    fromFondo5 ? FONDO4_GUARDIAN_LEFT_FROM_FONDO5 : FONDO4_GUARDIAN_LEFT,
-    INITIAL_GUARDIAN_BOTTOM
-  );
-  guardian.style.transform = "scaleX(-1)";
+  snapEvelynToPosition(consumePendingSceneEntry(FONDO4_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
+  evelyn.style.transform = "scaleX(-1)";
 
-  gaston.style.display = "none";
-  if (tele) {
-    tele.style.display = "none";
+  jane.style.display = "none";
+  if (helena) {
+    helena.style.display = "none";
   }
-  if (ardillaGuardiana) {
-    ardillaGuardiana.style.display = "none";
+  if (camus) {
+    camus.style.display = "none";
   }
-  if (bici) {
-    bici.style.display = "none";
+  if (darren) {
+    darren.style.display = "none";
   }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = "none";
-  }
-  if (vendedora) {
-    vendedora.style.display = "none";
-  }
-  if (fondo3Hotspot) {
-    fondo3Hotspot.style.display = "none";
-  }
-  if (fondo3HotspotLeft) {
-    fondo3HotspotLeft.style.display = "none";
-  }
-  if (fondo4HotspotLeftBottom) {
-    fondo4HotspotLeftBottom.style.display = "block";
-  }
-  if (fondo5HotspotLeft) {
-    fondo5HotspotLeft.style.display = "none";
-  }
-  updateFondo5CenterHotspotState();
-  if (brebaje) {
-    brebaje.style.display = "none";
+  if (mercenario) {
+    mercenario.style.display = "none";
   }
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
+  setArrowMode(nextArrow, null);
+  setArrowMode(prevArrow, null);
   nextArrow.style.display = "block";
   nextArrow.setAttribute("aria-label", "Volver a fondo 3");
   prevArrow.style.display = "none";
 }
 
-function goToFondo5() {
-  closeItemModal();
-  closeSpeech();
-  cancelPendingAnilloPickup();
-  stopGuardianWalkAnimation();
-  pendingSpeechForGaston = false;
-  pendingSpeechForArdillaGuardiana = false;
-  pendingSpeechForBici = false;
-  pendingSpeechForTele = false;
-  pendingSpeechForFondo4Hotspot = false;
-  pendingSpeechForFondo5Hotspot = false;
-  pendingSpeechForFondo5CenterHotspot = false;
-
-  background.src = "images/fondo5.png";
-  background.alt = "Fondo 5";
-  setSceneBackgroundClass("in-fondo5");
-
-  snapGuardianToPosition(FONDO5_GUARDIAN_LEFT, INITIAL_GUARDIAN_BOTTOM);
-
-  gaston.style.display = "none";
-  if (tele) {
-    tele.style.display = "none";
-  }
-  if (ardillaGuardiana) {
-    ardillaGuardiana.style.display = "none";
-  }
-  if (bici) {
-    bici.style.display = "none";
-  }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = "none";
-  }
-  if (vendedora) {
-    vendedora.style.display = "none";
-  }
-  if (fondo3Hotspot) {
-    fondo3Hotspot.style.display = "none";
-  }
-  if (fondo3HotspotLeft) {
-    fondo3HotspotLeft.style.display = "none";
-  }
-  if (fondo4HotspotLeftBottom) {
-    fondo4HotspotLeftBottom.style.display = "none";
-  }
-  if (fondo5HotspotLeft) {
-    fondo5HotspotLeft.style.display = "block";
-  }
-  updateFondo5CenterHotspotState();
-  if (brebaje) {
-    brebaje.style.display = "none";
-  }
-  anilloWorld.style.display = "none";
-  inventory.style.display = "block";
-  nextArrow.style.display = "block";
-  nextArrow.setAttribute("aria-label", "Volver a fondo 4");
-  prevArrow.style.display = "none";
-}
-
 function goToFondo1() {
+  clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
   cancelPendingAnilloPickup();
-  stopGuardianWalkAnimation();
-  pendingSpeechForGaston = false;
-  pendingSpeechForArdillaGuardiana = false;
-  pendingSpeechForBici = false;
-  pendingSpeechForTele = false;
-  pendingSpeechForFondo4Hotspot = false;
-  pendingSpeechForFondo5Hotspot = false;
-  pendingSpeechForFondo5CenterHotspot = false;
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
 
-  snapGuardianToInitialPosition();
+  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
 
-  background.src = "images/fondo1.png";
+  background.src = asset("images/fondo1.png");
   background.alt = "Fondo 1";
   setSceneBackgroundClass("in-fondo1");
+  evelyn.style.bottom = getFondo1EvelynBottom();
 
-  gaston.style.display = "block";
-  if (tele) {
-    tele.style.display = "block";
+  if (currentDay >= 1) {
+    jane.style.display = "none";
+    if (camus) {
+      camus.style.display = "none";
+    }
+    if (helena) {
+      helena.style.display = "block";
+    }
+  } else {
+    jane.style.display = "block";
+    if (camus) {
+      camus.style.display = "block";
+    }
+    if (helena) {
+      helena.style.display = "none";
+    }
   }
-  if (ardillaGuardiana) {
-    ardillaGuardiana.style.display = "block";
+  if (darren) {
+    darren.style.display = "none";
   }
-  if (bici) {
-    bici.style.display = "none";
-    setBiciLeft(BICI_LEFT_FONDO2);
+  if (mercenario) {
+    mercenario.style.display = "none";
   }
-  if (fondo2HotspotLeft) {
-    fondo2HotspotLeft.style.display = "none";
-  }
-  if (vendedora) {
-    vendedora.style.display = "none";
-  }
-  if (fondo3Hotspot) {
-    fondo3Hotspot.style.display = "none";
-  }
-  if (fondo3HotspotLeft) {
-    fondo3HotspotLeft.style.display = "none";
-  }
-  if (fondo4HotspotLeftBottom) {
-    fondo4HotspotLeftBottom.style.display = "none";
-  }
-  if (fondo5HotspotLeft) {
-    fondo5HotspotLeft.style.display = "none";
-  }
-  updateFondo5CenterHotspotState();
-  if (brebaje) {
-    brebaje.style.display = "none";
+  if (mercenario) {
+    mercenario.style.display = spawnMercenaryOnDay10 && currentDay >= 10 ? "block" : "none";
   }
   anilloWorld.style.display = hasAnillo ? "none" : "block";
   anilloWorld.style.pointerEvents = hasAnillo ? "none" : "auto";
   inventory.style.display = "block";
+  setArrowMode(nextArrow, null);
+  setArrowMode(prevArrow, "arrow-down-center");
   nextArrow.style.display = "block";
   nextArrow.setAttribute("aria-label", "Ir a fondo 2");
+  prevArrow.style.display = "block";
+  prevArrow.style.visibility = "visible";
+  prevArrow.style.pointerEvents = "auto";
+  prevArrow.setAttribute("aria-label", "Ir a fondo 0");
+}
+
+function goToFondo0() {
+  clearPendingSceneChange();
+  closeItemModal();
+  closeSpeech();
+  cancelPendingAnilloPickup();
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
+
+  snapEvelynToPosition(consumePendingSceneEntry(FONDO0_EVELYN_LEFT), getFondo0EvelynBottom());
+
+  background.src = asset("images/fondo0.png");
+  background.alt = "Fondo 0";
+  setSceneBackgroundClass("in-fondo0");
+
+  jane.style.display = "none";
+  if (helena) {
+    helena.style.display = "none";
+  }
+  if (camus) {
+    camus.style.display = "none";
+  }
+  if (darren) {
+    darren.style.display = "none";
+  }
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
+  inventory.style.display = "block";
+  setArrowMode(nextArrow, "arrow-up-center");
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Volver a fondo 1");
   prevArrow.style.display = "none";
 }
 
-if (gaston) {
-  gaston.addEventListener("click", () => {
+if (jane) {
+  jane.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     closeSpeech();
-    pendingSpeechForGaston = true;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForTele = false;
-    moveGuardianInFrontOf(gaston);
-    if (isGuardianBeside(gaston)) {
-      faceGuardianToward(gaston);
-      startDialogue(gaston, GASTON_DIALOGUE);
-      pendingSpeechForGaston = false;
+    pendingSpeechForJane = true;
+    pendingSpeechForCamus = false;
+    pendingSpeechForDarren = false;
+    pendingSpeechForHelena = false;
+    moveEvelynInFrontOf(jane);
+    if (isEvelynBeside(jane)) {
+      faceEvelynToward(jane);
+      faceJaneTowardEvelyn();
+      startDialogue(jane, JANE_DIALOGUE);
+      pendingSpeechForJane = false;
     }
   });
 }
 
-if (ardillaGuardiana) {
-  ardillaGuardiana.addEventListener("click", () => {
+if (camus) {
+  camus.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     closeSpeech();
-    pendingSpeechForArdillaGuardiana = true;
-    pendingSpeechForGaston = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForTele = false;
-    moveGuardianInFrontOf(ardillaGuardiana, false);
-    if (isGuardianBeside(ardillaGuardiana)) {
-      faceGuardianToward(ardillaGuardiana);
-      faceArdillaTowardGuardian();
-      startChoiceDialogue(
-        ardillaGuardiana,
-        ARDILLA_GUARDIANA_DIALOGUE.prompt,
-        ARDILLA_GUARDIANA_DIALOGUE.options
-      );
-      pendingSpeechForArdillaGuardiana = false;
+    pendingSpeechForCamus = true;
+    pendingSpeechForJane = false;
+    pendingSpeechForDarren = false;
+    pendingSpeechForHelena = false;
+    moveEvelynInFrontOf(camus, false);
+    if (isEvelynBeside(camus)) {
+      faceEvelynToward(camus);
+      faceCamusTowardEvelyn();
+      startDialogue(camus, CAMUS_DIALOGUE);
+      pendingSpeechForCamus = false;
     }
   });
 }
 
-if (bici) {
-  bici.addEventListener("click", () => {
+if (darren) {
+  darren.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     closeSpeech();
-    pendingSpeechForBici = true;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForTele = false;
-    moveGuardianInFrontOf(bici, false);
-    if (isGuardianBeside(bici)) {
-      faceGuardianToward(bici);
-      startBiciTravelDialogue();
-      pendingSpeechForBici = false;
+    pendingSpeechForDarren = true;
+    pendingSpeechForJane = false;
+    pendingSpeechForCamus = false;
+    pendingSpeechForHelena = false;
+    moveEvelynInFrontOf(darren, false);
+    if (isEvelynBeside(darren)) {
+      faceEvelynToward(darren);
+      startDarrenInteractionDialogue();
+      pendingSpeechForDarren = false;
     }
   });
 }
 
-if (tele) {
-  tele.addEventListener("click", () => {
+if (helena) {
+  helena.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) return;
+    if (window.getComputedStyle(helena).display === "none") return;
     closeSpeech();
-    pendingSpeechForTele = true;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    moveGuardianInFrontOf(tele, false);
-    if (isGuardianBeside(tele)) {
-      faceGuardianToward(tele);
-      startTerminalDialogue(guardian, TELE_DIALOGUE, TELE_CORRECT_CODE, TELE_INPUT_BUBBLE_OFFSET);
-      pendingSpeechForTele = false;
+    pendingSpeechForHelena = true;
+    pendingSpeechForJane = false;
+    pendingSpeechForCamus = false;
+    pendingSpeechForDarren = false;
+    moveEvelynInFrontOf(helena, false);
+    if (isEvelynBeside(helena)) {
+      faceEvelynToward(helena);
+      startHelenaDialogue();
+      pendingSpeechForHelena = false;
     }
   });
 }
 
-if (fondo3Hotspot) {
-  fondo3Hotspot.addEventListener("click", () => {
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForFondo4Hotspot = false;
-    pendingSpeechForFondo5Hotspot = false;
-    faceGuardianToward(fondo3Hotspot);
-    startDialogue(guardian, FONDO3_HOTSPOT_DIALOGUE);
+for (const card of helenaOptionCards) {
+  card.addEventListener("click", () => {
+    const optionId = card.dataset.optionId;
+    if (!optionId) return;
+    const nextSelection = new Set(selectedHelenaOptionIds);
+    if (nextSelection.has(optionId)) {
+      nextSelection.delete(optionId);
+    } else {
+      nextSelection.add(optionId);
+      if (!canAffordHelenaDay2Selection(nextSelection)) {
+        showRewardToast("No tienes recursos suficientes.");
+        triggerInventoryBuzz();
+        return;
+      }
+    }
+    setSelectedHelenaOptions(nextSelection);
+    if (helenaOptionsEmptyConfirm) {
+      helenaOptionsEmptyConfirm.classList.remove("open");
+      helenaOptionsEmptyConfirm.setAttribute("aria-hidden", "true");
+    }
   });
 }
 
-if (fondo3HotspotLeft) {
-  fondo3HotspotLeft.addEventListener("click", () => {
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForFondo4Hotspot = false;
-    pendingSpeechForFondo5Hotspot = false;
-    faceGuardianToward(fondo3HotspotLeft);
-    startDialogue(guardian, FONDO3_HOTSPOT_DIALOGUE);
-  });
-}
-
-if (fondo4HotspotLeftBottom) {
-  fondo4HotspotLeftBottom.addEventListener("click", () => {
-    if (hasUnlockedFondo4Door) {
-      goToFondo5();
+if (helenaOptionsConfirmBtn) {
+  helenaOptionsConfirmBtn.addEventListener("click", () => {
+    if (selectedHelenaOptionIds.size === 0) {
+      if (helenaOptionsEmptyConfirm) {
+        helenaOptionsEmptyConfirm.classList.add("open");
+        helenaOptionsEmptyConfirm.setAttribute("aria-hidden", "false");
+      }
       return;
     }
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForFondo5Hotspot = false;
-    pendingSpeechForFondo4Hotspot = true;
-    moveGuardianInFrontOf(fondo4HotspotLeftBottom, false);
-    if (isGuardianBeside(fondo4HotspotLeftBottom)) {
-      faceGuardianToward(fondo4HotspotLeftBottom);
-      startDialogue(guardian, FONDO4_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo4Hotspot = false;
-    }
-  });
-}
-
-if (fondo5HotspotLeft) {
-  fondo5HotspotLeft.addEventListener("click", () => {
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForFondo4Hotspot = false;
-    pendingSpeechForFondo5Hotspot = true;
-    pendingSpeechForFondo5CenterHotspot = false;
-    moveGuardianInFrontOf(fondo5HotspotLeft, false);
-    if (isGuardianBeside(fondo5HotspotLeft)) {
-      faceGuardianToward(fondo5HotspotLeft);
-      startDialogue(guardian, FONDO5_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo5Hotspot = false;
-    }
-  });
-}
-
-if (fondo5HotspotCenter) {
-  fondo5HotspotCenter.addEventListener("click", () => {
-    if (!hasActivatedFondo5CenterHotspot) return;
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForFondo4Hotspot = false;
-    pendingSpeechForFondo5Hotspot = false;
-    pendingSpeechForFondo5CenterHotspot = true;
-    moveGuardianInFrontOf(fondo5HotspotCenter, false);
-    if (isGuardianBeside(fondo5HotspotCenter)) {
-      faceGuardianToward(fondo5HotspotCenter);
-      startDialogue(guardian, FONDO5_CENTER_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo5CenterHotspot = false;
-    }
-  });
-}
-
-if (fondo2HotspotLeft) {
-  fondo2HotspotLeft.addEventListener("click", () => {
-    if (hasCompletedVendedoraTrade) return;
-    closeSpeech();
-    pendingSpeechForTele = false;
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    if (vendedora) {
-      vendedora.style.display = "block";
-      faceGuardianToward(vendedora);
-      startDialogue(vendedora, VENDEDORA_DIALOGUE);
+    if (!canAffordHelenaDay2Selection(selectedHelenaOptionIds)) {
+      showRewardToast("No tienes recursos suficientes.");
+      triggerInventoryBuzz();
       return;
     }
-    startDialogue(guardian, VENDEDORA_DIALOGUE);
+    finalizeHelenaDay2Options(selectedHelenaOptionIds);
+    completeHelenaDay2Dialogue();
+  });
+}
+
+if (helenaEmptyNoBtn) {
+  helenaEmptyNoBtn.addEventListener("click", () => {
+    if (!helenaOptionsEmptyConfirm) return;
+    helenaOptionsEmptyConfirm.classList.remove("open");
+    helenaOptionsEmptyConfirm.setAttribute("aria-hidden", "true");
+  });
+}
+
+if (helenaEmptyYesBtn) {
+  helenaEmptyYesBtn.addEventListener("click", () => {
+    finalizeHelenaDay2Options(new Set());
+    completeHelenaDay2Dialogue();
   });
 }
 
 if (nextArrow) {
   nextArrow.addEventListener("click", () => {
-    if (isInFondo5()) {
-      goToFondo4(true);
-      return;
-    }
+    if (isInteractionLocked()) return;
     if (isInFondo4()) {
-      goToFondo3();
+      setPendingSceneEntry(ENTRY_RIGHT_EDGE);
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo3);
       return;
     }
-    goToFondo2();
+    if (isInFondo2()) {
+      setPendingSceneEntry(ENTRY_CENTER);
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo3);
+      return;
+    }
+    if (isInFondo0()) {
+      setPendingSceneEntry(ENTRY_FONDO1_FROM_FONDO0);
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo1);
+      return;
+    }
+    if (isInFondo1()) {
+      pendingFondo2FromFondo1 = true;
+      setPendingSceneEntry(ENTRY_FONDO2_FROM_FONDO1);
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo2);
+      return;
+    }
+    pendingFondo2FromFondo1 = false;
+    setPendingSceneEntry(ENTRY_LEFT_EDGE);
+    moveEvelynToArrowAndChangeScene(nextArrow, goToFondo2);
   });
 }
 
 if (prevArrow) {
   prevArrow.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     if (isInFondo3()) {
-      goToFondo4();
+      setPendingSceneEntry(ENTRY_LEFT_EDGE);
+      moveEvelynToArrowAndChangeScene(prevArrow, goToFondo4);
       return;
     }
-    goToFondo1();
+    if (isInFondo1()) {
+      setPendingSceneEntry(ENTRY_CENTER);
+      moveEvelynToArrowAndChangeScene(prevArrow, goToFondo0);
+      return;
+    }
+    setPendingSceneEntry(ENTRY_RIGHT_EDGE);
+    moveEvelynToArrowAndChangeScene(prevArrow, goToFondo1);
   });
 }
 
 if (anilloWorld) {
   anilloWorld.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     if (hasAnillo || anilloPickupPending) return;
 
     anilloPickupPending = true;
     anilloWorld.style.pointerEvents = "none";
-    moveGuardianInFrontOf(anilloWorld);
+    moveEvelynInFrontOf(anilloWorld);
     anilloPickupTimeoutId = window.setTimeout(() => {
       pickupAnillo();
     }, 900);
@@ -1397,234 +1743,114 @@ if (anilloWorld) {
 if (anilloItem) {
   setupInventoryItemDrag(anilloItem, "anillo");
   anilloItem.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
     if (!hasAnillo) return;
     openItemModal(ANILLO_MODAL);
   });
 }
 
-if (facturaItem) {
-  setupInventoryItemDrag(facturaItem, "factura");
-  facturaItem.addEventListener("click", () => {
-    if (!hasFactura) return;
-    openItemModal(isInFondo5() ? FACTURA_MODAL_FONDO5 : FACTURA_MODAL);
-  });
-}
-
-if (llaveItem) {
-  setupInventoryItemDrag(llaveItem, "llave");
-  llaveItem.addEventListener("click", () => {
-    if (!hasLlave) return;
-    openItemModal(LLAVE_MODAL);
-  });
-}
-
-if (brebajeItem) {
-  setupInventoryItemDrag(brebajeItem, "brebaje");
-  brebajeItem.addEventListener("click", () => {
-    if (!hasBrebaje) return;
-    openItemModal(BREBAJE_MODAL);
-  });
-}
-
-if (brebaje) {
-  brebaje.addEventListener("click", () => {
-    pickupBrebaje();
-  });
-}
-
 if (scene) {
   scene.addEventListener("dragstart", (event) => {
+    if (isInteractionLocked()) {
+      event.preventDefault();
+      return;
+    }
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
     if (INVENTORY_DRAGGABLE_IDS.has(target.id)) return;
     event.preventDefault();
   });
 
-  scene.addEventListener("click", (event) => {
-    if (speech && speech.contains(event.target)) return;
-    const isFondo2 = isInFondo2();
-    if (!isFondo2) return;
-    if (!isClickInsideFondo2Hotspot(event.clientX, event.clientY)) return;
-    closeSpeech();
-    pendingSpeechForBici = false;
-    pendingSpeechForGaston = false;
-    pendingSpeechForArdillaGuardiana = false;
-    pendingSpeechForTele = false;
-    pendingSpeechForFondo4Hotspot = false;
-    pendingSpeechForFondo5Hotspot = false;
-    pendingSpeechForFondo5CenterHotspot = false;
-    startDialogue(guardian, FONDO2_HOTSPOT_DIALOGUE);
-  });
-
   scene.addEventListener("dragover", (event) => {
+    if (isInteractionLocked()) return;
     if (!draggedInventoryItem) return;
     event.preventDefault();
     moveDragProxy(event.clientX, event.clientY);
   });
 
   scene.addEventListener("drop", (event) => {
+    if (isInteractionLocked()) return;
     if (!draggedInventoryItem) return;
     event.preventDefault();
     removeDragProxy();
     const droppedItem = draggedInventoryItem;
     draggedInventoryItem = null;
 
-    const { clientX, clientY } = event;
-    const droppedOnVendedora = vendedora
-      && window.getComputedStyle(vendedora).display !== "none"
-      && isPointInsideElement(clientX, clientY, vendedora);
-    if (droppedOnVendedora && droppedItem === "anillo") {
-      tradeAnilloForFactura();
-      return;
-    }
-    const droppedOnFondo4Hotspot = fondo4HotspotLeftBottom
-      && isInFondo4()
-      && window.getComputedStyle(fondo4HotspotLeftBottom).display !== "none"
-      && isPointInsideElement(clientX, clientY, fondo4HotspotLeftBottom);
-    if (droppedOnFondo4Hotspot && droppedItem === "llave" && hasLlave) {
-      unlockFondo4DoorWithLlave();
-      return;
-    }
-    const droppedOnFondo5Hotspot = fondo5HotspotLeft
-      && isInFondo5()
-      && window.getComputedStyle(fondo5HotspotLeft).display !== "none"
-      && isPointInsideElement(clientX, clientY, fondo5HotspotLeft);
-    if (droppedOnFondo5Hotspot && droppedItem === "brebaje" && hasBrebaje) {
-      closeSpeech();
-      hasActivatedFondo5CenterHotspot = true;
-      updateFondo5CenterHotspotState();
-      startCenteredDialogue(FONDO5_BREBAJE_DIALOGUE);
-      return;
-    }
-
-    const validDrop = isValidDrop(clientX, clientY);
-    if (!validDrop) {
-      buzz();
-      return;
-    }
-
-    const worldPos = clientToWorld(clientX, clientY);
-    moveGuardianTo(worldPos.x);
+    triggerInventoryBuzz();
   });
 }
 
 if (speechNextBtn) {
   speechNextBtn.addEventListener("click", () => {
+    if (isIntroSequenceActive) {
+      advanceIntroDialogueSequence();
+      return;
+    }
+    if (advanceScriptedDialogueSequence()) {
+      return;
+    }
     advanceActiveDialogue();
   });
 }
 
-if (guardian) {
-  guardian.addEventListener("transitionend", (event) => {
+if (evelyn) {
+  evelyn.addEventListener("transitionend", (event) => {
     if (event.propertyName !== "left") return;
-    stopGuardianWalkAnimation();
-    if (pendingSpeechForGaston && isGuardianBeside(gaston)) {
-      faceGuardianToward(gaston);
-      startDialogue(gaston, GASTON_DIALOGUE);
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
+    stopEvelynWalkAnimation();
+    if (pendingSceneChangeAction) {
+      triggerPendingSceneChange();
+      return;
+    }
+    if (pendingSpeechForJane && isEvelynBeside(jane)) {
+      faceEvelynToward(jane);
+      faceJaneTowardEvelyn();
+      startDialogue(jane, JANE_DIALOGUE);
+      pendingSpeechForJane = false;
+      pendingSpeechForCamus = false;
+      pendingSpeechForDarren = false;
+      pendingSpeechForHelena = false;
     } else if (
-      pendingSpeechForArdillaGuardiana
-      && ardillaGuardiana
-      && isGuardianBeside(ardillaGuardiana)
+      pendingSpeechForCamus
+      && camus
+      && isEvelynBeside(camus)
     ) {
-      faceGuardianToward(ardillaGuardiana);
-      faceArdillaTowardGuardian();
-      startChoiceDialogue(
-        ardillaGuardiana,
-        ARDILLA_GUARDIANA_DIALOGUE.prompt,
-        ARDILLA_GUARDIANA_DIALOGUE.options
-      );
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
+      faceEvelynToward(camus);
+      faceCamusTowardEvelyn();
+      startDialogue(camus, CAMUS_DIALOGUE);
+      pendingSpeechForCamus = false;
+      pendingSpeechForJane = false;
+      pendingSpeechForDarren = false;
+      pendingSpeechForHelena = false;
     } else if (
-      pendingSpeechForBici
-      && bici
-      && isGuardianBeside(bici)
+      pendingSpeechForDarren
+      && darren
+      && isEvelynBeside(darren)
     ) {
-      faceGuardianToward(bici);
-      startBiciTravelDialogue();
-      pendingSpeechForBici = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
+      faceEvelynToward(darren);
+      startDarrenInteractionDialogue();
+      pendingSpeechForDarren = false;
+      pendingSpeechForJane = false;
+      pendingSpeechForCamus = false;
+      pendingSpeechForHelena = false;
     } else if (
-      pendingSpeechForTele
-      && tele
-      && isGuardianBeside(tele)
+      pendingSpeechForHelena
+      && helena
+      && isEvelynBeside(helena)
     ) {
-      faceGuardianToward(tele);
-      startTerminalDialogue(guardian, TELE_DIALOGUE, TELE_CORRECT_CODE, TELE_INPUT_BUBBLE_OFFSET);
-      pendingSpeechForTele = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
-    } else if (
-      pendingSpeechForFondo4Hotspot
-      && fondo4HotspotLeftBottom
-      && isGuardianBeside(fondo4HotspotLeftBottom)
-    ) {
-      faceGuardianToward(fondo4HotspotLeftBottom);
-      startDialogue(guardian, FONDO4_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
-    } else if (
-      pendingSpeechForFondo5Hotspot
-      && fondo5HotspotLeft
-      && isGuardianBeside(fondo5HotspotLeft)
-    ) {
-      faceGuardianToward(fondo5HotspotLeft);
-      startDialogue(guardian, FONDO5_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo5Hotspot = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5CenterHotspot = false;
-    } else if (
-      pendingSpeechForFondo5CenterHotspot
-      && fondo5HotspotCenter
-      && isGuardianBeside(fondo5HotspotCenter)
-    ) {
-      faceGuardianToward(fondo5HotspotCenter);
-      startDialogue(guardian, FONDO5_CENTER_HOTSPOT_DIALOGUE);
-      pendingSpeechForFondo5CenterHotspot = false;
-      pendingSpeechForGaston = false;
-      pendingSpeechForArdillaGuardiana = false;
-      pendingSpeechForBici = false;
-      pendingSpeechForTele = false;
-      pendingSpeechForFondo4Hotspot = false;
-      pendingSpeechForFondo5Hotspot = false;
+      faceEvelynToward(helena);
+      startHelenaDialogue();
+      pendingSpeechForHelena = false;
+      pendingSpeechForJane = false;
+      pendingSpeechForCamus = false;
+      pendingSpeechForDarren = false;
     }
   });
 }
 
-if (guardian) {
-  guardian.addEventListener("transitioncancel", (event) => {
+if (evelyn) {
+  evelyn.addEventListener("transitioncancel", (event) => {
     if (event.propertyName !== "left") return;
-    stopGuardianWalkAnimation();
+    stopEvelynWalkAnimation();
   });
 }
 
@@ -1648,19 +1874,90 @@ if (itemModalContent) {
   });
 }
 
+if (endDayIcon) {
+  endDayIcon.addEventListener("click", () => {
+    if (!isEndDayEnabled) return;
+    openDayEndModal();
+  });
+}
+
+if (dayEndNoBtn) {
+  dayEndNoBtn.addEventListener("click", () => {
+    closeDayEndModal();
+  });
+}
+
+if (dayEndYesBtn) {
+  dayEndYesBtn.addEventListener("click", () => {
+    advanceToNextDay();
+  });
+}
+
+if (dayEndModal) {
+  dayEndModal.addEventListener("click", (event) => {
+    if (event.target === dayEndModal) {
+      closeDayEndModal();
+    }
+  });
+}
+
+if (daySummaryCloseBtn) {
+  daySummaryCloseBtn.addEventListener("click", () => {
+    closeDaySummaryModal();
+  });
+}
+
+if (daySummaryModal) {
+  daySummaryModal.addEventListener("click", (event) => {
+    if (event.target === daySummaryModal) {
+      closeDaySummaryModal();
+    }
+  });
+}
+
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) {
+      closeHelenaOptionsModal();
+      return;
+    }
+    if (daySummaryModal && daySummaryModal.classList.contains("open")) {
+      closeDaySummaryModal();
+      return;
+    }
+    if (dayEndModal && dayEndModal.classList.contains("open")) {
+      closeDayEndModal();
+      return;
+    }
     closeItemModal();
+    return;
+  }
+  if (event.key === "Enter") {
+    if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) return;
+    if (daySummaryModal && daySummaryModal.classList.contains("open")) return;
+    if (dayEndModal && dayEndModal.classList.contains("open")) return;
+    if (itemModal && itemModal.classList.contains("open")) return;
+    if (!speech || speech.style.display === "none" || !activeDialogue) return;
+    if (!speechNextBtn || speechNextBtn.style.display === "none") return;
+    event.preventDefault();
+    if (isIntroSequenceActive) {
+      advanceIntroDialogueSequence();
+      return;
+    }
+    if (advanceScriptedDialogueSequence()) {
+      return;
+    }
+    advanceActiveDialogue();
   }
 });
 
 window.addEventListener("pointerdown", (event) => {
+  if (daySummaryModal && daySummaryModal.classList.contains("open") && daySummaryModal.contains(event.target)) return;
+  if (dayEndModal && dayEndModal.classList.contains("open") && dayEndModal.contains(event.target)) return;
+  if (isIntroSequenceActive) return;
   if (speech.style.display === "none") return;
   if (itemModal && itemModal.classList.contains("open") && itemModal.contains(event.target)) return;
   if (speech.contains(event.target)) return;
-  if (pendingVendedoraDismissAfterDialogue && activeDialogue && activeDialogue.anchor === vendedora) {
-    completeVendedoraTrade();
-  }
   closeSpeech();
 });
 
@@ -1671,7 +1968,21 @@ window.addEventListener("resize", () => {
   }
 });
 if (scene && sceneViewport) {
-  preloadGuardianWalkFrames();
-  stopGuardianWalkAnimation();
+  setEndDayEnabled(hasCompletedDarrenIntroDialogue);
+  renderDayBanner();
+  setALIMENTOS(ALIMENTOS);
+  setDINERO(DINERO);
+  setPUEBLO(PUEBLO);
+  window.setALIMENTOS = setALIMENTOS;
+  window.addALIMENTOS = addALIMENTOS;
+  window.setDINERO = setDINERO;
+  window.addDINERO = addDINERO;
+  window.setPUEBLO = setPUEBLO;
+  window.addPUEBLO = addPUEBLO;
+  applyAnilloInventoryStyle();
+  preloadEvelynWalkFrames();
+  stopEvelynWalkAnimation();
   layoutScene();
+  goToFondo1();
+  startIntroDialogueSequence();
 }

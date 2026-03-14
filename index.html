@@ -4,58 +4,101 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Aventura Grafica - Prueba</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260340" />
   </head>
   <body>
     <div id="scene-viewport">
       <div id="scene" aria-label="Escena">
-        <img id="background" src="images/fondo1.png" alt="Fondo" />
+        <img id="background" src="images/fondo1.png?v=20260312" alt="Fondo" />
 
-        <img id="guardian" class="entity" src="images/guardian.png" alt="Guardian" />
-        <img id="gaston" class="entity" src="images/gaston.png" alt="Gaston" />
-        <img id="tele" class="entity" src="images/tele.png" alt="Tele" />
-        <img id="ardillaguardiana" class="entity" src="images/ardillaguardiana.png" alt="Ardilla Guardiana" />
-        <img id="bici" class="entity" src="images/bici.png" alt="Bici" />
-        <img id="vendedora" class="entity" src="images/vendedora.png" alt="Vendedora" />
-        <img id="brebaje" class="entity" src="images/brebaje.png" alt="Brebaje" />
-        <div id="fondo2-hotspot-left" aria-label="Zona clicable fondo 2 izquierda"></div>
-        <div id="fondo3-hotspot-left" aria-label="Zona clicable fondo 3 izquierda"></div>
-        <div id="fondo3-hotspot" aria-label="Zona clicable fondo 3"></div>
-        <div id="fondo4-hotspot-left-bottom" aria-label="Zona clicable fondo 4 izquierda abajo"></div>
-        <div id="fondo5-hotspot-left" aria-label="Zona clicable fondo 5 izquierda"></div>
-        <div id="fondo5-hotspot-center" aria-label="Zona clicable fondo 5 centro"></div>
-        <img id="anillo-world" class="entity" src="images/anillo.png" alt="Anillo" />
+        <img id="evelyn" class="entity" src="images/evelyn.png?v=20260312" alt="Evelyn" />
+        <img id="jane" class="entity" src="images/jane.png?v=20260312" alt="Jane" />
+        <img id="helena" class="entity" src="images/helena.png?v=20260312" alt="Helena" />
+        <img id="camus" class="entity" src="images/camus.png?v=20260312" alt="Camus" />
+        <img id="darren" class="entity" src="images/darren.png?v=20260312" alt="Darren" />
+        <img id="mercenario" class="entity" src="images/mercenario.png?v=20260314" alt="Mercenario" />
+        <img id="anillo-world" class="entity" src="images/anillo.png?v=20260312" alt="Anillo" />
 
         <div id="speech">
-          <p id="speech-text">¡Hola, guardiana!</p>
+          <p id="speech-text">¡Hola, Evelyn!</p>
           <div id="speech-options"></div>
           <button id="speech-next-btn" type="button">Continuar</button>
         </div>
 
         <div id="inventory" aria-label="Inventario">
-          <img id="inventory-bg" src="images/inventario.png" alt="Inventario" />
+          <img id="inventory-bg" src="images/inventario.png?v=20260312" alt="Inventario" />
+          <div id="ring-slot-highlight" aria-hidden="true"></div>
           <div id="slot-1" class="inventory-slot"></div>
-          <div id="slot-2" class="inventory-slot"></div>
-          <div id="slot-3" class="inventory-slot"></div>
-          <img id="anillo-item" class="inventory-item" src="images/anillo.png" alt="Anillo en inventario" draggable="true" />
-          <img id="factura-item" class="inventory-item" src="images/factura.png" alt="Factura en inventario" draggable="true" />
-          <img id="llave-item" class="inventory-item" src="images/llave.png" alt="Llave en inventario" draggable="true" />
-          <img id="brebaje-item" class="inventory-item" src="images/brebaje.png" alt="Brebaje en inventario" draggable="true" />
+          <img id="anillo-item" class="inventory-item" src="images/anillo.png?v=20260312" alt="Anillo en inventario" draggable="true" />
         </div>
+        <div id="alimentos-display" aria-live="polite">10</div>
+        <div id="dinero-display" aria-live="polite">20</div>
+        <div id="pueblo-display" aria-live="polite">50</div>
+        <img id="icono-fin-dia" src="images/iconofindia.png?v=20260323" alt="Finalizar día" />
 
         <button id="next-arrow" type="button" aria-label="Ir a fondo 2"></button>
-        <button id="prev-arrow" type="button" aria-label="Volver a fondo 1"></button>
+        <button id="prev-arrow" type="button" aria-label="Ir a fondo 0"></button>
+      </div>
+    </div>
+    <div id="day-banner" aria-live="polite">Día <span id="day-banner-number">1</span></div>
+
+    <div id="day-end-modal" aria-hidden="true">
+      <div id="day-end-modal-content" role="dialog" aria-modal="true" aria-label="Finalizar día">
+        <p id="day-end-modal-text">¿Quieres finalizar el día?</p>
+        <div id="day-end-modal-actions">
+          <button id="day-end-yes" type="button">Si</button>
+          <button id="day-end-no" type="button">No</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="day-summary-modal" aria-hidden="true">
+      <div id="day-summary-modal-content" role="dialog" aria-modal="true" aria-label="Resumen del día">
+        <h2 id="day-summary-title">Pueblo de Orbis - Día 0</h2>
+        <div id="day-summary-list">
+          <p><span>🍞 COMIDA</span><span id="summary-comida">0</span></p>
+          <p><span>DINERO</span><span id="summary-dinero">0</span></p>
+          <p><span>PUEBLO</span><span id="summary-pueblo">0</span></p>
+        </div>
+        <div id="day-summary-notes"></div>
+        <button id="day-summary-close" type="button">Continuar</button>
+      </div>
+    </div>
+    <div id="reward-toast" aria-live="polite"></div>
+    <div id="helena-options-modal" aria-hidden="true">
+      <div id="helena-options-content" role="dialog" aria-modal="true" aria-label="Opciones de gestión">
+        <h2 id="helena-options-title">Opciones del día</h2>
+        <div id="helena-options-cards">
+          <button class="helena-option-card" data-option-id="day2-bandits" type="button">
+            <p class="card-text">
+              Un grupo de bandidos no paran de asaltar a todos los que se acercan al pueblo y eso está afectando a los suministros de comida. Podríamos contratar a un grupo de mercenarios para que los ahuyentasen.
+            </p>
+            <p class="card-cost">🪙 -4</p>
+          </button>
+          <button class="helena-option-card" data-option-id="day2-party" type="button">
+            <p class="card-text">Organizar una gran fiesta para anunciar tu llegada al pueblo.</p>
+            <p class="card-cost">🪙 -5 | COMIDA -5</p>
+          </button>
+        </div>
+        <button id="helena-options-confirm" type="button">Confirmar</button>
+        <div id="helena-options-empty-confirm" aria-hidden="true">
+          <p>¿Estás seguro?</p>
+          <div>
+            <button id="helena-empty-yes" type="button">Si</button>
+            <button id="helena-empty-no" type="button">No</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <div id="item-modal" aria-hidden="true">
       <div id="item-modal-content" role="dialog" aria-modal="true" aria-label="Detalle del objeto">
-        <img id="item-modal-image" src="images/anillo.png" alt="Anillo ampliado" />
+        <img id="item-modal-image" src="images/anillo.png?v=20260312" alt="Anillo ampliado" />
         <p id="item-modal-text">Un anillo de origen desconocido.<br>Parece ser de gran valor.</p>
         <button id="item-modal-close" type="button">Cerrar</button>
       </div>
     </div>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=20260342"></script>
   </body>
 </html>
