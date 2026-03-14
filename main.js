@@ -143,9 +143,9 @@ const HELENA_DAY2_OPTION_COSTS = {
   "day2-bandits": { alimentos: 0, dinero: 4, pueblo: 0 },
   "day2-party": { alimentos: 5, dinero: 5, pueblo: 0 }
 };
-const HELENA_DAY2_BANDITS_FAIL_NOTE = "Los bandidos siguen campando a sus anchas (-4 🍞 COMIDA)";
-const HELENA_DAY2_BANDITS_SUCCESS_NOTE = "Los mercenarios han ahuyentado a los bandidos, aunque temes que esto pueda tener consecuencias... (+5 🍞 COMIDA +5 PUEBLO)";
-const HELENA_DAY2_PARTY_NOTE = "¡Menudo fiestón has dado! Aunque quizás hayas derrochado demasiado y más teniendo en cuenta el poco tiempo que llevas aquí... (+10 PUEBLO)";
+const HELENA_DAY2_BANDITS_FAIL_NOTE = "Los bandidos siguen campando a sus anchas (-4 🍞)";
+const HELENA_DAY2_BANDITS_SUCCESS_NOTE = "Los mercenarios han ahuyentado a los bandidos, aunque temes que esto pueda tener consecuencias... (+5 🍞 +5 🏘️)";
+const HELENA_DAY2_PARTY_NOTE = "¡Menudo fiestón has dado! Aunque quizás hayas derrochado demasiado y más teniendo en cuenta el poco tiempo que llevas aquí... (+10 🏘️)";
 const INTRO_DIALOGUE_SEQUENCE = [
   { speaker: "evelyn", line: "Y así es como acabé aquí.", speechExtraTop: 0 },
   { speaker: "camus", line: "¿Eras la Capitana de la guardia del Rey y te han mandado a este lugar? Si que tienes que haber hecho algo grave...", speechExtraTop: -28 },

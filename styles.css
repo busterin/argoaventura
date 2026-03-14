@@ -8,7 +8,7 @@
         --helena-left: 66%;
         --camus-left: 39%;
         --darren-left: 66%;
-        --mercenario-left: 74%;
+        --mercenario-left: var(--camus-left);
         --evelyn-left-fondo4: 56%;
         --anillo-left: 50%;
         --anillo-top: 74.75%;
