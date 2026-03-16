@@ -322,6 +322,25 @@
         cursor: pointer;
       }
 
+      #iconoregistro {
+        position: absolute;
+        left: 1052px;
+        bottom: 28px;
+        width: 72px;
+        height: auto;
+        object-fit: contain;
+        z-index: 27;
+        cursor: pointer;
+        pointer-events: auto;
+      }
+
+      #iconoregistro.iconoregistro-highlight {
+        box-shadow:
+          0 0 0 3px rgba(255, 213, 74, 0.95),
+          0 0 20px rgba(255, 213, 74, 0.95);
+        animation: registro-pulse 1.1s ease-in-out infinite;
+      }
+
       #day-banner {
         position: fixed;
         top: 18px;
@@ -341,6 +360,34 @@
         font-weight: 700;
         text-align: center;
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      #day-transition-overlay {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 34;
+      }
+
+      #day-transition-overlay.active {
+        pointer-events: auto;
+      }
+
+      #day-transition-overlay.phase-night {
+        transition: opacity 1050ms ease-in;
+        opacity: 0.68;
+      }
+
+      #day-transition-overlay.phase-black {
+        transition: opacity 220ms ease-out;
+        opacity: 1;
+      }
+
+      #day-transition-overlay.phase-reset {
+        transition: opacity 260ms ease-out;
+        opacity: 0;
       }
 
       #day-end-modal {
@@ -503,6 +550,203 @@
 
       #reward-toast.open {
         display: block;
+      }
+
+      #registro-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.62);
+        z-index: 38;
+      }
+
+      #registro-modal.open {
+        display: flex;
+      }
+
+      #registro-modal-content {
+        width: min(92vw, 560px);
+        border: 3px solid #3d2516;
+        border-radius: 14px;
+        background: #f5e2bd;
+        color: #2f1a0f;
+        padding: 18px;
+      }
+
+      #registro-title {
+        margin: 0 0 10px;
+        text-align: center;
+        font-size: 30px;
+      }
+
+      #registro-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .registro-tab {
+        flex: 1;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #f8ecd2;
+        color: #2f1a0f;
+        padding: 8px 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .registro-tab.active {
+        background: #d8b078;
+      }
+
+      .registro-panel {
+        display: none;
+        min-height: 170px;
+        border: 2px solid rgba(61, 37, 22, 0.3);
+        border-radius: 10px;
+        background: #f9edd3;
+        padding: 12px;
+      }
+
+      .registro-panel.active {
+        display: block;
+      }
+
+      #registro-tutorial-gestion-toggle {
+        display: none;
+        width: 100%;
+        margin: 0 0 10px;
+        text-align: left;
+        font-size: 22px;
+        font-weight: 700;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #f8ecd2;
+        color: #2f1a0f;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+
+      #registro-tutorial-gestion-content {
+        display: none;
+      }
+
+      #registro-tutorial-list {
+        display: none;
+        max-height: 220px;
+        overflow: auto;
+        border: 2px solid rgba(61, 37, 22, 0.25);
+        border-radius: 10px;
+        background: #fff4e0;
+        padding: 10px;
+      }
+
+      #registro-tutorial-list p {
+        margin: 0 0 8px;
+        font-size: 16px;
+        line-height: 1.25;
+        font-weight: 700;
+      }
+
+      #registro-tutorial-list p:last-child {
+        margin-bottom: 0;
+      }
+
+      #registro-tutorial-empty {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .registro-char-item {
+        display: none;
+        margin-bottom: 8px;
+      }
+
+      .registro-char-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .registro-char-item.unlocked {
+        display: block;
+      }
+
+      .registro-char-item {
+        width: 100%;
+        text-align: left;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #fff4e0;
+        color: #2f1a0f;
+        font-size: 18px;
+        font-weight: 700;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      #registro-close {
+        margin-top: 12px;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #f8ecd2;
+        color: #2f1a0f;
+        padding: 6px 18px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #registro-character-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 39;
+      }
+
+      #registro-character-modal.open {
+        display: flex;
+      }
+
+      #registro-character-content {
+        width: min(88vw, 440px);
+        border: 3px solid #3d2516;
+        border-radius: 14px;
+        background: #f5e2bd;
+        color: #2f1a0f;
+        text-align: center;
+        padding: 18px;
+      }
+
+      #registro-character-content h2 {
+        margin: 0 0 8px;
+        font-size: 30px;
+      }
+
+      #registro-character-content h3 {
+        margin: 0 0 12px;
+        font-size: 26px;
+      }
+
+      #registro-character-image {
+        width: min(44vw, 190px);
+        height: 190px;
+        object-fit: cover;
+        object-position: center top;
+        border-radius: 8px;
+        border: 2px solid #3d2516;
+      }
+
+      #registro-character-text {
+        margin: 12px 0 0;
+        font-size: 22px;
+        font-weight: 700;
       }
 
       #helena-options-modal {
@@ -787,6 +1031,25 @@
         border-top: 0;
       }
 
+      #next-arrow.arrow-down-center {
+        left: 50%;
+        right: auto;
+        top: auto;
+        bottom: 16%;
+        transform: translateX(-50%);
+      }
+
+      #next-arrow.arrow-down-center::before {
+        left: 50%;
+        top: 56%;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 14px solid rgba(255, 255, 255, 0.78);
+        border-bottom: 0;
+        border-left-color: transparent;
+        border-right-color: transparent;
+      }
+
       #prev-arrow {
         position: absolute;
         left: 9.1%;
@@ -835,6 +1098,53 @@
         border-right-color: transparent;
       }
 
+      #prev-arrow.arrow-up-top-center {
+        left: 58%;
+        right: auto;
+        top: 30%;
+        bottom: auto;
+        transform: translateX(-50%);
+      }
+
+      #prev-arrow.arrow-up-top-center::before {
+        left: 50%;
+        top: 44%;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 14px solid rgba(255, 255, 255, 0.78);
+        border-top: 0;
+      }
+
+      #left-side-arrow {
+        position: absolute;
+        left: 2.4%;
+        top: 70%;
+        transform: translateY(-50%);
+        z-index: 30;
+        width: clamp(34px, 4.8vw, 58px);
+        height: clamp(34px, 4.8vw, 58px);
+        border: 0;
+        padding: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+        cursor: pointer;
+        display: none;
+      }
+
+      #left-side-arrow::before {
+        content: "";
+        position: absolute;
+        left: 46%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right: 14px solid rgba(255, 255, 255, 0.78);
+        transform: translate(-50%, -50%);
+      }
+
       #scene.in-fondo1 #jane,
       #scene.in-fondo1 #camus {
         bottom: calc(var(--character-bottom) + 30px);
@@ -849,6 +1159,12 @@
         25% { transform: translateX(-4px) rotate(-3deg); }
         75% { transform: translateX(4px) rotate(3deg); }
         100% { transform: translateX(0); }
+      }
+
+      @keyframes registro-pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.07); }
+        100% { transform: scale(1); }
       }
 
       @keyframes buzz-counter {

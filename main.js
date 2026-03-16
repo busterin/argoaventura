@@ -11,6 +11,7 @@ const anilloWorld = document.getElementById("anillo-world");
 const anilloItem = document.getElementById("anillo-item");
 const nextArrow = document.getElementById("next-arrow");
 const prevArrow = document.getElementById("prev-arrow");
+const leftSideArrow = document.getElementById("left-side-arrow");
 const speech = document.getElementById("speech");
 const speechText = document.getElementById("speech-text");
 const speechOptions = document.getElementById("speech-options");
@@ -19,6 +20,7 @@ const ringSlotHighlight = document.getElementById("ring-slot-highlight");
 const alimentosDisplay = document.getElementById("alimentos-display");
 const dineroDisplay = document.getElementById("dinero-display");
 const puebloDisplay = document.getElementById("pueblo-display");
+const registroIconBtn = document.getElementById("iconoregistro");
 const endDayIcon = document.getElementById("icono-fin-dia");
 const dayBanner = document.getElementById("day-banner");
 const dayBannerNumber = document.getElementById("day-banner-number");
@@ -32,7 +34,26 @@ const summaryDinero = document.getElementById("summary-dinero");
 const summaryPueblo = document.getElementById("summary-pueblo");
 const daySummaryNotes = document.getElementById("day-summary-notes");
 const daySummaryCloseBtn = document.getElementById("day-summary-close");
+const dayTransitionOverlay = document.getElementById("day-transition-overlay");
 const rewardToast = document.getElementById("reward-toast");
+const registroModal = document.getElementById("registro-modal");
+const registroTabPersonaje = document.getElementById("registro-tab-personaje");
+const registroTabTutorial = document.getElementById("registro-tab-tutorial");
+const registroPanelPersonaje = document.getElementById("registro-panel-personaje");
+const registroPanelTutorial = document.getElementById("registro-panel-tutorial");
+const registroTutorialGestionToggle = document.getElementById("registro-tutorial-gestion-toggle");
+const registroTutorialGestionContent = document.getElementById("registro-tutorial-gestion-content");
+const registroTutorialList = document.getElementById("registro-tutorial-list");
+const registroTutorialEmpty = document.getElementById("registro-tutorial-empty");
+const registroCharJane = document.getElementById("registro-char-jane");
+const registroCharCamus = document.getElementById("registro-char-camus");
+const registroCharDarren = document.getElementById("registro-char-darren");
+const registroCharHelena = document.getElementById("registro-char-helena");
+const registroCloseBtn = document.getElementById("registro-close");
+const registroCharacterModal = document.getElementById("registro-character-modal");
+const registroCharacterName = document.getElementById("registro-character-name");
+const registroCharacterImage = document.getElementById("registro-character-image");
+const registroCharacterText = document.getElementById("registro-character-text");
 const helenaOptionsModal = document.getElementById("helena-options-modal");
 const helenaOptionCards = [...document.querySelectorAll(".helena-option-card")];
 const helenaOptionsConfirmBtn = document.getElementById("helena-options-confirm");
@@ -49,11 +70,11 @@ const itemModalText = document.getElementById("item-modal-text");
 const ASSET_VERSION = "20260312";
 const asset = (path) => `${path}?v=${ASSET_VERSION}`;
 const JANE_GAP = 12;
-const EVELYN_IDLE_SRC = asset("images/evelyn.png");
+const EVELYN_IDLE_SRC = asset("personajes/evelyn.png");
 const EVELYN_WALK_FRAMES = [
-  asset("images/evelyn2.png"),
-  asset("images/evelyn3.png"),
-  asset("images/evelyn4.png")
+  asset("personajes/evelyn2.png"),
+  asset("personajes/evelyn3.png"),
+  asset("personajes/evelyn4.png")
 ];
 const EVELYN_WALK_FRAME_MS = 120;
 const WALK_SPRITES_ENABLED = false;
@@ -67,101 +88,34 @@ const PUEBLO_MAX = 100;
 const DEFAULT_SPEECH_NEXT_LABEL = "Continuar";
 const TRAVEL_SPEECH_NEXT_LABEL = "Viajar";
 const ENTER_SPEECH_NEXT_LABEL = "Entrar";
-const JANE_DIALOGUE = [
-  "¡Hola! Mi nombre es Jane, soy la alquimista del pueblo. ¿Así que tu vas a encargarte de administrar el pueblo a partir de ahora?",
-  "Tendrás que tener en cuenta tres factores al finalizar cada día: El nivel de comida del pueblo, la felicidad de sus habitantes y el dinero.",
-  "Pero tranquila, aquí nunca hay muchas complicaciones."
-];
-const CAMUS_DIALOGUE = [
-  "Recorre el pueblo y conoce a sus habitantes para comprender mejor tus labores a partir de ahora.",
-  "Busca al viejo Darren. El te explicará cómo funciona todo."
-];
-const DARREN_DIALOGUE_SEQUENCE = [
-  {
-    speaker: "darren",
-    line: "Vaya, vaya. Así que tu eres la famosa Evelyn, la gran capitana de la guardia descartada por el Rey. Veo que nos mandan lo mejor de lo mejor.",
-    speechExtraTop: -56
-  },
-  { speaker: "evelyn", line: "Menos sorna...", speechExtraTop: 28 },
-  {
-    speaker: "darren",
-    line: "Soy Darren, antiguo alcalde del pueblo. Gestionar este sitio no es complicado pero tampoco se puede hacer a lo loco. Te explicaré los principios básicos. Aquí abajo verás la barra de inventario, ahí se guardarán todos los objetos que vayas encontrando por ahí. Para usarlos, arrastralos hacia el sitio correcto. Si te equivocas, te darás cuenta.",
-    highlight: "slot-1",
-    speechExtraTop: 0
-  },
-  {
-    speaker: "darren",
-    line: "Este es el contador de COMIDA, cada día que pase se irá descontando comida. Tienes que encargarte de que se produza o se compre comida para el pueblo. Si llegamos a 0 todo se acabó. No creo que el Rey te perdone más veces...",
-    highlight: "alimentos",
-    speechExtraTop: -26
-  },
-  {
-    speaker: "darren",
-    line: "Lo mismo pasa con el DINERO. Cuanto más consigas, más prospero será el pueblo. Pero que sea de forma legal, por favor. Ya te imaginas que pasará si el contador llega a 0 ¿no?",
-    highlight: "dinero",
-    speechExtraTop: 0
-  },
-  {
-    speaker: "darren",
-    line: "Y por último, el contador del PUEBLO. Aquí se refleja lo contentos que estamos los habitantes del pueblo, si estamos contentos con tu gestión y con la vida en este lugar en general. No quiero repetirme mucho. Tu no llegues a 0 ¿vale?",
-    highlight: "pueblo",
-    speechExtraTop: -84
-  },
-  { speaker: "darren", line: "¿Tienes alguna duda?", speechExtraTop: -84 },
-  { speaker: "evelyn", line: "No he entendido nada de nada...", speechExtraTop: 0 },
-  { speaker: "darren", line: "Ay... Preguntame lo que quieras, anda.", speechExtraTop: 0 }
-];
-const DARREN_DAYS_DIALOGUE = [
-  "Abajo tienes un icono que al pulsarlo finaliza el día. Ten en cuenta que al finalizar el día se gastarán recursos, así que antes de hacerlo asegurate de que has aprovechado el día al máximo."
-];
-const DARREN_HELP_DIALOGUE = [
-  "Mañana Helena te esperará en la plaza del pueblo, ella te ayudará a gestionarlo todo, aunque hay muchas cosas que solo podrás gestionar o descubrir recorriendo el pueblo y a veces, solo en días concretos."
-];
-const HELENA_DIALOGUE_SEQUENCE = [
-  {
-    speaker: "helena",
-    line: "¡Hola, Evelyn! Un gusto tenerte por aquí. Soy Helena, la escribana del pueblo. Solía ayudar a Darren y creo que también puedo ayudarte a ti. Antes de finalizar el día, ven a hablar conmigo y podemos discutir como distribuir los recursos del pueblo."
-  },
-  { speaker: "evelyn", line: "Muchas gracias, Helena. Tu ayuda va a venirme muy bien." },
-  {
-    speaker: "helena",
-    line: "No tienes que darlas, me pagan por esto. O al menos, eso espero... Todos los días debes recorrer el pueblo para ver como están sus habitantes, y la localidad en si, quizás puedas ayudarles directamente."
-  },
-  {
-    speaker: "helena",
-    line: "Yo te plantearé formas de administrar el dinero pero debes tener algo claro, Evelyn: Tus acciones tendrán consecuencias y no puedes contentar a todos. Tenlo muy presente. Hoy intenta familiarizarte con el pueblo y ya mañana comenzamos a trabajar. Me he tomado la libertad de gestionar yo los alimentos en esta ocasión."
-  },
-  { speaker: "evelyn", line: "Genial, muchas gracias. Aunque eso de las consecuencias no suena muy bien..." }
-];
-const HELENA_DAY2_INTRO = [
-  "¡Hola! Te muestro opciones acerca de como gestionar los recursos en el día de hoy. Recuerda que soy totalmente objetiva y algunas de las opciones que te ofrezco pueden ser erróneas. Queda a tu criterio escoger las más optimas."
-];
-const HELENA_DAY2_REST_DIALOGUE = [
-  "Descansa por hoy, mañana te traeré nuevas sugerencias."
-];
 const HELENA_DAY2_OPTION_COSTS = {
   "day2-bandits": { alimentos: 0, dinero: 4, pueblo: 0 },
   "day2-party": { alimentos: 5, dinero: 5, pueblo: 0 }
 };
-const HELENA_DAY2_BANDITS_FAIL_NOTE = "Los bandidos siguen campando a sus anchas (-4 🍞)";
-const HELENA_DAY2_BANDITS_SUCCESS_NOTE = "Los mercenarios han ahuyentado a los bandidos, aunque temes que esto pueda tener consecuencias... (+5 🍞 +5 🏘️)";
-const HELENA_DAY2_PARTY_NOTE = "¡Menudo fiestón has dado! Aunque quizás hayas derrochado demasiado y más teniendo en cuenta el poco tiempo que llevas aquí... (+10 🏘️)";
-const INTRO_DIALOGUE_SEQUENCE = [
-  { speaker: "evelyn", line: "Y así es como acabé aquí.", speechExtraTop: 0 },
-  { speaker: "camus", line: "¿Eras la Capitana de la guardia del Rey y te han mandado a este lugar? Si que tienes que haber hecho algo grave...", speechExtraTop: -28 },
-  { speaker: "evelyn", line: "Eh... bueno, según la opinión del Rey, si... En fin, ahora tengo que encargarme de gestionar este pueblo y hacer que todo funcione bien.", speechExtraTop: 34 },
-  { speaker: "camus", line: "No te preocupes, este es un pueblo muy tranquilo. Date una vuelta para entenderlo todo mejor", speechExtraTop: -28 }
-];
-const FONDO3_HOTSPOT_DIALOGUE = [
-  "El reloj parece estar parado a proposito. La hora que marca son las diez horas y treinta y un minutos."
-];
+if (!window.ARGO_DIALOGUES) {
+  throw new Error("Falta dialogues.js: no se pudo cargar window.ARGO_DIALOGUES");
+}
+const {
+  JANE_DIALOGUE_SEQUENCE,
+  CAMUS_DIALOGUE,
+  DARREN_DIALOGUE_SEQUENCE,
+  DARREN_DAYS_DIALOGUE,
+  DARREN_HELP_DIALOGUE,
+  HELENA_DIALOGUE_SEQUENCE,
+  HELENA_DAY2_INTRO,
+  HELENA_DAY2_REST_DIALOGUE,
+  HELENA_DAY2_BANDITS_FAIL_NOTE,
+  HELENA_DAY2_BANDITS_SUCCESS_NOTE,
+  HELENA_DAY2_PARTY_NOTE,
+  INTRO_DIALOGUE_SEQUENCE
+} = window.ARGO_DIALOGUES;
 const ANILLO_MODAL = {
-  imageSrc: asset("images/anillo.png"),
+  imageSrc: asset("objetos/anillo.png"),
   imageAlt: "Anillo ampliado",
   textHtml: "Un anillo de origen desconocido.<br>Parece ser de gran valor."
 };
 const ANILLO_OBTAINED_MODAL = {
-  imageSrc: asset("images/anillo.png"),
+  imageSrc: asset("objetos/anillo.png"),
   imageAlt: "Anillo obtenido",
   textHtml: "¡Has obtenido un anillo!"
 };
@@ -180,10 +134,17 @@ const FONDO4_EVELYN_LEFT =
 const ENTRY_LEFT_EDGE = "8%";
 const ENTRY_RIGHT_EDGE = "86%";
 const ENTRY_CENTER = "50%";
-const ENTRY_FONDO1_FROM_FONDO0 = "66%";
+const ENTRY_FONDO1_FROM_FONDO0 = "47%";
 const ENTRY_FONDO2_FROM_FONDO1 = "14%";
+const ENTRY_FONDO1_FROM_FONDO2 = "72%";
+const ENTRY_FONDO3_FROM_FONDO2 = "54%";
+const ENTRY_FONDO2_FROM_FONDO3 = "52%";
+const ENTRY_FONDO5_FROM_FONDO1 = "42%";
 const FONDO2_EVELYN_EXTRA_BOTTOM_PX = 46;
 const FONDO0_EVELYN_EXTRA_BOTTOM_PX = 42;
+const FONDO3_ENTRY_EXTRA_BOTTOM_PX = 34;
+const FONDO4_ENTRY_EXTRA_BOTTOM_PX = 40;
+const FONDO5_ENTRY_EXTRA_BOTTOM_PX = 26;
 const SPEECH_LEFT_FROM_CENTER_PX = -24;
 const SPEECH_UP_OFFSET_PX = 18;
 
@@ -201,6 +162,7 @@ let pendingSceneChangeAction = null;
 let pendingSceneChangeArrow = null;
 let pendingSceneChangeTimeoutId = null;
 let pendingSceneEntryLeft = null;
+let pendingSceneEntryBottom = null;
 let pendingFondo2FromFondo1 = false;
 let activeDialogue = null;
 let activeDialogueIndex = 0;
@@ -218,6 +180,9 @@ let pendingDailyPuebloDelta = 0;
 let pendingDaySummaryNotes = [];
 let isEndDayEnabled = false;
 let currentDay = 0;
+let isDayTransitionRunning = false;
+let isAwaitingDaySummaryContinue = false;
+let isStartingNextDayFromSummary = false;
 let isIntroSequenceActive = true;
 let introDialogueIndex = 0;
 let anilloPickupPending = false;
@@ -227,10 +192,51 @@ let evelynWalkIntervalId = null;
 let evelynWalkFrameIndex = 0;
 let draggedSourceElement = null;
 let rewardToastTimeoutId = null;
+let hasRegisteredJane = false;
+let hasRegisteredCamus = false;
+let hasRegisteredDarren = false;
+let hasRegisteredHelena = false;
+let isRegistroHighlighted = false;
+let activeRegistroTab = "personaje";
+let hasLoggedDarrenTutorial = false;
+let hasAskedDarrenDaysQuestion = false;
+let hasAskedDarrenHelpQuestion = false;
+let hasUnlockedEndDayByDarrenDays = false;
+let tutorialGestionDiariaLines = [];
+let isGestionDiariaExpanded = false;
+const REGISTRO_CHARACTER_DATA = {
+  jane: {
+    name: "Jane",
+    imageSrc: asset("personajes/jane.png"),
+    imageAlt: "Jane",
+    text: "PRUEBA"
+  },
+  camus: {
+    name: "Camus",
+    imageSrc: asset("personajes/camus.png"),
+    imageAlt: "Camus",
+    text: "PRUEBA"
+  },
+  darren: {
+    name: "Darren",
+    imageSrc: asset("personajes/darren.png"),
+    imageAlt: "Darren",
+    text: "PRUEBA"
+  },
+  helena: {
+    name: "Helena",
+    imageSrc: asset("personajes/helena.png"),
+    imageAlt: "Helena",
+    text: "PRUEBA"
+  }
+};
 const TRANSPARENT_DRAG_IMAGE = new Image();
 TRANSPARENT_DRAG_IMAGE.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 const BASE_WIDTH = 1328;
 const BASE_HEIGHT = 800;
+const DAY_TRANSITION_NIGHT_MS = 1050;
+const DAY_TRANSITION_BLACK_MS = 220;
+const DAY_TRANSITION_RESET_MS = 260;
 const INVENTORY_DRAGGABLE_IDS = new Set([
   "anillo-item"
 ]);
@@ -239,7 +245,8 @@ const SCENE_BACKGROUND_CLASSES = [
   "in-fondo1",
   "in-fondo2",
   "in-fondo3",
-  "in-fondo4"
+  "in-fondo4",
+  "in-fondo5"
 ];
 
 function addFallbackOnError(id, label) {
@@ -265,14 +272,229 @@ function setSceneBackgroundClass(className) {
 
 function setArrowMode(arrowEl, mode) {
   if (!arrowEl) return;
-  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center");
+  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center", "arrow-up-top-center");
   if (mode) {
     arrowEl.classList.add(mode);
   }
 }
 
+function isRegistroModalOpen() {
+  return Boolean(registroModal && registroModal.classList.contains("open"));
+}
+
+function isRegistroCharacterModalOpen() {
+  return Boolean(registroCharacterModal && registroCharacterModal.classList.contains("open"));
+}
+
+function renderRegistroIconState() {
+  if (!registroIconBtn) return;
+  registroIconBtn.classList.toggle("iconoregistro-highlight", isRegistroHighlighted);
+}
+
+function setActiveRegistroTab(tabId) {
+  activeRegistroTab = tabId === "tutorial" ? "tutorial" : "personaje";
+  const personajeActive = activeRegistroTab === "personaje";
+  if (registroTabPersonaje) {
+    registroTabPersonaje.classList.toggle("active", personajeActive);
+  }
+  if (registroTabTutorial) {
+    registroTabTutorial.classList.toggle("active", !personajeActive);
+  }
+  if (registroPanelPersonaje) {
+    registroPanelPersonaje.classList.toggle("active", personajeActive);
+  }
+  if (registroPanelTutorial) {
+    registroPanelTutorial.classList.toggle("active", !personajeActive);
+  }
+}
+
+function renderRegistroEntries() {
+  if (registroCharJane) registroCharJane.classList.toggle("unlocked", hasRegisteredJane);
+  if (registroCharCamus) registroCharCamus.classList.toggle("unlocked", hasRegisteredCamus);
+  if (registroCharDarren) registroCharDarren.classList.toggle("unlocked", hasRegisteredDarren);
+  if (registroCharHelena) registroCharHelena.classList.toggle("unlocked", hasRegisteredHelena);
+}
+
+function getSpeakerLabelForTutorial(speaker) {
+  if (speaker === "evelyn") return "EVELYN";
+  if (speaker === "jane") return "JANE";
+  if (speaker === "camus") return "CAMUS";
+  if (speaker === "darren") return "DARREN";
+  if (speaker === "helena") return "HELENA";
+  return "NARRADOR";
+}
+
+function renderRegistroTutorialPanel() {
+  if (!registroTutorialGestionToggle || !registroTutorialGestionContent || !registroTutorialList || !registroTutorialEmpty) return;
+  const hasEntries = tutorialGestionDiariaLines.length > 0;
+  registroTutorialGestionToggle.style.display = hasEntries ? "block" : "none";
+  registroTutorialGestionToggle.setAttribute("aria-expanded", isGestionDiariaExpanded ? "true" : "false");
+  registroTutorialGestionContent.style.display = hasEntries && isGestionDiariaExpanded ? "block" : "none";
+  registroTutorialList.style.display = hasEntries && isGestionDiariaExpanded ? "block" : "none";
+  registroTutorialEmpty.style.display = hasEntries ? "none" : "block";
+  registroTutorialList.innerHTML = "";
+  for (const line of tutorialGestionDiariaLines) {
+    const p = document.createElement("p");
+    p.textContent = line;
+    registroTutorialList.appendChild(p);
+  }
+}
+
+function appendGestionDiariaLines(lines) {
+  if (!Array.isArray(lines) || lines.length === 0) return;
+  tutorialGestionDiariaLines.push(...lines);
+  renderRegistroTutorialPanel();
+}
+
+function logDarrenIntroTutorialIfNeeded() {
+  if (hasLoggedDarrenTutorial) return;
+  const lines = DARREN_DIALOGUE_SEQUENCE.map((step) => {
+    return `${getSpeakerLabelForTutorial(step.speaker)}: ${step.line}`;
+  });
+  appendGestionDiariaLines(lines);
+  hasLoggedDarrenTutorial = true;
+  window.setTimeout(() => {
+    showRewardToast("Gestión diaria añadida a TUTORIAL");
+  }, 1450);
+}
+
+function unlockEndDayByDarrenDaysQuestion() {
+  if (hasUnlockedEndDayByDarrenDays) return;
+  hasUnlockedEndDayByDarrenDays = true;
+  setEndDayEnabled(true);
+}
+
+function openRegistroModal() {
+  if (!registroModal) return;
+  closeSpeech();
+  closeItemModal();
+  isRegistroHighlighted = false;
+  renderRegistroIconState();
+  setActiveRegistroTab("personaje");
+  registroModal.classList.add("open");
+  registroModal.setAttribute("aria-hidden", "false");
+}
+
+function closeRegistroModal() {
+  if (!registroModal) return;
+  registroModal.classList.remove("open");
+  registroModal.setAttribute("aria-hidden", "true");
+}
+
+function openRegistroCharacterModal(characterId) {
+  const data = REGISTRO_CHARACTER_DATA[characterId];
+  if (!registroCharacterModal || !data) return;
+  const isUnlocked = (
+    (characterId === "jane" && hasRegisteredJane)
+    || (characterId === "camus" && hasRegisteredCamus)
+    || (characterId === "darren" && hasRegisteredDarren)
+    || (characterId === "helena" && hasRegisteredHelena)
+  );
+  if (!isUnlocked) return;
+  if (registroCharacterName) {
+    registroCharacterName.textContent = data.name;
+  }
+  if (registroCharacterImage) {
+    registroCharacterImage.src = data.imageSrc;
+    registroCharacterImage.alt = data.imageAlt;
+  }
+  if (registroCharacterText) {
+    registroCharacterText.textContent = data.text;
+  }
+  registroCharacterModal.classList.add("open");
+  registroCharacterModal.setAttribute("aria-hidden", "false");
+}
+
+function closeRegistroCharacterModal() {
+  if (!registroCharacterModal) return;
+  registroCharacterModal.classList.remove("open");
+  registroCharacterModal.setAttribute("aria-hidden", "true");
+}
+
+function unlockCamusInRegistro() {
+  if (hasRegisteredCamus) return;
+  hasRegisteredCamus = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Camus anotado en el registro.");
+}
+
+function unlockJaneInRegistro() {
+  if (hasRegisteredJane) return;
+  hasRegisteredJane = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Jane anotada en el registro.");
+}
+
+function unlockDarrenInRegistro() {
+  if (hasRegisteredDarren) return;
+  hasRegisteredDarren = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Darren anotado en el registro.");
+}
+
+function unlockHelenaInRegistro() {
+  if (hasRegisteredHelena) return;
+  hasRegisteredHelena = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Helena anotada en el registro.");
+}
+
+function startJaneInteractionDialogue() {
+  startScriptedDialogueSequence(JANE_DIALOGUE_SEQUENCE);
+}
+
+function startCamusInteractionDialogue() {
+  if (hasRegisteredCamus) {
+    startDialogue(camus, CAMUS_DIALOGUE);
+    return;
+  }
+  startDialogue(camus, CAMUS_DIALOGUE, 0, unlockCamusInRegistro);
+}
+
 function isInteractionLocked() {
-  return isIntroSequenceActive;
+  return isIntroSequenceActive
+    || isDayTransitionRunning
+    || isRegistroModalOpen()
+    || isRegistroCharacterModalOpen();
+}
+
+function waitForMs(ms) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
+
+function clearDayTransitionOverlayClasses() {
+  if (!dayTransitionOverlay) return;
+  dayTransitionOverlay.classList.remove("active", "phase-night", "phase-black", "phase-reset");
+}
+
+async function playDayTransitionToBlack() {
+  if (!dayTransitionOverlay) return;
+  clearDayTransitionOverlayClasses();
+  dayTransitionOverlay.classList.add("active");
+  void dayTransitionOverlay.offsetWidth;
+  dayTransitionOverlay.classList.add("phase-night");
+  await waitForMs(DAY_TRANSITION_NIGHT_MS + 50);
+  dayTransitionOverlay.classList.remove("phase-night");
+  dayTransitionOverlay.classList.add("phase-black");
+  await waitForMs(DAY_TRANSITION_BLACK_MS + 40);
+}
+
+async function fadeOutDayTransitionFromBlack() {
+  if (!dayTransitionOverlay) return;
+  dayTransitionOverlay.classList.remove("phase-night", "phase-black");
+  dayTransitionOverlay.classList.add("phase-reset");
+  await waitForMs(DAY_TRANSITION_RESET_MS + 30);
+  clearDayTransitionOverlayClasses();
 }
 
 function getFondo1EvelynBottom() {
@@ -285,6 +507,18 @@ function getFondo2FromFondo1EvelynBottom() {
 
 function getFondo0EvelynBottom() {
   return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO0_EVELYN_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getFondo3EntryEvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO3_ENTRY_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getFondo4EntryEvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO4_ENTRY_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getFondo5EntryEvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO5_ENTRY_EXTRA_BOTTOM_PX}px)`;
 }
 
 function clampAlimentos(value) {
@@ -403,13 +637,21 @@ function advanceScriptedDialogueSequence() {
   activeScriptedDialogueIndex += 1;
   const hasNext = activeScriptedDialogueIndex < activeScriptedDialogueSequence.length;
   if (!hasNext) {
-    if (activeScriptedDialogueSequence === DARREN_DIALOGUE_SEQUENCE) {
+    if (activeScriptedDialogueSequence === JANE_DIALOGUE_SEQUENCE) {
+      unlockJaneInRegistro();
+    } else if (activeScriptedDialogueSequence === DARREN_DIALOGUE_SEQUENCE) {
       hasCompletedDarrenIntroDialogue = true;
-      setEndDayEnabled(true);
+      unlockDarrenInRegistro();
+      logDarrenIntroTutorialIfNeeded();
     } else if (activeScriptedDialogueSequence === HELENA_DIALOGUE_SEQUENCE && !hasReceivedHelenaFoodBonus) {
       hasReceivedHelenaFoodBonus = true;
       addALIMENTOS(10);
       showRewardToast("Alimentos +10");
+      window.setTimeout(() => {
+        unlockHelenaInRegistro();
+      }, 1450);
+    } else if (activeScriptedDialogueSequence === HELENA_DIALOGUE_SEQUENCE) {
+      unlockHelenaInRegistro();
     }
     clearScriptedDialogueSequence();
     clearUiHighlight();
@@ -435,12 +677,27 @@ function startDarrenHelpChoiceDialogue() {
     {
       label: "¿Cómo transcurren los días?",
       onSelect: () => {
+        if (!hasAskedDarrenDaysQuestion) {
+          hasAskedDarrenDaysQuestion = true;
+          appendGestionDiariaLines([
+            "EVELYN: ¿Cómo transcurren los días?",
+            `DARREN: ${DARREN_DAYS_DIALOGUE[0]}`
+          ]);
+        }
+        unlockEndDayByDarrenDaysQuestion();
         startDialogue(darren, DARREN_DAYS_DIALOGUE);
       }
     },
     {
       label: "¿Alguien va a ayudarme?",
       onSelect: () => {
+        if (!hasAskedDarrenHelpQuestion) {
+          hasAskedDarrenHelpQuestion = true;
+          appendGestionDiariaLines([
+            "EVELYN: ¿Alguien va a ayudarme?",
+            `DARREN: ${DARREN_HELP_DIALOGUE[0]}`
+          ]);
+        }
         startDialogue(darren, DARREN_HELP_DIALOGUE);
       }
     },
@@ -558,10 +815,22 @@ function openHelenaOptionsModal() {
 
 function startHelenaDay2Dialogue() {
   if (hasCompletedHelenaDay2Dialogue) {
-    startDialogue(helena, HELENA_DAY2_REST_DIALOGUE);
+    if (hasRegisteredHelena) {
+      startDialogue(helena, HELENA_DAY2_REST_DIALOGUE);
+    } else {
+      startDialogue(helena, HELENA_DAY2_REST_DIALOGUE, 0, unlockHelenaInRegistro);
+    }
     return;
   }
-  startTravelDialogue(helena, HELENA_DAY2_INTRO, openHelenaOptionsModal, "Ver opciones");
+  startTravelDialogue(
+    helena,
+    HELENA_DAY2_INTRO,
+    () => {
+      unlockHelenaInRegistro();
+      openHelenaOptionsModal();
+    },
+    "Ver opciones"
+  );
 }
 
 function startHelenaDialogue() {
@@ -663,6 +932,43 @@ function closeDaySummaryModal() {
   daySummaryModal.setAttribute("aria-hidden", "true");
 }
 
+async function startNextDayFromSummary() {
+  if (!isAwaitingDaySummaryContinue) return;
+  if (isStartingNextDayFromSummary) return;
+  isStartingNextDayFromSummary = true;
+  closeDaySummaryModal();
+  try {
+    currentDay += 1;
+    renderDayBanner();
+    applyDayState(currentDay);
+    closeSpeech();
+    closeHelenaOptionsModal();
+    closeItemModal();
+    clearPendingSceneChange();
+    pendingSceneEntryLeft = null;
+    pendingSceneEntryBottom = null;
+    pendingFondo2FromFondo1 = false;
+    goToFondo1();
+    await fadeOutDayTransitionFromBlack();
+  } finally {
+    isAwaitingDaySummaryContinue = false;
+    isStartingNextDayFromSummary = false;
+    isDayTransitionRunning = false;
+    if (dayEndYesBtn) {
+      dayEndYesBtn.disabled = false;
+    }
+    clearDayTransitionOverlayClasses();
+  }
+}
+
+function requestCloseDaySummaryModal() {
+  if (isAwaitingDaySummaryContinue) {
+    void startNextDayFromSummary();
+    return;
+  }
+  closeDaySummaryModal();
+}
+
 function applyDayState(dayNumber) {
   // Hook para cambios por día.
   void dayNumber;
@@ -689,22 +995,37 @@ function applyDailyResourceChanges() {
   return deltas;
 }
 
-function advanceToNextDay() {
+async function advanceToNextDay() {
+  if (isDayTransitionRunning || isAwaitingDaySummaryContinue) return;
+  isDayTransitionRunning = true;
+  if (dayEndYesBtn) {
+    dayEndYesBtn.disabled = true;
+  }
   closeDayEndModal();
-  const closingDayNumber = currentDay;
-  const dayDeltas = applyDailyResourceChanges();
-  const summaryNotes = consumePendingDaySummaryNotes();
-  currentDay += 1;
-  renderDayBanner();
-  applyDayState(currentDay);
-  closeSpeech();
-  closeHelenaOptionsModal();
-  closeItemModal();
-  clearPendingSceneChange();
-  pendingSceneEntryLeft = null;
-  pendingFondo2FromFondo1 = false;
-  goToFondo1();
-  openDaySummaryModal(closingDayNumber, dayDeltas, summaryNotes);
+  try {
+    await playDayTransitionToBlack();
+    const closingDayNumber = currentDay;
+    const dayDeltas = applyDailyResourceChanges();
+    const summaryNotes = consumePendingDaySummaryNotes();
+    isAwaitingDaySummaryContinue = true;
+    openDaySummaryModal(closingDayNumber, dayDeltas, summaryNotes);
+  } catch (error) {
+    console.error("No se pudo completar la transición de día.", error);
+    isAwaitingDaySummaryContinue = false;
+    isDayTransitionRunning = false;
+    if (dayEndYesBtn) {
+      dayEndYesBtn.disabled = false;
+    }
+    clearDayTransitionOverlayClasses();
+  }
+  if (!daySummaryModal) {
+    await startNextDayFromSummary();
+    return;
+  }
+  if (!daySummaryModal.classList.contains("open")) {
+    await startNextDayFromSummary();
+    return;
+  }
 }
 
 function applyAnilloInventoryStyle() {
@@ -872,14 +1193,21 @@ function clearPendingSceneChange() {
   }
 }
 
-function setPendingSceneEntry(left) {
+function setPendingSceneEntry(left, bottom = null) {
   pendingSceneEntryLeft = left;
+  pendingSceneEntryBottom = bottom;
 }
 
 function consumePendingSceneEntry(fallbackLeft) {
   const left = pendingSceneEntryLeft || fallbackLeft;
   pendingSceneEntryLeft = null;
   return left;
+}
+
+function consumePendingSceneEntryBottom(fallbackBottom) {
+  const bottom = pendingSceneEntryBottom || fallbackBottom;
+  pendingSceneEntryBottom = null;
+  return bottom;
 }
 
 function getSceneScale() {
@@ -1045,7 +1373,11 @@ function moveEvelynToArrowAndChangeScene(arrowEl, onArrive) {
 
 function getArrowVerticalExitOffset(arrowEl) {
   if (!arrowEl) return 0;
-  if (arrowEl.classList.contains("arrow-up-center") || arrowEl.classList.contains("arrow-up-fondo2-center")) {
+  if (
+    arrowEl.classList.contains("arrow-up-center")
+    || arrowEl.classList.contains("arrow-up-fondo2-center")
+    || arrowEl.classList.contains("arrow-up-top-center")
+  ) {
     return 20;
   }
   if (arrowEl.classList.contains("arrow-down-center")) {
@@ -1188,8 +1520,8 @@ function renderActiveDialogue() {
   speech.style.display = "block";
 }
 
-function startDialogue(anchor, lines, speechExtraTop = 0) {
-  activeDialogue = { type: "linear", anchor, lines, speechExtraTop };
+function startDialogue(anchor, lines, speechExtraTop = 0, onComplete = null) {
+  activeDialogue = { type: "linear", anchor, lines, speechExtraTop, onComplete };
   activeDialogueIndex = 0;
   renderActiveDialogue();
 }
@@ -1246,6 +1578,9 @@ function advanceActiveDialogue() {
   }
   if (activeDialogue.type !== "linear" && activeDialogue.type !== "centered") return;
   if (activeDialogueIndex >= activeDialogue.lines.length - 1) {
+    if (typeof activeDialogue.onComplete === "function") {
+      activeDialogue.onComplete();
+    }
     closeSpeech();
     return;
   }
@@ -1256,31 +1591,37 @@ function advanceActiveDialogue() {
 function isInFondo1() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo1.png");
+  return src.includes("escenarios/fondo1.png");
 }
 
 function isInFondo2() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo2.png");
+  return src.includes("escenarios/fondo2.png");
 }
 
 function isInFondo0() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo0.png");
+  return src.includes("escenarios/fondo0.png");
 }
 
 function isInFondo3() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo3.png");
+  return src.includes("escenarios/fondo3.png");
 }
 
 function isInFondo4() {
   if (!background) return false;
   const src = background.getAttribute("src") || background.src || "";
-  return src.includes("images/fondo4.png");
+  return src.includes("escenarios/fondo4.png");
+}
+
+function isInFondo5() {
+  if (!background) return false;
+  const src = background.getAttribute("src") || background.src || "";
+  return src.includes("escenarios/fondo5.png");
 }
 
 function cancelPendingAnilloPickup() {
@@ -1340,11 +1681,11 @@ function goToFondo2() {
   pendingSpeechForDarren = false;
   const fondo2Bottom = pendingFondo2FromFondo1
     ? getFondo2FromFondo1EvelynBottom()
-    : INITIAL_EVELYN_BOTTOM;
+    : consumePendingSceneEntryBottom(INITIAL_EVELYN_BOTTOM);
   snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), fondo2Bottom);
   pendingFondo2FromFondo1 = false;
 
-  background.src = asset("images/fondo2.png");
+  background.src = asset("escenarios/fondo2.png");
   background.alt = "Fondo 2";
   setSceneBackgroundClass("in-fondo2");
 
@@ -1371,6 +1712,9 @@ function goToFondo2() {
   nextArrow.setAttribute("aria-label", "Ir a fondo 3");
   prevArrow.style.display = "block";
   prevArrow.setAttribute("aria-label", "Volver a fondo 1");
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
 }
 
 function goToFondo3() {
@@ -1383,9 +1727,12 @@ function goToFondo3() {
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
 
-  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
+  snapEvelynToPosition(
+    consumePendingSceneEntry(INITIAL_EVELYN_LEFT),
+    consumePendingSceneEntryBottom(INITIAL_EVELYN_BOTTOM)
+  );
 
-  background.src = asset("images/fondo3.png");
+  background.src = asset("escenarios/fondo3.png");
   background.alt = "Fondo 3";
   setSceneBackgroundClass("in-fondo3");
 
@@ -1404,8 +1751,8 @@ function goToFondo3() {
   }
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
-  setArrowMode(nextArrow, null);
-  setArrowMode(prevArrow, null);
+  setArrowMode(nextArrow, "arrow-down-center");
+  setArrowMode(prevArrow, "arrow-up-top-center");
   nextArrow.style.display = "block";
   nextArrow.style.visibility = "visible";
   nextArrow.style.pointerEvents = "auto";
@@ -1414,6 +1761,9 @@ function goToFondo3() {
   prevArrow.style.visibility = "visible";
   prevArrow.style.pointerEvents = "auto";
   prevArrow.setAttribute("aria-label", "Ir a fondo 4");
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
 }
 
 function goToFondo4() {
@@ -1426,11 +1776,14 @@ function goToFondo4() {
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
 
-  background.src = asset("images/fondo4.png");
+  background.src = asset("escenarios/fondo4.png");
   background.alt = "Fondo 4";
   setSceneBackgroundClass("in-fondo4");
 
-  snapEvelynToPosition(consumePendingSceneEntry(FONDO4_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
+  snapEvelynToPosition(
+    consumePendingSceneEntry(ENTRY_CENTER),
+    consumePendingSceneEntryBottom(getFondo4EntryEvelynBottom())
+  );
   evelyn.style.transform = "scaleX(-1)";
 
   jane.style.display = "none";
@@ -1449,10 +1802,15 @@ function goToFondo4() {
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, null);
-  setArrowMode(prevArrow, null);
-  nextArrow.style.display = "block";
-  nextArrow.setAttribute("aria-label", "Volver a fondo 3");
-  prevArrow.style.display = "none";
+  setArrowMode(prevArrow, "arrow-down-center");
+  nextArrow.style.display = "none";
+  prevArrow.style.display = "block";
+  prevArrow.style.visibility = "visible";
+  prevArrow.style.pointerEvents = "auto";
+  prevArrow.setAttribute("aria-label", "Volver a fondo 3");
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
 }
 
 function goToFondo1() {
@@ -1465,12 +1823,13 @@ function goToFondo1() {
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
 
-  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), INITIAL_EVELYN_BOTTOM);
+  const fondo1Bottom = consumePendingSceneEntryBottom(getFondo1EvelynBottom());
+  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), fondo1Bottom);
 
-  background.src = asset("images/fondo1.png");
+  background.src = asset("escenarios/fondo1.png");
   background.alt = "Fondo 1";
   setSceneBackgroundClass("in-fondo1");
-  evelyn.style.bottom = getFondo1EvelynBottom();
+  evelyn.style.bottom = fondo1Bottom;
 
   if (currentDay >= 1) {
     jane.style.display = "none";
@@ -1509,6 +1868,59 @@ function goToFondo1() {
   prevArrow.style.visibility = "visible";
   prevArrow.style.pointerEvents = "auto";
   prevArrow.setAttribute("aria-label", "Ir a fondo 0");
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "block";
+    leftSideArrow.style.visibility = "visible";
+    leftSideArrow.style.pointerEvents = "auto";
+    leftSideArrow.setAttribute("aria-label", "Ir a fondo 5");
+  }
+}
+
+function goToFondo5() {
+  clearPendingSceneChange();
+  closeItemModal();
+  closeSpeech();
+  cancelPendingAnilloPickup();
+  stopEvelynWalkAnimation();
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
+
+  snapEvelynToPosition(
+    consumePendingSceneEntry(ENTRY_FONDO5_FROM_FONDO1),
+    consumePendingSceneEntryBottom(getFondo5EntryEvelynBottom())
+  );
+
+  background.src = asset("escenarios/fondo5.png");
+  background.alt = "Fondo 5";
+  setSceneBackgroundClass("in-fondo5");
+
+  jane.style.display = "none";
+  if (helena) {
+    helena.style.display = "none";
+  }
+  if (camus) {
+    camus.style.display = "none";
+  }
+  if (darren) {
+    darren.style.display = "none";
+  }
+  if (mercenario) {
+    mercenario.style.display = "none";
+  }
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
+  inventory.style.display = "block";
+  setArrowMode(nextArrow, null);
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Volver a fondo 1");
+  prevArrow.style.display = "none";
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
 }
 
 function goToFondo0() {
@@ -1523,7 +1935,7 @@ function goToFondo0() {
 
   snapEvelynToPosition(consumePendingSceneEntry(FONDO0_EVELYN_LEFT), getFondo0EvelynBottom());
 
-  background.src = asset("images/fondo0.png");
+  background.src = asset("escenarios/fondo0.png");
   background.alt = "Fondo 0";
   setSceneBackgroundClass("in-fondo0");
 
@@ -1547,6 +1959,9 @@ function goToFondo0() {
   nextArrow.style.pointerEvents = "auto";
   nextArrow.setAttribute("aria-label", "Volver a fondo 1");
   prevArrow.style.display = "none";
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
 }
 
 if (jane) {
@@ -1561,7 +1976,7 @@ if (jane) {
     if (isEvelynBeside(jane)) {
       faceEvelynToward(jane);
       faceJaneTowardEvelyn();
-      startDialogue(jane, JANE_DIALOGUE);
+      startJaneInteractionDialogue();
       pendingSpeechForJane = false;
     }
   });
@@ -1579,7 +1994,7 @@ if (camus) {
     if (isEvelynBeside(camus)) {
       faceEvelynToward(camus);
       faceCamusTowardEvelyn();
-      startDialogue(camus, CAMUS_DIALOGUE);
+      startCamusInteractionDialogue();
       pendingSpeechForCamus = false;
     }
   });
@@ -1681,24 +2096,35 @@ if (helenaEmptyYesBtn) {
 if (nextArrow) {
   nextArrow.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInFondo5()) {
+      setPendingSceneEntry(ENTRY_LEFT_EDGE, getFondo1EvelynBottom());
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo1);
+      return;
+    }
     if (isInFondo4()) {
-      setPendingSceneEntry(ENTRY_RIGHT_EDGE);
+      setPendingSceneEntry(ENTRY_FONDO3_FROM_FONDO2, getFondo3EntryEvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo3);
       return;
     }
     if (isInFondo2()) {
-      setPendingSceneEntry(ENTRY_CENTER);
+      setPendingSceneEntry(ENTRY_FONDO3_FROM_FONDO2, getFondo3EntryEvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo3);
       return;
     }
     if (isInFondo0()) {
-      setPendingSceneEntry(ENTRY_FONDO1_FROM_FONDO0);
+      setPendingSceneEntry(ENTRY_FONDO1_FROM_FONDO0, getFondo1EvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo1);
       return;
     }
     if (isInFondo1()) {
       pendingFondo2FromFondo1 = true;
       setPendingSceneEntry(ENTRY_FONDO2_FROM_FONDO1);
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo2);
+      return;
+    }
+    if (isInFondo3()) {
+      pendingFondo2FromFondo1 = false;
+      setPendingSceneEntry(ENTRY_FONDO2_FROM_FONDO3, getFondo2FromFondo1EvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo2);
       return;
     }
@@ -1711,8 +2137,13 @@ if (nextArrow) {
 if (prevArrow) {
   prevArrow.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInFondo4()) {
+      setPendingSceneEntry(ENTRY_RIGHT_EDGE);
+      moveEvelynToArrowAndChangeScene(prevArrow, goToFondo3);
+      return;
+    }
     if (isInFondo3()) {
-      setPendingSceneEntry(ENTRY_LEFT_EDGE);
+      setPendingSceneEntry(ENTRY_CENTER, getFondo4EntryEvelynBottom());
       moveEvelynToArrowAndChangeScene(prevArrow, goToFondo4);
       return;
     }
@@ -1721,8 +2152,22 @@ if (prevArrow) {
       moveEvelynToArrowAndChangeScene(prevArrow, goToFondo0);
       return;
     }
+    if (isInFondo2()) {
+      setPendingSceneEntry(ENTRY_FONDO1_FROM_FONDO2, getFondo1EvelynBottom());
+      moveEvelynToArrowAndChangeScene(prevArrow, goToFondo1);
+      return;
+    }
     setPendingSceneEntry(ENTRY_RIGHT_EDGE);
     moveEvelynToArrowAndChangeScene(prevArrow, goToFondo1);
+  });
+}
+
+if (leftSideArrow) {
+  leftSideArrow.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (!isInFondo1()) return;
+    setPendingSceneEntry(ENTRY_FONDO5_FROM_FONDO1);
+    moveEvelynToArrowAndChangeScene(leftSideArrow, goToFondo5);
   });
 }
 
@@ -1782,6 +2227,7 @@ if (scene) {
 
 if (speechNextBtn) {
   speechNextBtn.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
     if (isIntroSequenceActive) {
       advanceIntroDialogueSequence();
       return;
@@ -1804,7 +2250,7 @@ if (evelyn) {
     if (pendingSpeechForJane && isEvelynBeside(jane)) {
       faceEvelynToward(jane);
       faceJaneTowardEvelyn();
-      startDialogue(jane, JANE_DIALOGUE);
+      startJaneInteractionDialogue();
       pendingSpeechForJane = false;
       pendingSpeechForCamus = false;
       pendingSpeechForDarren = false;
@@ -1816,7 +2262,7 @@ if (evelyn) {
     ) {
       faceEvelynToward(camus);
       faceCamusTowardEvelyn();
-      startDialogue(camus, CAMUS_DIALOGUE);
+      startCamusInteractionDialogue();
       pendingSpeechForCamus = false;
       pendingSpeechForJane = false;
       pendingSpeechForDarren = false;
@@ -1874,8 +2320,89 @@ if (itemModalContent) {
   });
 }
 
+if (registroIconBtn) {
+  registroIconBtn.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
+    if (isRegistroModalOpen()) {
+      closeRegistroCharacterModal();
+      closeRegistroModal();
+      return;
+    }
+    openRegistroModal();
+  });
+}
+
+if (registroCloseBtn) {
+  registroCloseBtn.addEventListener("click", () => {
+    closeRegistroCharacterModal();
+    closeRegistroModal();
+  });
+}
+
+if (registroTabPersonaje) {
+  registroTabPersonaje.addEventListener("click", () => {
+    setActiveRegistroTab("personaje");
+  });
+}
+
+if (registroTabTutorial) {
+  registroTabTutorial.addEventListener("click", () => {
+    setActiveRegistroTab("tutorial");
+  });
+}
+
+if (registroTutorialGestionToggle) {
+  registroTutorialGestionToggle.addEventListener("click", () => {
+    if (tutorialGestionDiariaLines.length === 0) return;
+    isGestionDiariaExpanded = !isGestionDiariaExpanded;
+    renderRegistroTutorialPanel();
+  });
+}
+
+if (registroCharJane) {
+  registroCharJane.addEventListener("click", () => {
+    openRegistroCharacterModal("jane");
+  });
+}
+
+if (registroCharCamus) {
+  registroCharCamus.addEventListener("click", () => {
+    openRegistroCharacterModal("camus");
+  });
+}
+
+if (registroCharDarren) {
+  registroCharDarren.addEventListener("click", () => {
+    openRegistroCharacterModal("darren");
+  });
+}
+
+if (registroCharHelena) {
+  registroCharHelena.addEventListener("click", () => {
+    openRegistroCharacterModal("helena");
+  });
+}
+
+if (registroModal) {
+  registroModal.addEventListener("click", (event) => {
+    if (event.target === registroModal) {
+      closeRegistroCharacterModal();
+      closeRegistroModal();
+    }
+  });
+}
+
+if (registroCharacterModal) {
+  registroCharacterModal.addEventListener("click", (event) => {
+    if (event.target === registroCharacterModal) {
+      closeRegistroCharacterModal();
+    }
+  });
+}
+
 if (endDayIcon) {
   endDayIcon.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
     if (!isEndDayEnabled) return;
     openDayEndModal();
   });
@@ -1889,7 +2416,8 @@ if (dayEndNoBtn) {
 
 if (dayEndYesBtn) {
   dayEndYesBtn.addEventListener("click", () => {
-    advanceToNextDay();
+    if (isDayTransitionRunning) return;
+    void advanceToNextDay();
   });
 }
 
@@ -1903,26 +2431,35 @@ if (dayEndModal) {
 
 if (daySummaryCloseBtn) {
   daySummaryCloseBtn.addEventListener("click", () => {
-    closeDaySummaryModal();
+    requestCloseDaySummaryModal();
   });
 }
 
 if (daySummaryModal) {
   daySummaryModal.addEventListener("click", (event) => {
     if (event.target === daySummaryModal) {
-      closeDaySummaryModal();
+      requestCloseDaySummaryModal();
     }
   });
 }
 
 window.addEventListener("keydown", (event) => {
+  if (isDayTransitionRunning && !(daySummaryModal && daySummaryModal.classList.contains("open"))) return;
   if (event.key === "Escape") {
+    if (isRegistroCharacterModalOpen()) {
+      closeRegistroCharacterModal();
+      return;
+    }
+    if (isRegistroModalOpen()) {
+      closeRegistroModal();
+      return;
+    }
     if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) {
       closeHelenaOptionsModal();
       return;
     }
     if (daySummaryModal && daySummaryModal.classList.contains("open")) {
-      closeDaySummaryModal();
+      requestCloseDaySummaryModal();
       return;
     }
     if (dayEndModal && dayEndModal.classList.contains("open")) {
@@ -1933,6 +2470,8 @@ window.addEventListener("keydown", (event) => {
     return;
   }
   if (event.key === "Enter") {
+    if (isRegistroCharacterModalOpen()) return;
+    if (isRegistroModalOpen()) return;
     if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) return;
     if (daySummaryModal && daySummaryModal.classList.contains("open")) return;
     if (dayEndModal && dayEndModal.classList.contains("open")) return;
@@ -1952,6 +2491,9 @@ window.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("pointerdown", (event) => {
+  if (isDayTransitionRunning) return;
+  if (registroCharacterModal && registroCharacterModal.classList.contains("open") && registroCharacterModal.contains(event.target)) return;
+  if (registroModal && registroModal.classList.contains("open") && registroModal.contains(event.target)) return;
   if (daySummaryModal && daySummaryModal.classList.contains("open") && daySummaryModal.contains(event.target)) return;
   if (dayEndModal && dayEndModal.classList.contains("open") && dayEndModal.contains(event.target)) return;
   if (isIntroSequenceActive) return;
@@ -1968,7 +2510,11 @@ window.addEventListener("resize", () => {
   }
 });
 if (scene && sceneViewport) {
-  setEndDayEnabled(hasCompletedDarrenIntroDialogue);
+  setEndDayEnabled(hasUnlockedEndDayByDarrenDays);
+  renderRegistroEntries();
+  renderRegistroIconState();
+  setActiveRegistroTab("personaje");
+  renderRegistroTutorialPanel();
   renderDayBanner();
   setALIMENTOS(ALIMENTOS);
   setDINERO(DINERO);

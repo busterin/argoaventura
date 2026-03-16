@@ -4,20 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Aventura Grafica - Prueba</title>
-    <link rel="stylesheet" href="styles.css?v=20260341" />
+    <link rel="stylesheet" href="styles.css?v=20260343" />
   </head>
   <body>
     <div id="scene-viewport">
       <div id="scene" aria-label="Escena">
-        <img id="background" src="images/fondo1.png?v=20260312" alt="Fondo" />
+        <img id="background" src="escenarios/fondo1.png?v=20260312" alt="Fondo" />
 
-        <img id="evelyn" class="entity" src="images/evelyn.png?v=20260312" alt="Evelyn" />
-        <img id="jane" class="entity" src="images/jane.png?v=20260312" alt="Jane" />
-        <img id="helena" class="entity" src="images/helena.png?v=20260312" alt="Helena" />
-        <img id="camus" class="entity" src="images/camus.png?v=20260312" alt="Camus" />
-        <img id="darren" class="entity" src="images/darren.png?v=20260312" alt="Darren" />
-        <img id="mercenario" class="entity" src="images/mercenario.png?v=20260314" alt="Mercenario" />
-        <img id="anillo-world" class="entity" src="images/anillo.png?v=20260312" alt="Anillo" />
+        <img id="evelyn" class="entity" src="personajes/evelyn.png?v=20260312" alt="Evelyn" />
+        <img id="jane" class="entity" src="personajes/jane.png?v=20260312" alt="Jane" />
+        <img id="helena" class="entity" src="personajes/helena.png?v=20260312" alt="Helena" />
+        <img id="camus" class="entity" src="personajes/camus.png?v=20260312" alt="Camus" />
+        <img id="darren" class="entity" src="personajes/darren.png?v=20260312" alt="Darren" />
+        <img id="mercenario" class="entity" src="personajes/mercenario.png?v=20260314" alt="Mercenario" />
+        <img id="anillo-world" class="entity" src="objetos/anillo.png?v=20260312" alt="Anillo" />
 
         <div id="speech">
           <p id="speech-text">¡Hola, Evelyn!</p>
@@ -26,20 +26,23 @@
         </div>
 
         <div id="inventory" aria-label="Inventario">
-          <img id="inventory-bg" src="images/inventario.png?v=20260312" alt="Inventario" />
+          <img id="inventory-bg" src="objetos/inventario.png?v=20260312" alt="Inventario" />
           <div id="ring-slot-highlight" aria-hidden="true"></div>
           <div id="slot-1" class="inventory-slot"></div>
-          <img id="anillo-item" class="inventory-item" src="images/anillo.png?v=20260312" alt="Anillo en inventario" draggable="true" />
+          <img id="anillo-item" class="inventory-item" src="objetos/anillo.png?v=20260312" alt="Anillo en inventario" draggable="true" />
         </div>
         <div id="alimentos-display" aria-live="polite">10</div>
         <div id="dinero-display" aria-live="polite">20</div>
         <div id="pueblo-display" aria-live="polite">50</div>
-        <img id="icono-fin-dia" src="images/iconofindia.png?v=20260323" alt="Finalizar día" />
+        <img id="iconoregistro" src="objetos/iconoregistro.png?v=20260316" alt="Abrir registro" />
+        <img id="icono-fin-dia" src="objetos/iconofindia.png?v=20260323" alt="Finalizar día" />
 
         <button id="next-arrow" type="button" aria-label="Ir a fondo 2"></button>
         <button id="prev-arrow" type="button" aria-label="Ir a fondo 0"></button>
+        <button id="left-side-arrow" type="button" aria-label="Ir a fondo 5"></button>
       </div>
     </div>
+    <div id="day-transition-overlay" aria-hidden="true"></div>
     <div id="day-banner" aria-live="polite">Día <span id="day-banner-number">1</span></div>
 
     <div id="day-end-modal" aria-hidden="true">
@@ -65,6 +68,37 @@
       </div>
     </div>
     <div id="reward-toast" aria-live="polite"></div>
+    <div id="registro-modal" aria-hidden="true">
+      <div id="registro-modal-content" role="dialog" aria-modal="true" aria-label="Registro">
+        <h2 id="registro-title">Registro</h2>
+        <div id="registro-tabs">
+          <button id="registro-tab-personaje" class="registro-tab active" type="button">Personaje</button>
+          <button id="registro-tab-tutorial" class="registro-tab" type="button">Tutorial</button>
+        </div>
+        <div id="registro-panel-personaje" class="registro-panel active">
+          <button id="registro-char-jane" class="registro-char-item" type="button">Jane</button>
+          <button id="registro-char-camus" class="registro-char-item" type="button">Camus</button>
+          <button id="registro-char-darren" class="registro-char-item" type="button">Darren</button>
+          <button id="registro-char-helena" class="registro-char-item" type="button">Helena</button>
+        </div>
+        <div id="registro-panel-tutorial" class="registro-panel">
+          <button id="registro-tutorial-gestion-toggle" type="button" aria-expanded="false">Gestión diaria</button>
+          <div id="registro-tutorial-gestion-content">
+            <div id="registro-tutorial-list"></div>
+          </div>
+          <p id="registro-tutorial-empty">Sin entradas de tutorial por ahora.</p>
+        </div>
+        <button id="registro-close" type="button">Cerrar</button>
+      </div>
+    </div>
+    <div id="registro-character-modal" aria-hidden="true">
+      <div id="registro-character-content" role="dialog" aria-modal="true" aria-label="Ficha de personaje">
+        <h2>PERSONAJE</h2>
+        <h3 id="registro-character-name">Camus</h3>
+        <img id="registro-character-image" src="personajes/camus.png?v=20260312" alt="Camus" />
+        <p id="registro-character-text">PRUEBA</p>
+      </div>
+    </div>
     <div id="helena-options-modal" aria-hidden="true">
       <div id="helena-options-content" role="dialog" aria-modal="true" aria-label="Opciones de gestión">
         <h2 id="helena-options-title">Opciones del día</h2>
@@ -93,12 +127,13 @@
 
     <div id="item-modal" aria-hidden="true">
       <div id="item-modal-content" role="dialog" aria-modal="true" aria-label="Detalle del objeto">
-        <img id="item-modal-image" src="images/anillo.png?v=20260312" alt="Anillo ampliado" />
+        <img id="item-modal-image" src="objetos/anillo.png?v=20260312" alt="Anillo ampliado" />
         <p id="item-modal-text">Un anillo de origen desconocido.<br>Parece ser de gran valor.</p>
         <button id="item-modal-close" type="button">Cerrar</button>
       </div>
     </div>
 
-    <script src="main.js?v=20260343"></script>
+    <script src="dialogues.js?v=20260316"></script>
+    <script src="main.js?v=20260346"></script>
   </body>
 </html>
