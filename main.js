@@ -7,6 +7,13 @@ const helena = document.getElementById("helena");
 const camus = document.getElementById("camus");
 const darren = document.getElementById("darren");
 const mercenario = document.getElementById("mercenario");
+const rey = document.getElementById("rey");
+const princesa = document.getElementById("princesa");
+const soldado = document.getElementById("soldado");
+const eliot = document.getElementById("eliot");
+const herrero = document.getElementById("herrero");
+const amanda = document.getElementById("amanda");
+const rita = document.getElementById("rita");
 const anilloWorld = document.getElementById("anillo-world");
 const anilloItem = document.getElementById("anillo-item");
 const nextArrow = document.getElementById("next-arrow");
@@ -21,9 +28,12 @@ const alimentosDisplay = document.getElementById("alimentos-display");
 const dineroDisplay = document.getElementById("dinero-display");
 const puebloDisplay = document.getElementById("pueblo-display");
 const registroIconBtn = document.getElementById("iconoregistro");
+const ejercitoIconBtn = document.getElementById("iconoejercito");
+const mapaIconBtn = document.getElementById("iconomapa");
 const endDayIcon = document.getElementById("icono-fin-dia");
 const dayBanner = document.getElementById("day-banner");
 const dayBannerNumber = document.getElementById("day-banner-number");
+const devDay13Btn = document.getElementById("dev-day13-btn");
 const dayEndModal = document.getElementById("day-end-modal");
 const dayEndYesBtn = document.getElementById("day-end-yes");
 const dayEndNoBtn = document.getElementById("day-end-no");
@@ -49,17 +59,47 @@ const registroCharJane = document.getElementById("registro-char-jane");
 const registroCharCamus = document.getElementById("registro-char-camus");
 const registroCharDarren = document.getElementById("registro-char-darren");
 const registroCharHelena = document.getElementById("registro-char-helena");
+const registroCharEliot = document.getElementById("registro-char-eliot");
+const registroCharHerrero = document.getElementById("registro-char-herrero");
+const registroCharAmanda = document.getElementById("registro-char-amanda");
+const registroCharRita = document.getElementById("registro-char-rita");
 const registroCloseBtn = document.getElementById("registro-close");
 const registroCharacterModal = document.getElementById("registro-character-modal");
 const registroCharacterName = document.getElementById("registro-character-name");
 const registroCharacterImage = document.getElementById("registro-character-image");
 const registroCharacterText = document.getElementById("registro-character-text");
+const armyModal = document.getElementById("army-modal");
+const armyEliotCard = document.getElementById("army-eliot-card");
+const mapModal = document.getElementById("map-modal");
+const mapCloseBtn = document.getElementById("map-close");
+const mapTimerDisplay = document.getElementById("map-timer");
+const mapMissionsLayer = document.getElementById("map-missions-layer");
+const mapRoster = document.getElementById("map-roster");
+const mapAbandonConfirm = document.getElementById("map-abandon-confirm");
+const mapAbandonYesBtn = document.getElementById("map-abandon-yes");
+const mapAbandonNoBtn = document.getElementById("map-abandon-no");
+const missionModal = document.getElementById("mission-modal");
+const missionTitle = document.getElementById("mission-title");
+const missionText = document.getElementById("mission-text");
+const missionAssignOptions = document.getElementById("mission-assign-options");
+const missionCloseBtn = document.getElementById("mission-close");
+const rouletteModal = document.getElementById("roulette-modal");
+const rouletteWheel = document.getElementById("roulette-wheel");
+const rouletteResult = document.getElementById("roulette-result");
+const rouletteSpinBtn = document.getElementById("roulette-spin");
 const helenaOptionsModal = document.getElementById("helena-options-modal");
 const helenaOptionCards = [...document.querySelectorAll(".helena-option-card")];
 const helenaOptionsConfirmBtn = document.getElementById("helena-options-confirm");
 const helenaOptionsEmptyConfirm = document.getElementById("helena-options-empty-confirm");
 const helenaEmptyYesBtn = document.getElementById("helena-empty-yes");
 const helenaEmptyNoBtn = document.getElementById("helena-empty-no");
+const eliotOptionsModal = document.getElementById("eliot-options-modal");
+const eliotHireBtn = document.getElementById("eliot-hire-btn");
+const eliotIgnoreBtn = document.getElementById("eliot-ignore-btn");
+const mercenaryModal = document.getElementById("mercenary-modal");
+const mercenaryPayBtn = document.getElementById("mercenary-pay-btn");
+const mercenaryResistBtn = document.getElementById("mercenary-resist-btn");
+const mercenaryEliotBtn = document.getElementById("mercenary-eliot-btn");
 const inventory = document.getElementById("inventory");
 const inventorySlots = [...document.querySelectorAll(".inventory-slot")];
 const itemModal = document.getElementById("item-modal");
@@ -81,6 +121,9 @@ const WALK_SPRITES_ENABLED = false;
 const EVELYN_MOVE_DURATION_LONG_MS = 1400;
 const EVELYN_MOVE_DURATION_SHORT_MS = 950;
 const EVELYN_SHORT_MOVE_DISTANCE_PX = 220;
+const ELIOT_HIRE_COST = 5;
+const MERCENARY_EXTORTION_COST = 5;
+const MERCENARY_ELIOT_SUPPORT_LEFT = "56%";
 const FONDO1_EVELYN_EXTRA_BOTTOM_PX = 30;
 const ALIMENTOS_MAX = 99;
 const DINERO_MAX = 99;
@@ -107,6 +150,27 @@ const {
   HELENA_DAY2_BANDITS_FAIL_NOTE,
   HELENA_DAY2_BANDITS_SUCCESS_NOTE,
   HELENA_DAY2_PARTY_NOTE,
+  ELIOT_INTRO_DIALOGUE,
+  ELIOT_ALREADY_HIRED_DIALOGUE,
+  ELIOT_POST_MERCENARY_DIALOGUE,
+  ELIOT_HIRE_CONFIRM_DIALOGUE,
+  ELIOT_IGNORE_DIALOGUE,
+  ELIOT_RETRY_DIALOGUE,
+  MERCENARY_DAY10_DIALOGUE_SEQUENCE,
+  MERCENARY_PAY_DIALOGUE,
+  MERCENARY_ELIOT_DIALOGUE,
+  MERCENARY_RETALIATION_NOTE,
+  DAY12_ROYAL_INTRO_SEQUENCE,
+  DAY12_ROYAL_PRIVATE_SEQUENCE,
+  DAY12_ROYAL_OUTRO_SEQUENCE,
+  HELENA_DAY12_REST_DIALOGUE,
+  HERRERO_INTRO_SEQUENCE,
+  HERRERO_REPEAT_DIALOGUE,
+  AMANDA_INTRO_SEQUENCE,
+  AMANDA_REPEAT_DIALOGUE,
+  RITA_INTRO_SEQUENCE,
+  RITA_REPEAT_SEQUENCE,
+  DAY13_HELENA_MAP_SEQUENCE,
   INTRO_DIALOGUE_SEQUENCE
 } = window.ARGO_DIALOGUES;
 const ANILLO_MODAL = {
@@ -139,12 +203,14 @@ const ENTRY_FONDO2_FROM_FONDO1 = "14%";
 const ENTRY_FONDO1_FROM_FONDO2 = "72%";
 const ENTRY_FONDO3_FROM_FONDO2 = "54%";
 const ENTRY_FONDO2_FROM_FONDO3 = "52%";
-const ENTRY_FONDO5_FROM_FONDO1 = "42%";
+const ENTRY_FONDO5_FROM_FONDO1 = "70%";
+const ENTRY_FONDO5_FROM_TABERNA = "70%";
 const FONDO2_EVELYN_EXTRA_BOTTOM_PX = 46;
-const FONDO0_EVELYN_EXTRA_BOTTOM_PX = 42;
-const FONDO3_ENTRY_EXTRA_BOTTOM_PX = 34;
+const FONDO0_EVELYN_EXTRA_BOTTOM_PX = 28;
+const FONDO3_ENTRY_EXTRA_BOTTOM_PX = 36;
 const FONDO4_ENTRY_EXTRA_BOTTOM_PX = 40;
-const FONDO5_ENTRY_EXTRA_BOTTOM_PX = 26;
+const FONDO5_ENTRY_EXTRA_BOTTOM_PX = 42;
+const TABERNA_EVELYN_EXTRA_BOTTOM_PX = 92;
 const SPEECH_LEFT_FROM_CENTER_PX = -24;
 const SPEECH_UP_OFFSET_PX = 18;
 
@@ -158,6 +224,10 @@ let pendingSpeechForJane = false;
 let pendingSpeechForCamus = false;
 let pendingSpeechForDarren = false;
 let pendingSpeechForHelena = false;
+let pendingSpeechForEliot = false;
+let pendingSpeechForHerrero = false;
+let pendingSpeechForAmanda = false;
+let pendingSpeechForRita = false;
 let pendingSceneChangeAction = null;
 let pendingSceneChangeArrow = null;
 let pendingSceneChangeTimeoutId = null;
@@ -172,6 +242,21 @@ let hasCompletedDarrenIntroDialogue = false;
 let hasReceivedHelenaFoodBonus = false;
 let hasCompletedHelenaDay2Dialogue = false;
 let hasQueuedDay2HelenaDecision = false;
+let hasMetEliot = false;
+let hasHiredEliot = false;
+let hasStartedMercenaryDay10Encounter = false;
+let hasMercenaryBeenDrivenOff = false;
+let hasAppliedMercenaryRetaliation = false;
+let isDay10MercenaryEventRunning = false;
+let hasEliotHelpedAgainstMercenary = false;
+let hideEliotInFondo5Today = false;
+let hasEliotLeftTownForever = false;
+let hasMetHerrero = false;
+let hasMetAmanda = false;
+let hasMetRita = false;
+let hasTriggeredDay12RoyalEvent = false;
+let hasCompletedDay12RoyalEvent = false;
+let isDay12RoyalEventRunning = false;
 let selectedHelenaOptionIds = new Set();
 let spawnMercenaryOnDay10 = false;
 let pendingDailyAlimentosDelta = 0;
@@ -179,6 +264,7 @@ let pendingDailyDineroDelta = 0;
 let pendingDailyPuebloDelta = 0;
 let pendingDaySummaryNotes = [];
 let isEndDayEnabled = false;
+let isEndDayHighlighted = false;
 let currentDay = 0;
 let isDayTransitionRunning = false;
 let isAwaitingDaySummaryContinue = false;
@@ -196,38 +282,78 @@ let hasRegisteredJane = false;
 let hasRegisteredCamus = false;
 let hasRegisteredDarren = false;
 let hasRegisteredHelena = false;
+let hasRegisteredEliot = false;
+let hasRegisteredHerrero = false;
+let hasRegisteredAmanda = false;
+let hasRegisteredRita = false;
 let isRegistroHighlighted = false;
 let activeRegistroTab = "personaje";
 let hasLoggedDarrenTutorial = false;
 let hasAskedDarrenDaysQuestion = false;
 let hasAskedDarrenHelpQuestion = false;
 let hasUnlockedEndDayByDarrenDays = false;
+let hasUnlockedArmyIcon = false;
+let isArmyIconHighlighted = false;
+let hasUnlockedMapIcon = false;
+let isMapIconHighlighted = false;
+let hasTriggeredDay13MapIntro = false;
+let hasCompletedDay13MapIntro = false;
+let isDay13MapIntroRunning = false;
+let day13MissionStateByDay = new Map();
+let activeMapState = null;
+let mapTimerIntervalId = null;
+let activeMissionForDialog = null;
+let activeMissionForRoulette = null;
 let tutorialGestionDiariaLines = [];
 let isGestionDiariaExpanded = false;
 const REGISTRO_CHARACTER_DATA = {
   jane: {
     name: "Jane",
-    imageSrc: asset("personajes/jane.png"),
+    imageSrc: asset("personajes/Retratos/jane%20retrato.PNG"),
     imageAlt: "Jane",
     text: "PRUEBA"
   },
   camus: {
     name: "Camus",
-    imageSrc: asset("personajes/camus.png"),
+    imageSrc: asset("personajes/Retratos/camus%20retrato.png"),
     imageAlt: "Camus",
     text: "PRUEBA"
   },
   darren: {
     name: "Darren",
-    imageSrc: asset("personajes/darren.png"),
+    imageSrc: asset("personajes/Retratos/darren.png"),
     imageAlt: "Darren",
     text: "PRUEBA"
   },
   helena: {
     name: "Helena",
-    imageSrc: asset("personajes/helena.png"),
+    imageSrc: asset("personajes/Retratos/helena%20retrato.png"),
     imageAlt: "Helena",
     text: "PRUEBA"
+  },
+  eliot: {
+    name: "Eliot",
+    imageSrc: asset("personajes/Retratos/eliot%20retrato.png"),
+    imageAlt: "Eliot",
+    text: "Arquero mercenario de paso por Orbis."
+  },
+  herrero: {
+    name: "Simón",
+    imageSrc: asset("personajes/Retratos/herrero%20retrato.png"),
+    imageAlt: "Simón",
+    text: "Herrero del pueblo. Dice que pronto tendrá material del bueno."
+  },
+  amanda: {
+    name: "Amanda",
+    imageSrc: asset("personajes/Retratos/amanda%20retrato.png"),
+    imageAlt: "Amanda",
+    text: "Vecina de Orbis. Recolecta setas con su hija Rita."
+  },
+  rita: {
+    name: "Rita",
+    imageSrc: asset("personajes/Retratos/rita%20retrato.png"),
+    imageAlt: "Rita",
+    text: "Rita Dinamita. Energía infinita y ganas de jugar."
   }
 };
 const TRANSPARENT_DRAG_IMAGE = new Image();
@@ -246,7 +372,8 @@ const SCENE_BACKGROUND_CLASSES = [
   "in-fondo2",
   "in-fondo3",
   "in-fondo4",
-  "in-fondo5"
+  "in-fondo5",
+  "in-taberna"
 ];
 
 function addFallbackOnError(id, label) {
@@ -272,7 +399,7 @@ function setSceneBackgroundClass(className) {
 
 function setArrowMode(arrowEl, mode) {
   if (!arrowEl) return;
-  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center", "arrow-up-top-center");
+  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center", "arrow-up-top-center", "arrow-up-top-left");
   if (mode) {
     arrowEl.classList.add(mode);
   }
@@ -286,9 +413,60 @@ function isRegistroCharacterModalOpen() {
   return Boolean(registroCharacterModal && registroCharacterModal.classList.contains("open"));
 }
 
+function isArmyModalOpen() {
+  return Boolean(armyModal && armyModal.classList.contains("open"));
+}
+
+function isEliotOptionsModalOpen() {
+  return Boolean(eliotOptionsModal && eliotOptionsModal.classList.contains("open"));
+}
+
+function isMercenaryModalOpen() {
+  return Boolean(mercenaryModal && mercenaryModal.classList.contains("open"));
+}
+
+function clearPendingSpeechFlags() {
+  pendingSpeechForJane = false;
+  pendingSpeechForCamus = false;
+  pendingSpeechForDarren = false;
+  pendingSpeechForHelena = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
+}
+
 function renderRegistroIconState() {
   if (!registroIconBtn) return;
   registroIconBtn.classList.toggle("iconoregistro-highlight", isRegistroHighlighted);
+}
+
+function renderEjercitoIconState() {
+  if (!ejercitoIconBtn) return;
+  ejercitoIconBtn.classList.toggle("enabled", hasUnlockedArmyIcon);
+  ejercitoIconBtn.classList.toggle("iconoejercito-highlight", isArmyIconHighlighted);
+}
+
+function renderMapaIconState() {
+  if (!mapaIconBtn) return;
+  mapaIconBtn.classList.toggle("enabled", hasUnlockedMapIcon);
+  mapaIconBtn.classList.toggle("iconomapa-highlight", isMapIconHighlighted);
+}
+
+function renderArmyModalContent() {
+  if (armyEliotCard) {
+    armyEliotCard.style.display = hasHiredEliot ? "flex" : "none";
+  }
+}
+
+function isMapModalOpen() {
+  return Boolean(mapModal && mapModal.classList.contains("open"));
+}
+
+function unlockMapIcon() {
+  hasUnlockedMapIcon = true;
+  isMapIconHighlighted = true;
+  renderMapaIconState();
 }
 
 function setActiveRegistroTab(tabId) {
@@ -313,6 +491,10 @@ function renderRegistroEntries() {
   if (registroCharCamus) registroCharCamus.classList.toggle("unlocked", hasRegisteredCamus);
   if (registroCharDarren) registroCharDarren.classList.toggle("unlocked", hasRegisteredDarren);
   if (registroCharHelena) registroCharHelena.classList.toggle("unlocked", hasRegisteredHelena);
+  if (registroCharEliot) registroCharEliot.classList.toggle("unlocked", hasRegisteredEliot);
+  if (registroCharHerrero) registroCharHerrero.classList.toggle("unlocked", hasRegisteredHerrero);
+  if (registroCharAmanda) registroCharAmanda.classList.toggle("unlocked", hasRegisteredAmanda);
+  if (registroCharRita) registroCharRita.classList.toggle("unlocked", hasRegisteredRita);
 }
 
 function getSpeakerLabelForTutorial(speaker) {
@@ -361,12 +543,26 @@ function logDarrenIntroTutorialIfNeeded() {
 function unlockEndDayByDarrenDaysQuestion() {
   if (hasUnlockedEndDayByDarrenDays) return;
   hasUnlockedEndDayByDarrenDays = true;
+  isEndDayHighlighted = true;
   setEndDayEnabled(true);
+}
+
+function unlockArmyIconWithEliot() {
+  if (!hasUnlockedArmyIcon) {
+    hasUnlockedArmyIcon = true;
+  }
+  isArmyIconHighlighted = true;
+  renderEjercitoIconState();
+  renderArmyModalContent();
 }
 
 function openRegistroModal() {
   if (!registroModal) return;
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeArmyModal();
+  closeMapModal();
   closeItemModal();
   isRegistroHighlighted = false;
   renderRegistroIconState();
@@ -389,6 +585,10 @@ function openRegistroCharacterModal(characterId) {
     || (characterId === "camus" && hasRegisteredCamus)
     || (characterId === "darren" && hasRegisteredDarren)
     || (characterId === "helena" && hasRegisteredHelena)
+    || (characterId === "eliot" && hasRegisteredEliot)
+    || (characterId === "herrero" && hasRegisteredHerrero)
+    || (characterId === "amanda" && hasRegisteredAmanda)
+    || (characterId === "rita" && hasRegisteredRita)
   );
   if (!isUnlocked) return;
   if (registroCharacterName) {
@@ -409,6 +609,306 @@ function closeRegistroCharacterModal() {
   if (!registroCharacterModal) return;
   registroCharacterModal.classList.remove("open");
   registroCharacterModal.setAttribute("aria-hidden", "true");
+}
+
+function openArmyModal() {
+  if (!armyModal || !hasUnlockedArmyIcon) return;
+  closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeMapModal();
+  closeItemModal();
+  renderArmyModalContent();
+  isArmyIconHighlighted = false;
+  renderEjercitoIconState();
+  armyModal.classList.add("open");
+  armyModal.setAttribute("aria-hidden", "false");
+}
+
+function closeArmyModal() {
+  if (!armyModal) return;
+  armyModal.classList.remove("open");
+  armyModal.setAttribute("aria-hidden", "true");
+}
+
+function closeMissionModal() {
+  if (!missionModal) return;
+  missionModal.classList.remove("open");
+  missionModal.setAttribute("aria-hidden", "true");
+  activeMissionForDialog = null;
+}
+
+function closeRouletteModal() {
+  if (!rouletteModal) return;
+  rouletteModal.classList.remove("open");
+  rouletteModal.setAttribute("aria-hidden", "true");
+  activeMissionForRoulette = null;
+}
+
+function closeMapModal() {
+  closeMissionModal();
+  closeRouletteModal();
+  if (mapTimerIntervalId !== null) {
+    window.clearInterval(mapTimerIntervalId);
+    mapTimerIntervalId = null;
+  }
+  if (!mapModal) return;
+  if (mapAbandonConfirm) {
+    mapAbandonConfirm.classList.remove("open");
+    mapAbandonConfirm.setAttribute("aria-hidden", "true");
+  }
+  mapModal.classList.remove("open");
+  mapModal.setAttribute("aria-hidden", "true");
+}
+
+function getMapRosterForCurrentDay() {
+  const roster = [
+    { id: "camus", name: "Camus", portrait: asset("personajes/Retratos/camus%20retrato.png") },
+    { id: "jane", name: "Jane", portrait: asset("personajes/Retratos/jane%20retrato.PNG") },
+    { id: "helena", name: "Helena", portrait: asset("personajes/Retratos/helena%20retrato.png") }
+  ];
+  if (hasMetAmanda) {
+    roster.push({ id: "amanda", name: "Amanda", portrait: asset("personajes/Retratos/amanda%20retrato.png") });
+  }
+  return roster;
+}
+
+function getOrCreateDay13MapState(dayNumber) {
+  const existing = day13MissionStateByDay.get(dayNumber);
+  if (existing) return existing;
+  const randomMissions = [];
+  const missionCount = 4;
+  for (let i = 0; i < missionCount; i += 1) {
+    randomMissions.push({
+      id: `day${dayNumber}-mission-${i + 1}`,
+      title: "Prueba",
+      text: "Misión de prueba.",
+      x: Math.floor(14 + Math.random() * 70),
+      y: Math.floor(14 + Math.random() * 56),
+      state: "idle",
+      assignedCharacterId: null,
+      resolvesAt: 0
+    });
+  }
+  const mapState = {
+    dayNumber,
+    startedAt: Date.now(),
+    durationMs: 5 * 60 * 1000,
+    roster: getMapRosterForCurrentDay(),
+    missions: randomMissions,
+    busyCharacterIds: new Set()
+  };
+  day13MissionStateByDay.set(dayNumber, mapState);
+  return mapState;
+}
+
+function getMapTimeRemainingMs() {
+  if (!activeMapState) return 0;
+  const elapsed = Date.now() - activeMapState.startedAt;
+  return Math.max(0, activeMapState.durationMs - elapsed);
+}
+
+function formatMapTimer(ms) {
+  const totalSeconds = Math.ceil(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
+}
+
+function isMapTimeExpired() {
+  return getMapTimeRemainingMs() <= 0;
+}
+
+function updateMapTimerDisplay() {
+  if (!mapTimerDisplay) return;
+  mapTimerDisplay.textContent = formatMapTimer(getMapTimeRemainingMs());
+}
+
+function applyReadyMissionsIfNeeded() {
+  if (!activeMapState) return;
+  const now = Date.now();
+  for (const mission of activeMapState.missions) {
+    if (mission.state === "assigned" && mission.resolvesAt <= now) {
+      mission.state = "ready";
+    }
+  }
+}
+
+function renderMapRoster() {
+  if (!mapRoster || !activeMapState) return;
+  mapRoster.innerHTML = "";
+  for (const member of activeMapState.roster) {
+    const card = document.createElement("div");
+    card.className = "map-roster-item";
+    if (activeMapState.busyCharacterIds.has(member.id)) {
+      card.classList.add("busy");
+    }
+    const img = document.createElement("img");
+    img.src = member.portrait;
+    img.alt = member.name;
+    const label = document.createElement("div");
+    label.textContent = member.name;
+    card.appendChild(img);
+    card.appendChild(label);
+    mapRoster.appendChild(card);
+  }
+}
+
+function openMissionDialog(mission) {
+  if (!missionModal || !missionTitle || !missionText || !missionAssignOptions || !activeMapState) return;
+  activeMissionForDialog = mission;
+  missionTitle.textContent = mission.title;
+  missionText.textContent = mission.text;
+  missionAssignOptions.innerHTML = "";
+  for (const member of activeMapState.roster) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mission-assign-btn";
+    btn.textContent = `Enviar a ${member.name}`;
+    const isBusy = activeMapState.busyCharacterIds.has(member.id);
+    btn.disabled = isBusy || isMapTimeExpired();
+    btn.addEventListener("click", () => {
+      if (!activeMissionForDialog || !activeMapState) return;
+      if (activeMapState.busyCharacterIds.has(member.id) || isMapTimeExpired()) return;
+      activeMissionForDialog.assignedCharacterId = member.id;
+      activeMissionForDialog.state = "assigned";
+      activeMissionForDialog.resolvesAt = Date.now() + 10_000;
+      activeMapState.busyCharacterIds.add(member.id);
+      closeMissionModal();
+      renderMapRoster();
+      renderMapMissions();
+    });
+    missionAssignOptions.appendChild(btn);
+  }
+  missionModal.classList.add("open");
+  missionModal.setAttribute("aria-hidden", "false");
+}
+
+function getMissionSuccessChance(mission) {
+  if (!mission || !mission.assignedCharacterId) return 0.1;
+  // Versión inicial: todos los personajes son válidos para todas las misiones.
+  const assignedIsIndicated = true;
+  return assignedIsIndicated ? 0.8 : 0.1;
+}
+
+function openRouletteDialog(mission) {
+  if (!rouletteModal || !rouletteWheel || !rouletteResult || !rouletteSpinBtn || !activeMapState) return;
+  activeMissionForRoulette = mission;
+  const successChance = getMissionSuccessChance(mission);
+  const greenPct = Math.round(successChance * 100);
+  rouletteWheel.style.transition = "none";
+  rouletteWheel.style.transform = "rotate(0deg)";
+  rouletteWheel.style.background = `conic-gradient(#2ea043 0 ${greenPct}%, #c52222 ${greenPct}% 100%)`;
+  rouletteResult.textContent = "";
+  rouletteSpinBtn.textContent = "Girar ruleta";
+  rouletteSpinBtn.disabled = false;
+  rouletteModal.classList.add("open");
+  rouletteModal.setAttribute("aria-hidden", "false");
+}
+
+function resolveMissionWithRoulette() {
+  if (!activeMissionForRoulette || !activeMapState || !rouletteResult || !rouletteSpinBtn) return;
+  if (rouletteSpinBtn.textContent === "Continuar") {
+    closeRouletteModal();
+    return;
+  }
+  rouletteSpinBtn.disabled = true;
+  const fullTurns = 4 + Math.floor(Math.random() * 3);
+  const extraDeg = Math.floor(Math.random() * 360);
+  rouletteWheel.style.transition = "transform 1.4s cubic-bezier(0.16, 1, 0.3, 1)";
+  rouletteWheel.style.transform = `rotate(${fullTurns * 360 + extraDeg}deg)`;
+  window.setTimeout(() => {
+    if (!activeMissionForRoulette || !activeMapState || !rouletteResult || !rouletteSpinBtn) return;
+    const mission = activeMissionForRoulette;
+    const successChance = getMissionSuccessChance(mission);
+    const success = Math.random() < successChance;
+    const memberId = mission.assignedCharacterId;
+    if (memberId) {
+      activeMapState.busyCharacterIds.delete(memberId);
+    }
+    mission.state = "resolved";
+    mission.assignedCharacterId = null;
+    mission.resolvesAt = 0;
+    queueDaySummaryNote(success ? "Misión de prueba completada." : "Misión de prueba fallida.");
+    rouletteResult.textContent = success ? "Éxito" : "Fracaso";
+    rouletteSpinBtn.textContent = "Continuar";
+    rouletteSpinBtn.disabled = false;
+    renderMapRoster();
+    renderMapMissions();
+  }, 1450);
+}
+
+function renderMapMissions() {
+  if (!mapMissionsLayer || !activeMapState) return;
+  mapMissionsLayer.innerHTML = "";
+  for (const mission of activeMapState.missions) {
+    if (mission.state === "resolved") continue;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "mission-icon-btn";
+    btn.style.left = `${mission.x}%`;
+    btn.style.top = `${mission.y}%`;
+    btn.style.transform = "translate(-50%, -50%)";
+    if (mission.state === "assigned") {
+      btn.classList.add("assigned");
+      btn.disabled = true;
+    } else if (mission.state === "ready") {
+      btn.classList.add("ready");
+    }
+    const img = document.createElement("img");
+    img.src = asset("objetos/mision.png");
+    img.alt = "Misión";
+    btn.appendChild(img);
+    btn.addEventListener("click", () => {
+      if (mission.state === "idle") {
+        openMissionDialog(mission);
+      } else if (mission.state === "ready") {
+        openRouletteDialog(mission);
+      }
+    });
+    mapMissionsLayer.appendChild(btn);
+  }
+}
+
+function tickMapSystems() {
+  applyReadyMissionsIfNeeded();
+  updateMapTimerDisplay();
+  renderMapMissions();
+  renderMapRoster();
+  if (isMapTimeExpired()) {
+    if (mapTimerIntervalId !== null) {
+      window.clearInterval(mapTimerIntervalId);
+      mapTimerIntervalId = null;
+    }
+    if (missionModal && missionModal.classList.contains("open")) {
+      closeMissionModal();
+    }
+  }
+}
+
+function openMapModal() {
+  if (!mapModal || !hasUnlockedMapIcon || currentDay < 13) return;
+  closeSpeech();
+  closeRegistroModal();
+  closeRegistroCharacterModal();
+  closeArmyModal();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeItemModal();
+  isMapIconHighlighted = false;
+  renderMapaIconState();
+  activeMapState = getOrCreateDay13MapState(currentDay);
+  if (mapAbandonConfirm) {
+    mapAbandonConfirm.classList.remove("open");
+    mapAbandonConfirm.setAttribute("aria-hidden", "true");
+  }
+  mapModal.classList.add("open");
+  mapModal.setAttribute("aria-hidden", "false");
+  tickMapSystems();
+  if (mapTimerIntervalId !== null) {
+    window.clearInterval(mapTimerIntervalId);
+  }
+  mapTimerIntervalId = window.setInterval(tickMapSystems, 250);
 }
 
 function unlockCamusInRegistro() {
@@ -447,6 +947,42 @@ function unlockHelenaInRegistro() {
   showRewardToast("Helena anotada en el registro.");
 }
 
+function unlockEliotInRegistro() {
+  if (hasRegisteredEliot) return;
+  hasRegisteredEliot = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Eliot anotado en el registro.");
+}
+
+function unlockHerreroInRegistro() {
+  if (hasRegisteredHerrero) return;
+  hasRegisteredHerrero = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Simón anotado en el registro.");
+}
+
+function unlockAmandaInRegistro() {
+  if (hasRegisteredAmanda) return;
+  hasRegisteredAmanda = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Amanda anotada en el registro.");
+}
+
+function unlockRitaInRegistro() {
+  if (hasRegisteredRita) return;
+  hasRegisteredRita = true;
+  isRegistroHighlighted = true;
+  renderRegistroEntries();
+  renderRegistroIconState();
+  showRewardToast("Rita anotada en el registro.");
+}
+
 function startJaneInteractionDialogue() {
   startScriptedDialogueSequence(JANE_DIALOGUE_SEQUENCE);
 }
@@ -459,11 +995,395 @@ function startCamusInteractionDialogue() {
   startDialogue(camus, CAMUS_DIALOGUE, 0, unlockCamusInRegistro);
 }
 
+function getHerreroSpeakerAnchor(speaker) {
+  if (speaker === "evelyn") return evelyn;
+  return herrero;
+}
+
+function runHerreroIntroSequence(index = 0) {
+  const step = HERRERO_INTRO_SEQUENCE[index];
+  if (!step) {
+    unlockHerreroInRegistro();
+    return;
+  }
+  const anchor = getHerreroSpeakerAnchor(step.speaker);
+  startDialogue(anchor, [step.line], 0, () => {
+    window.setTimeout(() => {
+      runHerreroIntroSequence(index + 1);
+    }, 0);
+  });
+}
+
+function startHerreroDialogue() {
+  if (!herrero) return;
+  if (!hasMetHerrero) {
+    hasMetHerrero = true;
+    runHerreroIntroSequence(0);
+    return;
+  }
+  startDialogue(herrero, HERRERO_REPEAT_DIALOGUE);
+}
+
+function getAmandaSpeakerAnchor(speaker) {
+  if (speaker === "evelyn") return evelyn;
+  return amanda;
+}
+
+function runAmandaIntroSequence(index = 0) {
+  const step = AMANDA_INTRO_SEQUENCE[index];
+  if (!step) {
+    unlockAmandaInRegistro();
+    return;
+  }
+  const anchor = getAmandaSpeakerAnchor(step.speaker);
+  startDialogue(anchor, [step.line], 0, () => {
+    window.setTimeout(() => {
+      runAmandaIntroSequence(index + 1);
+    }, 0);
+  });
+}
+
+function startAmandaDialogue() {
+  if (!amanda) return;
+  if (!hasMetAmanda) {
+    hasMetAmanda = true;
+    runAmandaIntroSequence(0);
+    return;
+  }
+  startDialogue(amanda, AMANDA_REPEAT_DIALOGUE);
+}
+
+function getRitaSpeakerAnchor(speaker) {
+  if (speaker === "evelyn") return evelyn;
+  return rita;
+}
+
+function runRitaSequence(sequence, index = 0, onComplete = null) {
+  const step = sequence[index];
+  if (!step) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  const anchor = getRitaSpeakerAnchor(step.speaker);
+  startDialogue(anchor, [step.line], 0, () => {
+    window.setTimeout(() => {
+      runRitaSequence(sequence, index + 1, onComplete);
+    }, 0);
+  });
+}
+
+function startRitaDialogue() {
+  if (!rita) return;
+  if (!hasMetRita) {
+    hasMetRita = true;
+    runRitaSequence(RITA_INTRO_SEQUENCE, 0, unlockRitaInRegistro);
+    return;
+  }
+  runRitaSequence(RITA_REPEAT_SEQUENCE);
+}
+
 function isInteractionLocked() {
   return isIntroSequenceActive
     || isDayTransitionRunning
+    || isDay12RoyalEventRunning
+    || isDay13MapIntroRunning
+    || isDay10MercenaryEventRunning
     || isRegistroModalOpen()
-    || isRegistroCharacterModalOpen();
+    || isRegistroCharacterModalOpen()
+    || isArmyModalOpen()
+    || isMapModalOpen()
+    || isEliotOptionsModalOpen()
+    || isMercenaryModalOpen();
+}
+
+function isForcedSceneLockActive() {
+  return isDay12RoyalEventRunning || isDay10MercenaryEventRunning || isDay13MapIntroRunning;
+}
+
+function getDay12SpeakerAnchor(speaker) {
+  if (speaker === "rey") return rey;
+  if (speaker === "princesa") return princesa;
+  if (speaker === "soldado") return soldado;
+  if (speaker === "helena") return helena;
+  return evelyn;
+}
+
+function runDay12DialogueSequence(sequence, onComplete) {
+  const runStep = (index) => {
+    const step = sequence[index];
+    if (!step) {
+      if (typeof onComplete === "function") onComplete();
+      return;
+    }
+    const anchor = getDay12SpeakerAnchor(step.speaker);
+    startDialogue(anchor, [step.line], 0, () => {
+      window.setTimeout(() => {
+        runStep(index + 1);
+      }, 0);
+    });
+  };
+  runStep(0);
+}
+
+function setDay12IntroSceneLayout() {
+  if (!scene || !rey || !princesa || !soldado || !helena || !evelyn) return;
+  background.src = asset("escenarios/fondo1.png");
+  background.alt = "Fondo 1";
+  setSceneBackgroundClass("in-fondo1");
+  jane.style.display = "none";
+  if (camus) camus.style.display = "none";
+  if (darren) darren.style.display = "none";
+  if (mercenario) mercenario.style.display = "none";
+  if (eliot) eliot.style.display = "none";
+  if (herrero) herrero.style.display = "none";
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  helena.style.display = "block";
+  rey.style.display = "block";
+  princesa.style.display = "block";
+  soldado.style.display = "block";
+  rey.style.left = "31%";
+  princesa.style.left = "22%";
+  soldado.style.left = "78%";
+  helena.style.left = "66%";
+  snapEvelynToPosition("56%", getFondo1EvelynBottom());
+  evelyn.style.transform = "scaleX(-1)";
+  if (nextArrow) nextArrow.style.display = "none";
+  if (prevArrow) prevArrow.style.display = "none";
+  if (leftSideArrow) leftSideArrow.style.display = "none";
+}
+
+function setDay12PrivateSceneLayout() {
+  if (!scene || !rey || !evelyn) return;
+  background.src = asset("escenarios/fondo3.png");
+  background.alt = "Fondo 3";
+  setSceneBackgroundClass("in-fondo3");
+  jane.style.display = "none";
+  if (camus) camus.style.display = "none";
+  if (darren) darren.style.display = "none";
+  if (mercenario) mercenario.style.display = "none";
+  if (eliot) eliot.style.display = "none";
+  if (herrero) herrero.style.display = "none";
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
+  if (helena) helena.style.display = "none";
+  rey.style.display = "block";
+  rey.style.left = "38%";
+  const day12PrivateBottom = `calc(${INITIAL_EVELYN_BOTTOM} + 26px)`;
+  snapEvelynToPosition("52%", day12PrivateBottom);
+  evelyn.style.transform = "scaleX(-1)";
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
+  if (nextArrow) nextArrow.style.display = "none";
+  if (prevArrow) prevArrow.style.display = "none";
+  if (leftSideArrow) leftSideArrow.style.display = "none";
+}
+
+async function startDay12RoyalEvent() {
+  if (hasTriggeredDay12RoyalEvent || hasCompletedDay12RoyalEvent || currentDay !== 12) return;
+  hasTriggeredDay12RoyalEvent = true;
+  isDay12RoyalEventRunning = true;
+  closeSpeech();
+  closeItemModal();
+  closeRegistroModal();
+  closeRegistroCharacterModal();
+  closeArmyModal();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeHelenaOptionsModal();
+
+  try {
+    setDay12IntroSceneLayout();
+    await new Promise((resolve) => {
+      runDay12DialogueSequence(DAY12_ROYAL_INTRO_SEQUENCE, resolve);
+    });
+
+    await playDayTransitionToBlack();
+    setDay12PrivateSceneLayout();
+    await fadeOutDayTransitionFromBlack();
+
+    await new Promise((resolve) => {
+      runDay12DialogueSequence(DAY12_ROYAL_PRIVATE_SEQUENCE, resolve);
+    });
+
+    await playDayTransitionToBlack();
+    goToFondo1();
+    if (mercenario) mercenario.style.display = "none";
+    if (eliot) eliot.style.display = "none";
+    if (rey) rey.style.display = "none";
+    if (princesa) princesa.style.display = "none";
+    if (soldado) soldado.style.display = "none";
+    await fadeOutDayTransitionFromBlack();
+
+    await new Promise((resolve) => {
+      runDay12DialogueSequence(DAY12_ROYAL_OUTRO_SEQUENCE, resolve);
+    });
+
+    hasCompletedDay12RoyalEvent = true;
+  } finally {
+    if (rey) rey.style.display = "none";
+    if (princesa) princesa.style.display = "none";
+    if (soldado) soldado.style.display = "none";
+    isDay12RoyalEventRunning = false;
+  }
+}
+
+function getDay13SpeakerAnchor(speaker) {
+  if (speaker === "helena") return helena;
+  return evelyn;
+}
+
+function runDay13DialogueSequence(sequence, onComplete) {
+  const runStep = (index) => {
+    const step = sequence[index];
+    if (!step) {
+      if (typeof onComplete === "function") onComplete();
+      return;
+    }
+    const anchor = getDay13SpeakerAnchor(step.speaker);
+    startDialogue(anchor, [step.line], 0, () => {
+      window.setTimeout(() => {
+        runStep(index + 1);
+      }, 0);
+    });
+  };
+  runStep(0);
+}
+
+async function startDay13MapIntroEvent() {
+  if (currentDay !== 13) return;
+  if (hasTriggeredDay13MapIntro || hasCompletedDay13MapIntro) return;
+  hasTriggeredDay13MapIntro = true;
+  isDay13MapIntroRunning = true;
+  closeSpeech();
+  closeItemModal();
+  closeRegistroModal();
+  closeRegistroCharacterModal();
+  closeArmyModal();
+  closeMapModal();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeHelenaOptionsModal();
+  try {
+    await new Promise((resolve) => {
+      runDay13DialogueSequence(DAY13_HELENA_MAP_SEQUENCE, resolve);
+    });
+    hasCompletedDay13MapIntro = true;
+    unlockMapIcon();
+  } finally {
+    isDay13MapIntroRunning = false;
+  }
+}
+
+function openEliotOptionsModal() {
+  if (!eliotOptionsModal) return;
+  closeSpeech();
+  if (eliotHireBtn) {
+    const canAfford = DINERO >= ELIOT_HIRE_COST;
+    eliotHireBtn.disabled = !canAfford;
+    eliotHireBtn.setAttribute("aria-disabled", canAfford ? "false" : "true");
+  }
+  eliotOptionsModal.classList.add("open");
+  eliotOptionsModal.setAttribute("aria-hidden", "false");
+}
+
+function closeEliotOptionsModal() {
+  if (!eliotOptionsModal) return;
+  eliotOptionsModal.classList.remove("open");
+  eliotOptionsModal.setAttribute("aria-hidden", "true");
+}
+
+function openMercenaryModal() {
+  if (!mercenaryModal) return;
+  if (mercenaryPayBtn) {
+    const canAfford = DINERO >= MERCENARY_EXTORTION_COST;
+    mercenaryPayBtn.disabled = !canAfford;
+    mercenaryPayBtn.setAttribute("aria-disabled", canAfford ? "false" : "true");
+  }
+  if (mercenaryEliotBtn) {
+    mercenaryEliotBtn.style.display = hasHiredEliot ? "block" : "none";
+  }
+  mercenaryModal.classList.add("open");
+  mercenaryModal.setAttribute("aria-hidden", "false");
+}
+
+function closeMercenaryModal() {
+  if (!mercenaryModal) return;
+  mercenaryModal.classList.remove("open");
+  mercenaryModal.setAttribute("aria-hidden", "true");
+}
+
+function startMercenaryDay10Encounter() {
+  if (!spawnMercenaryOnDay10 || currentDay < 10) return;
+  if (hasStartedMercenaryDay10Encounter) return;
+  if (!isInFondo1()) return;
+  if (!mercenario || window.getComputedStyle(mercenario).display === "none") return;
+
+  hasStartedMercenaryDay10Encounter = true;
+  isDay10MercenaryEventRunning = true;
+  closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+
+  const runStep = (index) => {
+    const step = MERCENARY_DAY10_DIALOGUE_SEQUENCE[index];
+    if (!step) {
+      window.setTimeout(() => {
+        openMercenaryModal();
+      }, 0);
+      return;
+    }
+    const anchor = step.speaker === "evelyn" ? evelyn : mercenario;
+    startDialogue(anchor, [step.line], 0, () => {
+      window.setTimeout(() => {
+        runStep(index + 1);
+      }, 0);
+    });
+  };
+
+  runStep(0);
+}
+
+function startEliotHireChoiceDialogue() {
+  openEliotOptionsModal();
+}
+
+function startEliotDialogue() {
+  if (!eliot) return;
+  if (hasEliotHelpedAgainstMercenary) {
+    startDialogue(eliot, ELIOT_POST_MERCENARY_DIALOGUE);
+    return;
+  }
+  if (hasHiredEliot) {
+    startDialogue(eliot, ELIOT_ALREADY_HIRED_DIALOGUE);
+    return;
+  }
+  if (!hasMetEliot) {
+    hasMetEliot = true;
+    startDialogue(
+      eliot,
+      ELIOT_INTRO_DIALOGUE,
+      0,
+      () => {
+        window.setTimeout(() => {
+          startEliotHireChoiceDialogue();
+        }, 0);
+      }
+    );
+    return;
+  }
+  startDialogue(
+    eliot,
+    ELIOT_RETRY_DIALOGUE,
+    0,
+    () => {
+      window.setTimeout(() => {
+        startEliotHireChoiceDialogue();
+      }, 0);
+    }
+  );
 }
 
 function waitForMs(ms) {
@@ -519,6 +1439,10 @@ function getFondo4EntryEvelynBottom() {
 
 function getFondo5EntryEvelynBottom() {
   return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO5_ENTRY_EXTRA_BOTTOM_PX}px)`;
+}
+
+function getTabernaEntryEvelynBottom() {
+  return `calc(${INITIAL_EVELYN_BOTTOM} + ${TABERNA_EVELYN_EXTRA_BOTTOM_PX}px)`;
 }
 
 function clampAlimentos(value) {
@@ -834,6 +1758,10 @@ function startHelenaDay2Dialogue() {
 }
 
 function startHelenaDialogue() {
+  if (currentDay === 12 && hasCompletedDay12RoyalEvent) {
+    startDialogue(helena, HELENA_DAY12_REST_DIALOGUE);
+    return;
+  }
   if (currentDay >= 2) {
     startHelenaDay2Dialogue();
     return;
@@ -857,6 +1785,7 @@ function showRewardToast(text) {
 function renderEndDayIconState() {
   if (!endDayIcon) return;
   endDayIcon.classList.toggle("enabled", isEndDayEnabled);
+  endDayIcon.classList.toggle("icono-fin-dia-highlight", isEndDayHighlighted);
 }
 
 function setEndDayEnabled(enabled) {
@@ -876,6 +1805,7 @@ function renderDayBanner() {
 
 function openDayEndModal() {
   if (!dayEndModal || !isEndDayEnabled) return;
+  if (isForcedSceneLockActive()) return;
   dayEndModal.classList.add("open");
   dayEndModal.setAttribute("aria-hidden", "false");
 }
@@ -939,17 +1869,23 @@ async function startNextDayFromSummary() {
   closeDaySummaryModal();
   try {
     currentDay += 1;
+    hideEliotInFondo5Today = false;
     renderDayBanner();
     applyDayState(currentDay);
     closeSpeech();
     closeHelenaOptionsModal();
+    closeMapModal();
     closeItemModal();
     clearPendingSceneChange();
     pendingSceneEntryLeft = null;
     pendingSceneEntryBottom = null;
     pendingFondo2FromFondo1 = false;
+    setPendingSceneEntry(INITIAL_EVELYN_LEFT, getFondo1EvelynBottom());
     goToFondo1();
     await fadeOutDayTransitionFromBlack();
+    if (currentDay === 13 && !hasCompletedDay13MapIntro && !hasTriggeredDay13MapIntro) {
+      await startDay13MapIntroEvent();
+    }
   } finally {
     isAwaitingDaySummaryContinue = false;
     isStartingNextDayFromSummary = false;
@@ -971,7 +1907,9 @@ function requestCloseDaySummaryModal() {
 
 function applyDayState(dayNumber) {
   // Hook para cambios por día.
-  void dayNumber;
+  if (dayNumber >= 12 && !hasHiredEliot) {
+    hasEliotLeftTownForever = true;
+  }
 }
 
 function applyDailyResourceChanges() {
@@ -1045,6 +1983,13 @@ addFallbackOnError("camus", "camus.png no encontrado");
 addFallbackOnError("helena", "helena.png no encontrado");
 addFallbackOnError("darren", "darren.png no encontrado");
 addFallbackOnError("mercenario", "mercenario.png no encontrado");
+addFallbackOnError("rey", "rey.png no encontrado");
+addFallbackOnError("princesa", "princes.png no encontrado");
+addFallbackOnError("soldado", "soldado no encontrado");
+addFallbackOnError("eliot", "eliot.png no encontrado");
+addFallbackOnError("herrero", "herrero.png no encontrado");
+addFallbackOnError("amanda", "amanda.png no encontrado");
+addFallbackOnError("rita", "rita.png no encontrado");
 
 function preloadEvelynWalkFrames() {
   for (const src of EVELYN_WALK_FRAMES) {
@@ -1338,6 +2283,12 @@ function moveEvelynTo(targetWorldX, avoidJane = true) {
       ? getFondo2FromFondo1EvelynBottom()
       : isInFondo0()
         ? getFondo0EvelynBottom()
+        : isInFondo3()
+          ? getFondo3EntryEvelynBottom()
+        : isInTaberna()
+          ? getTabernaEntryEvelynBottom()
+        : isInFondo5()
+          ? getFondo5EntryEvelynBottom()
         : INITIAL_EVELYN_BOTTOM;
   return Math.abs(clampedX - currentLeft) > 1;
 }
@@ -1360,7 +2311,11 @@ function moveEvelynToArrowAndChangeScene(arrowEl, onArrive) {
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
   pendingSpeechForHelena = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
   const arrowRect = getWorldRect(arrowEl);
   const targetX = arrowRect.left + arrowRect.width / 2;
   pendingSceneChangeAction = onArrive;
@@ -1624,6 +2579,12 @@ function isInFondo5() {
   return src.includes("escenarios/fondo5.png");
 }
 
+function isInTaberna() {
+  if (!background) return false;
+  const src = background.getAttribute("src") || background.src || "";
+  return src.includes("escenarios/taberna.png");
+}
+
 function cancelPendingAnilloPickup() {
   if (anilloPickupTimeoutId !== null) {
     window.clearTimeout(anilloPickupTimeoutId);
@@ -1674,11 +2635,14 @@ function goToFondo2() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
   const fondo2Bottom = pendingFondo2FromFondo1
     ? getFondo2FromFondo1EvelynBottom()
     : consumePendingSceneEntryBottom(INITIAL_EVELYN_BOTTOM);
@@ -1702,6 +2666,17 @@ function goToFondo2() {
   if (mercenario) {
     mercenario.style.display = "none";
   }
+  if (eliot) {
+    eliot.style.display = "none";
+  }
+  if (herrero) {
+    herrero.style.display = "none";
+  }
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, "arrow-up-fondo2-center");
@@ -1721,15 +2696,21 @@ function goToFondo3() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
 
   snapEvelynToPosition(
     consumePendingSceneEntry(INITIAL_EVELYN_LEFT),
-    consumePendingSceneEntryBottom(INITIAL_EVELYN_BOTTOM)
+    consumePendingSceneEntryBottom(getFondo3EntryEvelynBottom())
   );
 
   background.src = asset("escenarios/fondo3.png");
@@ -1749,6 +2730,17 @@ function goToFondo3() {
   if (mercenario) {
     mercenario.style.display = "none";
   }
+  if (eliot) {
+    eliot.style.display = "none";
+  }
+  if (herrero) {
+    herrero.style.display = currentDay >= 1 ? "block" : "none";
+  }
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, "arrow-down-center");
@@ -1770,11 +2762,17 @@ function goToFondo4() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
 
   background.src = asset("escenarios/fondo4.png");
   background.alt = "Fondo 4";
@@ -1799,6 +2797,17 @@ function goToFondo4() {
   if (mercenario) {
     mercenario.style.display = "none";
   }
+  if (eliot) {
+    eliot.style.display = "none";
+  }
+  if (herrero) {
+    herrero.style.display = "none";
+  }
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, null);
@@ -1817,14 +2826,22 @@ function goToFondo1() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
 
   const fondo1Bottom = consumePendingSceneEntryBottom(getFondo1EvelynBottom());
-  snapEvelynToPosition(consumePendingSceneEntry(INITIAL_EVELYN_LEFT), fondo1Bottom);
+  const fondo1EntryLeft = consumePendingSceneEntry(INITIAL_EVELYN_LEFT);
+  snapEvelynToPosition(fondo1EntryLeft, fondo1Bottom);
+  evelyn.style.transform = fondo1EntryLeft === ENTRY_FONDO1_FROM_FONDO2 ? "scaleX(-1)" : "scaleX(1)";
 
   background.src = asset("escenarios/fondo1.png");
   background.alt = "Fondo 1";
@@ -1852,11 +2869,25 @@ function goToFondo1() {
     darren.style.display = "none";
   }
   if (mercenario) {
-    mercenario.style.display = "none";
+    mercenario.style.display = spawnMercenaryOnDay10 && currentDay >= 10 && !hasMercenaryBeenDrivenOff ? "block" : "none";
+    mercenario.classList.remove("shake");
   }
-  if (mercenario) {
-    mercenario.style.display = spawnMercenaryOnDay10 && currentDay >= 10 ? "block" : "none";
+  if (eliot) {
+    eliot.style.opacity = "1";
+    eliot.classList.remove("fade-out");
+    eliot.style.display = "none";
+    eliot.style.left = "";
+    eliot.style.bottom = "";
+    eliot.style.transform = "";
   }
+  if (herrero) {
+    herrero.style.display = "none";
+  }
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = hasAnillo ? "none" : "block";
   anilloWorld.style.pointerEvents = hasAnillo ? "none" : "auto";
   inventory.style.display = "block";
@@ -1874,22 +2905,34 @@ function goToFondo1() {
     leftSideArrow.style.pointerEvents = "auto";
     leftSideArrow.setAttribute("aria-label", "Ir a fondo 5");
   }
+  if (currentDay === 12 && !hasCompletedDay12RoyalEvent && !hasTriggeredDay12RoyalEvent) {
+    void startDay12RoyalEvent();
+  }
+  startMercenaryDay10Encounter();
 }
 
 function goToFondo5() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
 
+  const fondo5EntryLeft = consumePendingSceneEntry(ENTRY_FONDO5_FROM_FONDO1);
   snapEvelynToPosition(
-    consumePendingSceneEntry(ENTRY_FONDO5_FROM_FONDO1),
+    fondo5EntryLeft,
     consumePendingSceneEntryBottom(getFondo5EntryEvelynBottom())
   );
+  evelyn.style.transform = fondo5EntryLeft === ENTRY_FONDO5_FROM_TABERNA ? "scaleX(-1)" : "scaleX(1)";
 
   background.src = asset("escenarios/fondo5.png");
   background.alt = "Fondo 5";
@@ -1908,15 +2951,79 @@ function goToFondo5() {
   if (mercenario) {
     mercenario.style.display = "none";
   }
+  if (eliot) {
+    const shouldShowEliot = currentDay >= 4 && !hideEliotInFondo5Today && !hasEliotLeftTownForever;
+    eliot.style.display = shouldShowEliot ? "block" : "none";
+    eliot.style.opacity = "1";
+    eliot.classList.remove("fade-out");
+    eliot.style.transform = "";
+  }
+  if (herrero) {
+    herrero.style.display = "none";
+  }
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = "none";
   anilloWorld.style.pointerEvents = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, null);
-  setArrowMode(prevArrow, null);
+  setArrowMode(prevArrow, "arrow-up-top-left");
   nextArrow.style.display = "block";
   nextArrow.style.visibility = "visible";
   nextArrow.style.pointerEvents = "auto";
   nextArrow.setAttribute("aria-label", "Volver a fondo 1");
+  prevArrow.style.display = "block";
+  prevArrow.style.visibility = "visible";
+  prevArrow.style.pointerEvents = "auto";
+  prevArrow.setAttribute("aria-label", "Entrar en taberna");
+  if (leftSideArrow) {
+    leftSideArrow.style.display = "none";
+  }
+}
+
+function goToTaberna() {
+  clearPendingSceneChange();
+  closeItemModal();
+  closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  cancelPendingAnilloPickup();
+  stopEvelynWalkAnimation();
+  clearPendingSpeechFlags();
+
+  evelyn.style.transition = "none";
+  snapEvelynToPosition(INITIAL_EVELYN_LEFT, getTabernaEntryEvelynBottom());
+  evelyn.style.transform = "scaleX(-1)";
+  void evelyn.offsetWidth;
+
+  background.src = asset("escenarios/taberna.png");
+  background.alt = "Taberna";
+  setSceneBackgroundClass("in-taberna");
+
+  jane.style.display = "none";
+  if (helena) helena.style.display = "none";
+  if (camus) camus.style.display = "none";
+  if (darren) darren.style.display = "none";
+  if (mercenario) mercenario.style.display = "none";
+  if (eliot) eliot.style.display = "none";
+  if (herrero) herrero.style.display = "none";
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
+  inventory.style.display = "block";
+  setArrowMode(nextArrow, "arrow-down-center");
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Volver a fondo 5");
   prevArrow.style.display = "none";
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
@@ -1927,13 +3034,22 @@ function goToFondo0() {
   clearPendingSceneChange();
   closeItemModal();
   closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
   cancelPendingAnilloPickup();
   stopEvelynWalkAnimation();
   pendingSpeechForJane = false;
   pendingSpeechForCamus = false;
   pendingSpeechForDarren = false;
+  pendingSpeechForEliot = false;
+  pendingSpeechForHerrero = false;
+  pendingSpeechForAmanda = false;
+  pendingSpeechForRita = false;
 
-  snapEvelynToPosition(consumePendingSceneEntry(FONDO0_EVELYN_LEFT), getFondo0EvelynBottom());
+  evelyn.style.transition = "none";
+  snapEvelynToPosition(FONDO0_EVELYN_LEFT, getFondo0EvelynBottom());
+  evelyn.style.transform = "scaleX(-1)";
+  void evelyn.offsetWidth;
 
   background.src = asset("escenarios/fondo0.png");
   background.alt = "Fondo 0";
@@ -1949,6 +3065,17 @@ function goToFondo0() {
   if (darren) {
     darren.style.display = "none";
   }
+  if (eliot) {
+    eliot.style.display = "none";
+  }
+  if (herrero) {
+    herrero.style.display = "none";
+  }
+  if (amanda) amanda.style.display = currentDay >= 1 ? "block" : "none";
+  if (rita) rita.style.display = currentDay >= 1 ? "block" : "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
   anilloWorld.style.display = "none";
   anilloWorld.style.pointerEvents = "none";
   inventory.style.display = "block";
@@ -1968,10 +3095,8 @@ if (jane) {
   jane.addEventListener("click", () => {
     if (isInteractionLocked()) return;
     closeSpeech();
+    clearPendingSpeechFlags();
     pendingSpeechForJane = true;
-    pendingSpeechForCamus = false;
-    pendingSpeechForDarren = false;
-    pendingSpeechForHelena = false;
     moveEvelynInFrontOf(jane);
     if (isEvelynBeside(jane)) {
       faceEvelynToward(jane);
@@ -1986,10 +3111,8 @@ if (camus) {
   camus.addEventListener("click", () => {
     if (isInteractionLocked()) return;
     closeSpeech();
+    clearPendingSpeechFlags();
     pendingSpeechForCamus = true;
-    pendingSpeechForJane = false;
-    pendingSpeechForDarren = false;
-    pendingSpeechForHelena = false;
     moveEvelynInFrontOf(camus, false);
     if (isEvelynBeside(camus)) {
       faceEvelynToward(camus);
@@ -2004,10 +3127,8 @@ if (darren) {
   darren.addEventListener("click", () => {
     if (isInteractionLocked()) return;
     closeSpeech();
+    clearPendingSpeechFlags();
     pendingSpeechForDarren = true;
-    pendingSpeechForJane = false;
-    pendingSpeechForCamus = false;
-    pendingSpeechForHelena = false;
     moveEvelynInFrontOf(darren, false);
     if (isEvelynBeside(darren)) {
       faceEvelynToward(darren);
@@ -2023,15 +3144,77 @@ if (helena) {
     if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) return;
     if (window.getComputedStyle(helena).display === "none") return;
     closeSpeech();
+    clearPendingSpeechFlags();
     pendingSpeechForHelena = true;
-    pendingSpeechForJane = false;
-    pendingSpeechForCamus = false;
-    pendingSpeechForDarren = false;
     moveEvelynInFrontOf(helena, false);
     if (isEvelynBeside(helena)) {
       faceEvelynToward(helena);
       startHelenaDialogue();
       pendingSpeechForHelena = false;
+    }
+  });
+}
+
+if (eliot) {
+  eliot.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (window.getComputedStyle(eliot).display === "none") return;
+    closeSpeech();
+    clearPendingSpeechFlags();
+    pendingSpeechForEliot = true;
+    moveEvelynInFrontOf(eliot, false);
+    if (isEvelynBeside(eliot)) {
+      faceEvelynToward(eliot);
+      startEliotDialogue();
+      pendingSpeechForEliot = false;
+    }
+  });
+}
+
+if (herrero) {
+  herrero.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (window.getComputedStyle(herrero).display === "none") return;
+    closeSpeech();
+    clearPendingSpeechFlags();
+    pendingSpeechForHerrero = true;
+    moveEvelynInFrontOf(herrero, false);
+    if (isEvelynBeside(herrero)) {
+      faceEvelynToward(herrero);
+      startHerreroDialogue();
+      pendingSpeechForHerrero = false;
+    }
+  });
+}
+
+if (amanda) {
+  amanda.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (window.getComputedStyle(amanda).display === "none") return;
+    closeSpeech();
+    clearPendingSpeechFlags();
+    pendingSpeechForAmanda = true;
+    moveEvelynInFrontOf(amanda, false);
+    if (isEvelynBeside(amanda)) {
+      faceEvelynToward(amanda);
+      startAmandaDialogue();
+      pendingSpeechForAmanda = false;
+    }
+  });
+}
+
+if (rita) {
+  rita.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (window.getComputedStyle(rita).display === "none") return;
+    closeSpeech();
+    clearPendingSpeechFlags();
+    pendingSpeechForRita = true;
+    moveEvelynInFrontOf(rita, false);
+    if (isEvelynBeside(rita)) {
+      faceEvelynToward(rita);
+      startRitaDialogue();
+      pendingSpeechForRita = false;
     }
   });
 }
@@ -2093,9 +3276,123 @@ if (helenaEmptyYesBtn) {
   });
 }
 
+if (eliotHireBtn) {
+  eliotHireBtn.addEventListener("click", () => {
+    if (!eliot) return;
+    if (DINERO < ELIOT_HIRE_COST) {
+      showRewardToast("No tienes recursos suficientes.");
+      triggerInventoryBuzz();
+      return;
+    }
+    closeEliotOptionsModal();
+    addDINERO(-ELIOT_HIRE_COST);
+    hasHiredEliot = true;
+    unlockArmyIconWithEliot();
+    startDialogue(eliot, ELIOT_HIRE_CONFIRM_DIALOGUE, 0, unlockEliotInRegistro);
+  });
+}
+
+if (eliotIgnoreBtn) {
+  eliotIgnoreBtn.addEventListener("click", () => {
+    if (!eliot) return;
+    closeEliotOptionsModal();
+    startDialogue(eliot, ELIOT_IGNORE_DIALOGUE, 0, unlockEliotInRegistro);
+  });
+}
+
+if (eliotOptionsModal) {
+  eliotOptionsModal.addEventListener("click", (event) => {
+    if (event.target === eliotOptionsModal) {
+      closeEliotOptionsModal();
+    }
+  });
+}
+
+if (mercenaryPayBtn) {
+  mercenaryPayBtn.addEventListener("click", () => {
+    if (!mercenario) return;
+    if (DINERO < MERCENARY_EXTORTION_COST) {
+      showRewardToast("No tienes recursos suficientes.");
+      triggerInventoryBuzz();
+      return;
+    }
+    closeMercenaryModal();
+    addDINERO(-MERCENARY_EXTORTION_COST);
+    startDialogue(mercenario, MERCENARY_PAY_DIALOGUE, 0, () => {
+      hasMercenaryBeenDrivenOff = true;
+      mercenario.style.display = "none";
+      isDay10MercenaryEventRunning = false;
+      if (eliot) {
+        eliot.style.display = isInFondo5() && currentDay >= 4 ? "block" : "none";
+        eliot.style.left = "";
+        eliot.style.bottom = "";
+      }
+    });
+  });
+}
+
+if (mercenaryResistBtn) {
+  mercenaryResistBtn.addEventListener("click", () => {
+    closeMercenaryModal();
+    hasMercenaryBeenDrivenOff = true;
+    if (mercenario) {
+      mercenario.style.display = "none";
+      mercenario.classList.remove("shake");
+    }
+    if (!hasAppliedMercenaryRetaliation) {
+      hasAppliedMercenaryRetaliation = true;
+      queuePendingDailyDelta(-6, 0, 0);
+      queueDaySummaryNote(MERCENARY_RETALIATION_NOTE);
+    }
+    isDay10MercenaryEventRunning = false;
+  });
+}
+
+if (mercenaryEliotBtn) {
+  mercenaryEliotBtn.addEventListener("click", () => {
+    if (!mercenario || !eliot || !hasHiredEliot) return;
+    closeMercenaryModal();
+    hasEliotHelpedAgainstMercenary = true;
+    hideEliotInFondo5Today = true;
+    eliot.style.display = "block";
+    eliot.style.left = MERCENARY_ELIOT_SUPPORT_LEFT;
+    eliot.style.bottom = "calc(var(--character-bottom) + 30px)";
+    eliot.style.transform = "translateX(-50%) scaleX(-1)";
+    mercenario.classList.add("shake");
+    if (scene) {
+      scene.classList.add("mercenary-slash");
+      window.setTimeout(() => {
+        scene.classList.remove("mercenary-slash");
+      }, 340);
+    }
+    startDialogue(mercenario, MERCENARY_ELIOT_DIALOGUE, 0, () => {
+      hasMercenaryBeenDrivenOff = true;
+      mercenario.classList.remove("shake");
+      mercenario.classList.add("fade-out");
+      window.setTimeout(() => {
+        mercenario.style.display = "none";
+        mercenario.classList.remove("fade-out");
+        mercenario.style.opacity = "1";
+        isDay10MercenaryEventRunning = false;
+      }, 900);
+    });
+  });
+}
+
+if (mercenaryModal) {
+  mercenaryModal.addEventListener("click", () => {
+    // Este modal fuerza una decisión; no se cierra por click fuera.
+  });
+}
+
 if (nextArrow) {
   nextArrow.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInTaberna()) {
+      setPendingSceneEntry(ENTRY_FONDO5_FROM_TABERNA, getFondo5EntryEvelynBottom());
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo5);
+      return;
+    }
     if (isInFondo5()) {
       setPendingSceneEntry(ENTRY_LEFT_EDGE, getFondo1EvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo1);
@@ -2137,6 +3434,11 @@ if (nextArrow) {
 if (prevArrow) {
   prevArrow.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInFondo5()) {
+      setPendingSceneEntry(ENTRY_LEFT_EDGE, INITIAL_EVELYN_BOTTOM);
+      moveEvelynToArrowAndChangeScene(prevArrow, goToTaberna);
+      return;
+    }
     if (isInFondo4()) {
       setPendingSceneEntry(ENTRY_RIGHT_EDGE);
       moveEvelynToArrowAndChangeScene(prevArrow, goToFondo3);
@@ -2251,10 +3553,7 @@ if (evelyn) {
       faceEvelynToward(jane);
       faceJaneTowardEvelyn();
       startJaneInteractionDialogue();
-      pendingSpeechForJane = false;
-      pendingSpeechForCamus = false;
-      pendingSpeechForDarren = false;
-      pendingSpeechForHelena = false;
+      clearPendingSpeechFlags();
     } else if (
       pendingSpeechForCamus
       && camus
@@ -2263,10 +3562,7 @@ if (evelyn) {
       faceEvelynToward(camus);
       faceCamusTowardEvelyn();
       startCamusInteractionDialogue();
-      pendingSpeechForCamus = false;
-      pendingSpeechForJane = false;
-      pendingSpeechForDarren = false;
-      pendingSpeechForHelena = false;
+      clearPendingSpeechFlags();
     } else if (
       pendingSpeechForDarren
       && darren
@@ -2274,10 +3570,7 @@ if (evelyn) {
     ) {
       faceEvelynToward(darren);
       startDarrenInteractionDialogue();
-      pendingSpeechForDarren = false;
-      pendingSpeechForJane = false;
-      pendingSpeechForCamus = false;
-      pendingSpeechForHelena = false;
+      clearPendingSpeechFlags();
     } else if (
       pendingSpeechForHelena
       && helena
@@ -2285,10 +3578,39 @@ if (evelyn) {
     ) {
       faceEvelynToward(helena);
       startHelenaDialogue();
-      pendingSpeechForHelena = false;
-      pendingSpeechForJane = false;
-      pendingSpeechForCamus = false;
-      pendingSpeechForDarren = false;
+      clearPendingSpeechFlags();
+    } else if (
+      pendingSpeechForEliot
+      && eliot
+      && isEvelynBeside(eliot)
+    ) {
+      faceEvelynToward(eliot);
+      startEliotDialogue();
+      clearPendingSpeechFlags();
+    } else if (
+      pendingSpeechForHerrero
+      && herrero
+      && isEvelynBeside(herrero)
+    ) {
+      faceEvelynToward(herrero);
+      startHerreroDialogue();
+      clearPendingSpeechFlags();
+    } else if (
+      pendingSpeechForAmanda
+      && amanda
+      && isEvelynBeside(amanda)
+    ) {
+      faceEvelynToward(amanda);
+      startAmandaDialogue();
+      clearPendingSpeechFlags();
+    } else if (
+      pendingSpeechForRita
+      && rita
+      && isEvelynBeside(rita)
+    ) {
+      faceEvelynToward(rita);
+      startRitaDialogue();
+      clearPendingSpeechFlags();
     }
   });
 }
@@ -2323,6 +3645,7 @@ if (itemModalContent) {
 if (registroIconBtn) {
   registroIconBtn.addEventListener("click", () => {
     if (isDayTransitionRunning) return;
+    if (isForcedSceneLockActive()) return;
     if (isRegistroModalOpen()) {
       closeRegistroCharacterModal();
       closeRegistroModal();
@@ -2383,6 +3706,30 @@ if (registroCharHelena) {
   });
 }
 
+if (registroCharEliot) {
+  registroCharEliot.addEventListener("click", () => {
+    openRegistroCharacterModal("eliot");
+  });
+}
+
+if (registroCharHerrero) {
+  registroCharHerrero.addEventListener("click", () => {
+    openRegistroCharacterModal("herrero");
+  });
+}
+
+if (registroCharAmanda) {
+  registroCharAmanda.addEventListener("click", () => {
+    openRegistroCharacterModal("amanda");
+  });
+}
+
+if (registroCharRita) {
+  registroCharRita.addEventListener("click", () => {
+    openRegistroCharacterModal("rita");
+  });
+}
+
 if (registroModal) {
   registroModal.addEventListener("click", (event) => {
     if (event.target === registroModal) {
@@ -2400,11 +3747,139 @@ if (registroCharacterModal) {
   });
 }
 
+if (ejercitoIconBtn) {
+  ejercitoIconBtn.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
+    if (isForcedSceneLockActive()) return;
+    if (!hasUnlockedArmyIcon) return;
+    if (isArmyModalOpen()) {
+      closeArmyModal();
+      return;
+    }
+    openArmyModal();
+  });
+}
+
+if (mapaIconBtn) {
+  mapaIconBtn.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
+    if (isForcedSceneLockActive()) return;
+    if (!hasUnlockedMapIcon) return;
+    if (isMapModalOpen()) {
+      closeMapModal();
+      return;
+    }
+    openMapModal();
+  });
+}
+
+if (mapCloseBtn) {
+  mapCloseBtn.addEventListener("click", () => {
+    if (!mapAbandonConfirm) return;
+    mapAbandonConfirm.classList.add("open");
+    mapAbandonConfirm.setAttribute("aria-hidden", "false");
+  });
+}
+
+if (mapModal) {
+  mapModal.addEventListener("click", () => {
+    // No se cierra por click fuera.
+  });
+}
+
+if (mapAbandonNoBtn) {
+  mapAbandonNoBtn.addEventListener("click", () => {
+    if (!mapAbandonConfirm) return;
+    mapAbandonConfirm.classList.remove("open");
+    mapAbandonConfirm.setAttribute("aria-hidden", "true");
+  });
+}
+
+if (mapAbandonYesBtn) {
+  mapAbandonYesBtn.addEventListener("click", () => {
+    closeMapModal();
+  });
+}
+
+if (missionCloseBtn) {
+  missionCloseBtn.addEventListener("click", () => {
+    closeMissionModal();
+  });
+}
+
+if (missionModal) {
+  missionModal.addEventListener("click", (event) => {
+    if (event.target === missionModal) {
+      closeMissionModal();
+    }
+  });
+}
+
+if (rouletteSpinBtn) {
+  rouletteSpinBtn.addEventListener("click", () => {
+    resolveMissionWithRoulette();
+  });
+}
+
+if (rouletteModal) {
+  rouletteModal.addEventListener("click", (event) => {
+    if (event.target === rouletteModal) {
+      closeRouletteModal();
+    }
+  });
+}
+
+if (armyModal) {
+  armyModal.addEventListener("click", (event) => {
+    if (event.target === armyModal) {
+      closeArmyModal();
+    }
+  });
+}
+
 if (endDayIcon) {
   endDayIcon.addEventListener("click", () => {
     if (isDayTransitionRunning) return;
+    if (isForcedSceneLockActive()) return;
     if (!isEndDayEnabled) return;
+    isEndDayHighlighted = false;
+    renderEndDayIconState();
     openDayEndModal();
+  });
+}
+
+if (devDay13Btn) {
+  devDay13Btn.addEventListener("click", () => {
+    closeDayEndModal();
+    closeDaySummaryModal();
+    closeRegistroCharacterModal();
+    closeRegistroModal();
+    closeArmyModal();
+    closeMapModal();
+    closeHelenaOptionsModal();
+    closeEliotOptionsModal();
+    closeMercenaryModal();
+    closeItemModal();
+    closeSpeech();
+
+    isIntroSequenceActive = false;
+    if (!hasCompletedDay13MapIntro) {
+      hasUnlockedMapIcon = false;
+      isMapIconHighlighted = false;
+      day13MissionStateByDay.delete(13);
+      activeMapState = null;
+    }
+
+    currentDay = 13;
+    renderDayBanner();
+    applyDayState(currentDay);
+    renderMapaIconState();
+    setPendingSceneEntry(INITIAL_EVELYN_LEFT, getFondo1EvelynBottom());
+    goToFondo1();
+    if (!hasCompletedDay13MapIntro && !hasTriggeredDay13MapIntro) {
+      void startDay13MapIntroEvent();
+    }
+    showRewardToast("Salto a día 13");
   });
 }
 
@@ -2445,9 +3920,26 @@ if (daySummaryModal) {
 
 window.addEventListener("keydown", (event) => {
   if (isDayTransitionRunning && !(daySummaryModal && daySummaryModal.classList.contains("open"))) return;
+  if (event.key === "Escape" && isForcedSceneLockActive()) return;
   if (event.key === "Escape") {
+    if (rouletteModal && rouletteModal.classList.contains("open")) {
+      closeRouletteModal();
+      return;
+    }
+    if (missionModal && missionModal.classList.contains("open")) {
+      closeMissionModal();
+      return;
+    }
     if (isRegistroCharacterModalOpen()) {
       closeRegistroCharacterModal();
+      return;
+    }
+    if (isMapModalOpen()) {
+      closeMapModal();
+      return;
+    }
+    if (isArmyModalOpen()) {
+      closeArmyModal();
       return;
     }
     if (isRegistroModalOpen()) {
@@ -2458,6 +3950,11 @@ window.addEventListener("keydown", (event) => {
       closeHelenaOptionsModal();
       return;
     }
+    if (eliotOptionsModal && eliotOptionsModal.classList.contains("open")) {
+      closeEliotOptionsModal();
+      return;
+    }
+    if (mercenaryModal && mercenaryModal.classList.contains("open")) return;
     if (daySummaryModal && daySummaryModal.classList.contains("open")) {
       requestCloseDaySummaryModal();
       return;
@@ -2470,11 +3967,31 @@ window.addEventListener("keydown", (event) => {
     return;
   }
   if (event.key === "Enter") {
+    if (rouletteModal && rouletteModal.classList.contains("open")) {
+      event.preventDefault();
+      resolveMissionWithRoulette();
+      return;
+    }
+    if (missionModal && missionModal.classList.contains("open")) return;
     if (isRegistroCharacterModalOpen()) return;
+    if (isArmyModalOpen()) return;
+    if (isMapModalOpen()) return;
     if (isRegistroModalOpen()) return;
     if (helenaOptionsModal && helenaOptionsModal.classList.contains("open")) return;
-    if (daySummaryModal && daySummaryModal.classList.contains("open")) return;
-    if (dayEndModal && dayEndModal.classList.contains("open")) return;
+    if (eliotOptionsModal && eliotOptionsModal.classList.contains("open")) return;
+    if (mercenaryModal && mercenaryModal.classList.contains("open")) return;
+    if (daySummaryModal && daySummaryModal.classList.contains("open")) {
+      event.preventDefault();
+      requestCloseDaySummaryModal();
+      return;
+    }
+    if (dayEndModal && dayEndModal.classList.contains("open")) {
+      event.preventDefault();
+      if (!isDayTransitionRunning) {
+        void advanceToNextDay();
+      }
+      return;
+    }
     if (itemModal && itemModal.classList.contains("open")) return;
     if (!speech || speech.style.display === "none" || !activeDialogue) return;
     if (!speechNextBtn || speechNextBtn.style.display === "none") return;
@@ -2492,10 +4009,17 @@ window.addEventListener("keydown", (event) => {
 
 window.addEventListener("pointerdown", (event) => {
   if (isDayTransitionRunning) return;
+  if (isForcedSceneLockActive()) return;
+  if (missionModal && missionModal.classList.contains("open") && missionModal.contains(event.target)) return;
+  if (rouletteModal && rouletteModal.classList.contains("open") && rouletteModal.contains(event.target)) return;
   if (registroCharacterModal && registroCharacterModal.classList.contains("open") && registroCharacterModal.contains(event.target)) return;
+  if (armyModal && armyModal.classList.contains("open") && armyModal.contains(event.target)) return;
+  if (mapModal && mapModal.classList.contains("open") && mapModal.contains(event.target)) return;
   if (registroModal && registroModal.classList.contains("open") && registroModal.contains(event.target)) return;
   if (daySummaryModal && daySummaryModal.classList.contains("open") && daySummaryModal.contains(event.target)) return;
   if (dayEndModal && dayEndModal.classList.contains("open") && dayEndModal.contains(event.target)) return;
+  if (eliotOptionsModal && eliotOptionsModal.classList.contains("open") && eliotOptionsModal.contains(event.target)) return;
+  if (mercenaryModal && mercenaryModal.classList.contains("open") && mercenaryModal.contains(event.target)) return;
   if (isIntroSequenceActive) return;
   if (speech.style.display === "none") return;
   if (itemModal && itemModal.classList.contains("open") && itemModal.contains(event.target)) return;
@@ -2513,6 +4037,9 @@ if (scene && sceneViewport) {
   setEndDayEnabled(hasUnlockedEndDayByDarrenDays);
   renderRegistroEntries();
   renderRegistroIconState();
+  renderEjercitoIconState();
+  renderMapaIconState();
+  renderArmyModalContent();
   setActiveRegistroTab("personaje");
   renderRegistroTutorialPanel();
   renderDayBanner();
