@@ -44,6 +44,7 @@
         <img id="iconoregistro" src="objetos/iconoregistro.png?v=20260316" alt="Abrir registro" />
         <img id="iconoejercito" src="objetos/iconoejercito.png?v=20260326" alt="Abrir ejército" />
         <img id="iconomapa" src="objetos/iconomapa.png?v=20260328" alt="Abrir mapa de misiones" />
+        <button id="iconopantallacompleta" type="button" aria-label="Activar pantalla completa" title="Pantalla completa">⛶</button>
         <img id="icono-fin-dia" src="objetos/iconofindia.png?v=20260323" alt="Finalizar día" />
 
         <button id="next-arrow" type="button" aria-label="Ir a fondo 2"></button>
@@ -127,22 +128,31 @@
     </div>
     <div id="map-modal" aria-hidden="true">
       <div id="map-modal-content" role="dialog" aria-modal="true" aria-label="Mesa de batalla">
-        <div id="map-topbar">
-          <h2 id="map-title">Mesa de Batalla</h2>
-          <div id="map-timer">05:00</div>
-          <button id="map-close" type="button">Abandonar</button>
-        </div>
         <div id="map-board">
-          <img id="map-board-image" src="escenarios/mesabatalla.png?v=20260328" alt="Mapa de misiones" />
+          <div id="map-topbar">
+            <div id="map-timer">03:00</div>
+            <button id="map-close" type="button">Abandonar</button>
+          </div>
+          <img id="map-board-image" src="objetos/mesabatalla.png?v=20260328" alt="Mapa de misiones" />
+          <div id="map-mission-spawn-zone" aria-hidden="true"></div>
           <div id="map-missions-layer"></div>
+          <div id="map-roster"></div>
         </div>
-        <div id="map-roster"></div>
         <div id="map-abandon-confirm" aria-hidden="true">
-          <p>¿Quieres abandonar?</p>
+          <p>¿Seguro que quieres abandonar? Perderás todo el progreso del día.</p>
           <div>
             <button id="map-abandon-yes" type="button">Sí</button>
             <button id="map-abandon-no" type="button">No</button>
           </div>
+        </div>
+      </div>
+    </div>
+    <div id="map-enter-confirm" aria-hidden="true">
+      <div id="map-enter-confirm-content" role="dialog" aria-modal="true" aria-label="Entrar en modo batalla">
+        <p>¿Quieres entrar en el modo batalla?</p>
+        <div>
+          <button id="map-enter-yes" type="button">Sí</button>
+          <button id="map-enter-no" type="button">No</button>
         </div>
       </div>
     </div>
@@ -151,15 +161,30 @@
         <h3 id="mission-title">Prueba</h3>
         <p id="mission-text">Misión de prueba.</p>
         <div id="mission-assign-options"></div>
-        <button id="mission-close" type="button">Cerrar</button>
+        <div id="mission-actions">
+          <button id="mission-confirm" type="button" disabled>Confirmar</button>
+          <button id="mission-close" type="button">Cancelar</button>
+        </div>
       </div>
     </div>
     <div id="roulette-modal" aria-hidden="true">
       <div id="roulette-modal-content" role="dialog" aria-modal="true" aria-label="Resolución de misión">
         <h3 id="roulette-title">Resultado de misión</h3>
-        <div id="roulette-wheel"></div>
+        <div id="roulette-wheel-wrap">
+          <div id="roulette-stop-zone" aria-hidden="true"></div>
+          <div id="roulette-pointer" aria-hidden="true"></div>
+          <div id="roulette-wheel"></div>
+        </div>
         <p id="roulette-result"></p>
         <button id="roulette-spin" type="button">Girar ruleta</button>
+      </div>
+    </div>
+    <div id="map-final-report-modal" aria-hidden="true">
+      <div id="map-final-report-content" role="dialog" aria-modal="true" aria-label="Informe final de batalla">
+        <h3 id="map-final-report-title">Informe final</h3>
+        <p id="map-final-report-subtitle"></p>
+        <div id="map-final-report-list"></div>
+        <button id="map-final-report-close" type="button">Continuar</button>
       </div>
     </div>
     <div id="helena-options-modal" aria-hidden="true">
@@ -216,6 +241,7 @@
     </div>
 
     <script src="dialogues.js?v=20260319"></script>
-    <script src="main.js?v=20260356"></script>
+    <script src="misiones.js?v=20260329"></script>
+    <script src="main.js?v=20260357"></script>
   </body>
 </html>
