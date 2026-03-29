@@ -2221,3 +2221,59 @@
         25% { opacity: 1; }
         100% { opacity: 0; }
       }
+
+      @media (pointer: coarse) {
+        html,
+        body {
+          overscroll-behavior: none;
+          -webkit-text-size-adjust: 100%;
+        }
+
+        #scene-viewport {
+          touch-action: manipulation;
+        }
+
+        #speech {
+          width: min(88vw, 460px);
+          min-height: 112px;
+          padding: 14px 16px;
+        }
+
+        #speech-text {
+          font-size: 18px;
+          line-height: 1.32;
+        }
+
+        #speech-next-btn,
+        .speech-option-btn {
+          min-height: 44px;
+          font-size: 16px;
+        }
+
+        #next-arrow,
+        #prev-arrow,
+        #left-side-arrow,
+        #top-right-arrow {
+          width: clamp(42px, 7.4vw, 68px);
+          height: clamp(42px, 7.4vw, 68px);
+        }
+
+        #iconopantallacompleta {
+          min-width: 36px;
+          min-height: 36px;
+        }
+      }
+
+      @media (pointer: coarse) and (max-width: 540px) and (orientation: portrait) {
+        #inventory {
+          width: 118%;
+          left: -9%;
+          bottom: -4px;
+        }
+
+        #alimentos-display,
+        #dinero-display,
+        #pueblo-display {
+          font-size: 22px;
+        }
+      }

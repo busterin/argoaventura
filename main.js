@@ -421,6 +421,12 @@ const SCENE_BACKGROUND_CLASSES = [
   "in-tiendamagia"
 ];
 
+function shouldUseMobileTabletLayout() {
+  const hasCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const hasTouch = typeof navigator !== "undefined" && Number(navigator.maxTouchPoints) > 0;
+  return hasCoarsePointer || hasTouch;
+}
+
 function addFallbackOnError(id, label) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -2697,7 +2703,12 @@ function getWorldRect(el) {
 function layoutScene() {
   const vw = sceneViewport.clientWidth;
   const vh = sceneViewport.clientHeight;
-  const scale = Math.max(vw / BASE_WIDTH, vh / BASE_HEIGHT);
+  const isTouchLayout = shouldUseMobileTabletLayout();
+  const isSmallPhonePortrait = isTouchLayout && vw <= 540 && vh > vw;
+  const useContainScale = isTouchLayout && !isSmallPhonePortrait;
+  const scale = useContainScale
+    ? Math.min(vw / BASE_WIDTH, vh / BASE_HEIGHT)
+    : Math.max(vw / BASE_WIDTH, vh / BASE_HEIGHT);
   const offsetX = (vw - BASE_WIDTH * scale) / 2;
   const offsetY = (vh - BASE_HEIGHT * scale) / 2;
   scene.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
