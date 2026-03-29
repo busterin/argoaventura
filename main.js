@@ -350,6 +350,7 @@ let tutorialMesaBatallaLines = [];
 let isGestionDiariaExpanded = false;
 let isMesaBatallaExpanded = false;
 let pendingAnilloMissionPopup = false;
+let isPseudoFullscreenMobile = false;
 const REGISTRO_CHARACTER_DATA = {
   jane: {
     name: "Jane",
@@ -512,24 +513,63 @@ function renderMapaIconState() {
 
 function renderFullscreenButtonState() {
   if (!fullscreenBtn) return;
-  const isFullscreen = Boolean(document.fullscreenElement);
+  const docAny = document;
+  const webkitFullscreenElement = docAny.webkitFullscreenElement || null;
+  const isFullscreen = Boolean(document.fullscreenElement || webkitFullscreenElement || isPseudoFullscreenMobile);
   fullscreenBtn.classList.toggle("fullscreen-active", isFullscreen);
   fullscreenBtn.setAttribute("aria-label", isFullscreen ? "Salir de pantalla completa" : "Activar pantalla completa");
   fullscreenBtn.title = isFullscreen ? "Salir de pantalla completa" : "Pantalla completa";
 }
 
+function setPseudoFullscreenMobile(enabled) {
+  isPseudoFullscreenMobile = Boolean(enabled);
+  document.documentElement.classList.toggle("pseudo-fullscreen-mobile", isPseudoFullscreenMobile);
+  document.body.classList.toggle("pseudo-fullscreen-mobile", isPseudoFullscreenMobile);
+  if (isPseudoFullscreenMobile) {
+    window.scrollTo(0, 1);
+  }
+}
+
 async function toggleFullscreenMode() {
   const root = document.documentElement;
+  const docAny = document;
+  const rootAny = root;
+  const isNativeFullscreen = Boolean(document.fullscreenElement || docAny.webkitFullscreenElement);
   try {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen();
+    if (isNativeFullscreen) {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (docAny.webkitExitFullscreen) {
+        docAny.webkitExitFullscreen();
+      }
       return;
     }
-    if (!root.requestFullscreen) return;
-    await root.requestFullscreen({ navigationUI: "hide" });
+    if (isPseudoFullscreenMobile) {
+      setPseudoFullscreenMobile(false);
+      return;
+    }
+    if (root.requestFullscreen) {
+      await root.requestFullscreen({ navigationUI: "hide" });
+      return;
+    }
+    if (rootAny.webkitRequestFullscreen) {
+      rootAny.webkitRequestFullscreen();
+      return;
+    }
+    if (shouldUseMobileTabletLayout()) {
+      setPseudoFullscreenMobile(true);
+      showRewardToast("Modo pantalla completa activado.");
+      return;
+    }
+    showRewardToast("Tu navegador no permite pantalla completa aquí.");
   } catch (error) {
-    console.error("No se pudo alternar pantalla completa.", error);
-    showRewardToast("No se pudo activar pantalla completa.");
+    if (shouldUseMobileTabletLayout()) {
+      setPseudoFullscreenMobile(!isPseudoFullscreenMobile);
+      showRewardToast(isPseudoFullscreenMobile ? "Modo pantalla completa activado." : "Modo pantalla completa desactivado.");
+    } else {
+      console.error("No se pudo alternar pantalla completa.", error);
+      showRewardToast("No se pudo activar pantalla completa.");
+    }
   } finally {
     renderFullscreenButtonState();
   }
@@ -4823,6 +4863,9 @@ window.addEventListener("resize", () => {
   }
 });
 document.addEventListener("fullscreenchange", () => {
+  renderFullscreenButtonState();
+});
+document.addEventListener("webkitfullscreenchange", () => {
   renderFullscreenButtonState();
 });
 if (scene && sceneViewport) {

@@ -2277,3 +2277,18 @@
           font-size: 22px;
         }
       }
+
+      html.pseudo-fullscreen-mobile,
+      body.pseudo-fullscreen-mobile {
+        width: 100vw;
+        height: 100dvh;
+        overflow: hidden;
+      }
+
+      body.pseudo-fullscreen-mobile #scene-viewport {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100dvh;
+        z-index: 9999;
+      }
