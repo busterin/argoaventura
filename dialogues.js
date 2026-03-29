@@ -194,6 +194,11 @@
     AMANDA_REPEAT_DIALOGUE: [
       "¡Hola, Evelyn! Espero que vaya todo bien."
     ],
+    AMANDA_DAY14_BATTLE_SEQUENCE: [
+      { speaker: "amanda", line: "Me he enterado de que estás utilizando a gente del pueblo para realizar misiones." },
+      { speaker: "evelyn", line: "Espero que no me digas que me vas a denunciar..." },
+      { speaker: "amanda", line: "¡Qué graciosa eres siempre! No es eso, quiero ayudar. No soy una combatiente pero sé mucho de ganadería, cultivos... y es posible que te sea útil en alguna misión. ¡No todo es violencia!" }
+    ],
     RITA_INTRO_SEQUENCE: [
       { speaker: "rita", line: "¡Hola! Soy Rita Dinamita." },
       { speaker: "evelyn", line: "¿Te llamas así?" },
@@ -219,6 +224,11 @@
       { speaker: "helena", line: "En el fondo ya estabas, querida, así que no te preocupes por eso. En el mapa irán apareciendo distintos lugares que visitar y tendrás que decidir a quién enviar en cada situación. Si envías a la persona adecuada, obtendremos buenos resultados, pero si te equivocas, será un desastre." },
       { speaker: "evelyn", line: "Creo que lo entiendo... creo." },
       { speaker: "helena", line: "El único problema es que nuestros recursos son demasiado limitados. Dispondrás tan solo de 5 minutos al día para realizar estas gestiones. Administra bien tu tiempo. Pulsa el icono cuando estés preparado." }
+    ],
+    MAP_BATTLE_FIRST_ENTRY_TUTORIAL_SEQUENCE: [
+      { speaker: "helena", line: "¡Te doy la bienvenida al mapa de batalla!\nEn el mapa irán apareciendo banderas (misiones). Pulsa sobre ellas y escoge a uno o dos personajes para enviarlos a la misión. Debes leer bien la misión para ver quién es más adecuado para cada una. Es importante que hables a menudo con tus aliados para conocer sus puntos fuertes y débiles." },
+      { speaker: "helena", line: "La misión tardará 10 segundos en completarse. Se iluminará para indicarte que se ha completado y tendrás que pulsar sobre ella. En ese momento aparecerá una ruleta: cuanto más aptos sean los personajes que has enviado, más posibilidades habrá de completar la misión con éxito." },
+      { speaker: "helena", line: "Tendrás 3 minutos para completar las misiones. Actualmente solo puedes participar en un máximo de 5 misiones por día, pero ese límite irá aumentando. También sería recomendable que consiguieras más aliados para completar las misiones. Al finalizar el tiempo o alcanzar el límite de misiones, aparecerá un informe de misión que te indicará qué han proporcionado las misiones completadas con éxito.\nRecuerda que puedes acceder a la mesa de batalla una vez por día. ¡Aprovecha bien tus recursos!" }
     ],
     INTRO_DIALOGUE_SEQUENCE: [
       { speaker: "evelyn", line: "Y así es como acabé aquí.", speechExtraTop: 0 },

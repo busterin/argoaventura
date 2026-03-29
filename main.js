@@ -19,6 +19,7 @@ const anilloItem = document.getElementById("anillo-item");
 const nextArrow = document.getElementById("next-arrow");
 const prevArrow = document.getElementById("prev-arrow");
 const leftSideArrow = document.getElementById("left-side-arrow");
+const topRightArrow = document.getElementById("top-right-arrow");
 const speech = document.getElementById("speech");
 const speechText = document.getElementById("speech-text");
 const speechOptions = document.getElementById("speech-options");
@@ -54,7 +55,10 @@ const registroPanelPersonaje = document.getElementById("registro-panel-personaje
 const registroPanelTutorial = document.getElementById("registro-panel-tutorial");
 const registroTutorialGestionToggle = document.getElementById("registro-tutorial-gestion-toggle");
 const registroTutorialGestionContent = document.getElementById("registro-tutorial-gestion-content");
-const registroTutorialList = document.getElementById("registro-tutorial-list");
+const registroTutorialGestionList = document.getElementById("registro-tutorial-gestion-list");
+const registroTutorialMesaBatallaToggle = document.getElementById("registro-tutorial-mesabatalla-toggle");
+const registroTutorialMesaBatallaContent = document.getElementById("registro-tutorial-mesabatalla-content");
+const registroTutorialMesaBatallaList = document.getElementById("registro-tutorial-mesabatalla-list");
 const registroTutorialEmpty = document.getElementById("registro-tutorial-empty");
 const registroCharJane = document.getElementById("registro-char-jane");
 const registroCharCamus = document.getElementById("registro-char-camus");
@@ -77,6 +81,10 @@ const mapTimerDisplay = document.getElementById("map-timer");
 const mapMissionsLayer = document.getElementById("map-missions-layer");
 const mapMissionSpawnZone = document.getElementById("map-mission-spawn-zone");
 const mapRoster = document.getElementById("map-roster");
+const mapHelenaGuide = document.getElementById("map-helena-guide");
+const mapGuideSpeech = document.getElementById("map-guide-speech");
+const mapGuideSpeechText = document.getElementById("map-guide-speech-text");
+const mapGuideSpeechNextBtn = document.getElementById("map-guide-speech-next");
 const mapAbandonConfirm = document.getElementById("map-abandon-confirm");
 const mapAbandonYesBtn = document.getElementById("map-abandon-yes");
 const mapAbandonNoBtn = document.getElementById("map-abandon-no");
@@ -142,7 +150,7 @@ const DEFAULT_SPEECH_NEXT_LABEL = "Continuar";
 const TRAVEL_SPEECH_NEXT_LABEL = "Viajar";
 const ENTER_SPEECH_NEXT_LABEL = "Entrar";
 const MAP_MAX_VISIBLE_MISSIONS = 10;
-const MAP_COMPLETION_TARGET_FOR_REPORT = 3;
+const MAP_PARTICIPATION_TARGET_FOR_REPORT = 5;
 const MAP_MISSION_ZONE = Object.freeze({
   topLeft: { x: 26.99, y: 14.96 },
   topRight: { x: 87.65, y: 21.34 },
@@ -191,9 +199,11 @@ const {
   HERRERO_REPEAT_DIALOGUE,
   AMANDA_INTRO_SEQUENCE,
   AMANDA_REPEAT_DIALOGUE,
+  AMANDA_DAY14_BATTLE_SEQUENCE,
   RITA_INTRO_SEQUENCE,
   RITA_REPEAT_SEQUENCE,
   DAY13_HELENA_MAP_SEQUENCE,
+  MAP_BATTLE_FIRST_ENTRY_TUTORIAL_SEQUENCE,
   INTRO_DIALOGUE_SEQUENCE
 } = window.ARGO_DIALOGUES;
 const { BATTLE_MISSIONS } = window.ARGO_MISIONES;
@@ -278,9 +288,11 @@ let hasEliotLeftTownForever = false;
 let hasMetHerrero = false;
 let hasMetAmanda = false;
 let hasMetRita = false;
+let hasUnlockedAmandaForBattle = false;
 let hasTriggeredDay12RoyalEvent = false;
 let hasCompletedDay12RoyalEvent = false;
 let isDay12RoyalEventRunning = false;
+let pendingTiendaMagiaJaneHello = false;
 let selectedHelenaOptionIds = new Set();
 let spawnMercenaryOnDay10 = false;
 let pendingDailyAlimentosDelta = 0;
@@ -323,15 +335,20 @@ let isMapIconHighlighted = false;
 let hasTriggeredDay13MapIntro = false;
 let hasCompletedDay13MapIntro = false;
 let isDay13MapIntroRunning = false;
+let hasShownMapBattleFirstEntryTutorial = false;
+let isMapBattleFirstEntryTutorialRunning = false;
+let hasLoggedMapBattleTutorial = false;
 let day13MissionStateByDay = new Map();
 let completedBattleMissionIds = new Set();
 let activeMapState = null;
 let mapTimerIntervalId = null;
 let activeMissionForDialog = null;
 let activeMissionForRoulette = null;
-let selectedMissionAssigneeId = null;
+let selectedMissionAssigneeIds = [];
 let tutorialGestionDiariaLines = [];
+let tutorialMesaBatallaLines = [];
 let isGestionDiariaExpanded = false;
+let isMesaBatallaExpanded = false;
 let pendingAnilloMissionPopup = false;
 const REGISTRO_CHARACTER_DATA = {
   jane: {
@@ -400,7 +417,8 @@ const SCENE_BACKGROUND_CLASSES = [
   "in-fondo3",
   "in-fondo4",
   "in-fondo5",
-  "in-taberna"
+  "in-taberna",
+  "in-tiendamagia"
 ];
 
 function addFallbackOnError(id, label) {
@@ -426,7 +444,13 @@ function setSceneBackgroundClass(className) {
 
 function setArrowMode(arrowEl, mode) {
   if (!arrowEl) return;
-  arrowEl.classList.remove("arrow-up-center", "arrow-up-fondo2-center", "arrow-down-center", "arrow-up-top-center", "arrow-up-top-left");
+  arrowEl.classList.remove(
+    "arrow-up-center",
+    "arrow-up-fondo2-center",
+    "arrow-down-center",
+    "arrow-up-top-center",
+    "arrow-up-top-left"
+  );
   if (mode) {
     arrowEl.classList.add(mode);
   }
@@ -559,24 +583,50 @@ function getSpeakerLabelForTutorial(speaker) {
 }
 
 function renderRegistroTutorialPanel() {
-  if (!registroTutorialGestionToggle || !registroTutorialGestionContent || !registroTutorialList || !registroTutorialEmpty) return;
-  const hasEntries = tutorialGestionDiariaLines.length > 0;
-  registroTutorialGestionToggle.style.display = hasEntries ? "block" : "none";
+  if (
+    !registroTutorialGestionToggle
+    || !registroTutorialGestionContent
+    || !registroTutorialGestionList
+    || !registroTutorialMesaBatallaToggle
+    || !registroTutorialMesaBatallaContent
+    || !registroTutorialMesaBatallaList
+    || !registroTutorialEmpty
+  ) return;
+  const hasGestionEntries = tutorialGestionDiariaLines.length > 0;
+  const hasMesaBatallaEntries = tutorialMesaBatallaLines.length > 0;
+  const hasAnyEntries = hasGestionEntries || hasMesaBatallaEntries;
+  registroTutorialGestionToggle.style.display = hasGestionEntries ? "block" : "none";
   registroTutorialGestionToggle.setAttribute("aria-expanded", isGestionDiariaExpanded ? "true" : "false");
-  registroTutorialGestionContent.style.display = hasEntries && isGestionDiariaExpanded ? "block" : "none";
-  registroTutorialList.style.display = hasEntries && isGestionDiariaExpanded ? "block" : "none";
-  registroTutorialEmpty.style.display = hasEntries ? "none" : "block";
-  registroTutorialList.innerHTML = "";
+  registroTutorialGestionContent.style.display = hasGestionEntries && isGestionDiariaExpanded ? "block" : "none";
+  registroTutorialGestionList.style.display = hasGestionEntries && isGestionDiariaExpanded ? "block" : "none";
+  registroTutorialMesaBatallaToggle.style.display = hasMesaBatallaEntries ? "block" : "none";
+  registroTutorialMesaBatallaToggle.setAttribute("aria-expanded", isMesaBatallaExpanded ? "true" : "false");
+  registroTutorialMesaBatallaContent.style.display = hasMesaBatallaEntries && isMesaBatallaExpanded ? "block" : "none";
+  registroTutorialMesaBatallaList.style.display = hasMesaBatallaEntries && isMesaBatallaExpanded ? "block" : "none";
+  registroTutorialEmpty.style.display = hasAnyEntries ? "none" : "block";
+  registroTutorialGestionList.innerHTML = "";
   for (const line of tutorialGestionDiariaLines) {
     const p = document.createElement("p");
     p.textContent = line;
-    registroTutorialList.appendChild(p);
+    registroTutorialGestionList.appendChild(p);
+  }
+  registroTutorialMesaBatallaList.innerHTML = "";
+  for (const line of tutorialMesaBatallaLines) {
+    const p = document.createElement("p");
+    p.textContent = line;
+    registroTutorialMesaBatallaList.appendChild(p);
   }
 }
 
 function appendGestionDiariaLines(lines) {
   if (!Array.isArray(lines) || lines.length === 0) return;
   tutorialGestionDiariaLines.push(...lines);
+  renderRegistroTutorialPanel();
+}
+
+function appendMesaBatallaLines(lines) {
+  if (!Array.isArray(lines) || lines.length === 0) return;
+  tutorialMesaBatallaLines.push(...lines);
   renderRegistroTutorialPanel();
 }
 
@@ -590,6 +640,20 @@ function logDarrenIntroTutorialIfNeeded() {
   window.setTimeout(() => {
     showRewardToast("Gestión diaria añadida a TUTORIAL");
   }, 1450);
+}
+
+function logMapBattleTutorialIfNeeded() {
+  if (hasLoggedMapBattleTutorial) return;
+  const lines = MAP_BATTLE_FIRST_ENTRY_TUTORIAL_SEQUENCE.map((step) => {
+    return `${getSpeakerLabelForTutorial(step.speaker)}: ${step.line}`;
+  });
+  appendMesaBatallaLines(lines);
+  hasLoggedMapBattleTutorial = true;
+  isRegistroHighlighted = true;
+  renderRegistroIconState();
+  window.setTimeout(() => {
+    showRewardToast("Tutorial de mesa de batalla añadido al registro.");
+  }, 350);
 }
 
 function unlockEndDayByDarrenDaysQuestion() {
@@ -688,7 +752,7 @@ function closeMissionModal() {
   missionModal.classList.remove("open");
   missionModal.setAttribute("aria-hidden", "true");
   activeMissionForDialog = null;
-  selectedMissionAssigneeId = null;
+  selectedMissionAssigneeIds = [];
   if (missionConfirmBtn) missionConfirmBtn.disabled = true;
   renderMapRoster();
 }
@@ -703,6 +767,7 @@ function closeRouletteModal() {
 function closeMapModal() {
   closeMissionModal();
   closeRouletteModal();
+  isMapBattleFirstEntryTutorialRunning = false;
   if (mapTimerIntervalId !== null) {
     window.clearInterval(mapTimerIntervalId);
     mapTimerIntervalId = null;
@@ -712,23 +777,40 @@ function closeMapModal() {
     mapAbandonConfirm.classList.remove("open");
     mapAbandonConfirm.setAttribute("aria-hidden", "true");
   }
+  if (mapHelenaGuide) {
+    mapHelenaGuide.classList.remove("visible");
+    mapHelenaGuide.setAttribute("aria-hidden", "true");
+  }
+  if (mapGuideSpeechText) {
+    mapGuideSpeechText.textContent = "";
+  }
+  if (mapGuideSpeechNextBtn) {
+    mapGuideSpeechNextBtn.onclick = null;
+  }
+  setMapGuideSpeechVisible(false);
   mapModal.classList.remove("open");
   mapModal.setAttribute("aria-hidden", "true");
+  if (hasShownMapBattleFirstEntryTutorial) {
+    logMapBattleTutorialIfNeeded();
+  }
   if (pendingAnilloMissionPopup) {
     pendingAnilloMissionPopup = false;
     openItemModal(ANILLO_OBTAINED_MODAL);
   }
 }
 
-function openMapFinalReport(reasonLabel, lines) {
+function openMapFinalReport(reasonLabel, successCount, reportLines) {
   if (!mapFinalReportModal || !mapFinalReportList || !mapFinalReportSubtitle) return;
   mapFinalReportSubtitle.textContent = reasonLabel;
   mapFinalReportList.innerHTML = "";
-  const safeLines = Array.isArray(lines) ? lines : [];
+  const p = document.createElement("p");
+  p.textContent = `Batallas completadas con éxito: ${successCount}`;
+  mapFinalReportList.appendChild(p);
+  const safeLines = Array.isArray(reportLines) ? reportLines : [];
   for (const line of safeLines) {
-    const p = document.createElement("p");
-    p.textContent = line;
-    mapFinalReportList.appendChild(p);
+    const detail = document.createElement("p");
+    detail.textContent = line;
+    mapFinalReportList.appendChild(detail);
   }
   mapFinalReportModal.classList.add("open");
   mapFinalReportModal.setAttribute("aria-hidden", "false");
@@ -752,10 +834,23 @@ function closeMapEnterConfirm() {
   mapEnterConfirm.setAttribute("aria-hidden", "true");
 }
 
+function setMapHelenaGuideVisible(visible) {
+  if (!mapHelenaGuide) return;
+  mapHelenaGuide.classList.toggle("visible", visible);
+  mapHelenaGuide.setAttribute("aria-hidden", visible ? "false" : "true");
+}
+
+function setMapGuideSpeechVisible(visible) {
+  if (!mapGuideSpeech) return;
+  mapGuideSpeech.classList.toggle("visible", visible);
+  mapGuideSpeech.setAttribute("aria-hidden", visible ? "false" : "true");
+}
+
 function resetCurrentDayMapProgress() {
   day13MissionStateByDay.delete(currentDay);
   activeMapState = null;
   pendingAnilloMissionPopup = false;
+  selectedMissionAssigneeIds = [];
   closeMapFinalReport();
 }
 
@@ -765,27 +860,25 @@ function getMapRosterForCurrentDay() {
     { id: "jane", name: "Jane", portrait: asset("personajes/Retratos/jane%20retrato.PNG") },
     { id: "helena", name: "Helena", portrait: asset("personajes/Retratos/helena%20retrato.png") }
   ];
+  if (hasUnlockedAmandaForBattle) {
+    roster.push({ id: "amanda", name: "Amanda", portrait: asset("personajes/Retratos/amanda%20retrato.png") });
+  }
   if (hasHiredEliot) {
     roster.push({ id: "eliot", name: "Eliot", portrait: asset("personajes/Retratos/eliot%20retrato.png") });
   }
   return roster;
 }
 
-function getBattleMissionTemplates() {
+function getAvailableBattleMissionTemplates(excludedTemplateIds = null) {
   if (!Array.isArray(BATTLE_MISSIONS)) return [];
-  const available = BATTLE_MISSIONS.filter((mission) => {
+  const excluded = excludedTemplateIds instanceof Set ? excludedTemplateIds : null;
+  return BATTLE_MISSIONS.filter((mission) => {
     return mission
       && mission.id
       && mission.title
-      && !completedBattleMissionIds.has(mission.id);
+      && !completedBattleMissionIds.has(mission.id)
+      && (!excluded || !excluded.has(mission.id));
   });
-  for (let i = available.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = available[i];
-    available[i] = available[j];
-    available[j] = temp;
-  }
-  return available;
 }
 
 function unlockAnilloFromMissionReward() {
@@ -811,6 +904,10 @@ function applyMissionSuccessRewards(mission) {
   }
   if (reward.type === "money" && Number.isFinite(reward.amount)) {
     addDINERO(reward.amount);
+    return;
+  }
+  if (reward.type === "pueblo" && Number.isFinite(reward.amount)) {
+    addPUEBLO(reward.amount);
     return;
   }
   if (reward.type === "ring") {
@@ -854,83 +951,102 @@ function samplePointInMissionZone() {
   };
 }
 
-function generateMissionPositions(count) {
-  const positions = [];
+function generateMissionPosition(existingPositions = []) {
   const minDistance = MAP_MISSION_ZONE.minDistancePct;
+  let placed = false;
+  let candidate = samplePointInMissionZone();
 
-  for (let i = 0; i < count; i += 1) {
-    let placed = false;
-    let candidate = samplePointInMissionZone();
+  for (let attempt = 0; attempt < 300; attempt += 1) {
+    const point = samplePointInMissionZone();
+    const hasEnoughDistance = existingPositions.every((existing) => {
+      return Math.hypot(existing.x - point.x, existing.y - point.y) >= minDistance;
+    });
+    if (!hasEnoughDistance) continue;
+    candidate = point;
+    placed = true;
+    break;
+  }
 
-    for (let attempt = 0; attempt < 300; attempt += 1) {
+  if (!placed) {
+    let bestMinDistance = -1;
+    for (let sample = 0; sample < 120; sample += 1) {
       const point = samplePointInMissionZone();
-      const hasEnoughDistance = positions.every((existing) => {
-        return Math.hypot(existing.x - point.x, existing.y - point.y) >= minDistance;
-      });
-      if (!hasEnoughDistance) continue;
-      candidate = point;
-      placed = true;
-      break;
-    }
-
-    if (!placed) {
-      let bestMinDistance = -1;
-      for (let sample = 0; sample < 120; sample += 1) {
-        const point = samplePointInMissionZone();
-        const currentMinDistance = positions.length === 0
-          ? Number.POSITIVE_INFINITY
-          : Math.min(...positions.map((existing) => Math.hypot(existing.x - point.x, existing.y - point.y)));
-        if (currentMinDistance > bestMinDistance) {
-          bestMinDistance = currentMinDistance;
-          candidate = point;
-        }
+      const currentMinDistance = existingPositions.length === 0
+        ? Number.POSITIVE_INFINITY
+        : Math.min(...existingPositions.map((existing) => Math.hypot(existing.x - point.x, existing.y - point.y)));
+      if (currentMinDistance > bestMinDistance) {
+        bestMinDistance = currentMinDistance;
+        candidate = point;
       }
     }
-
-    positions.push({
-      x: Math.round(candidate.x * 100) / 100,
-      y: Math.round(candidate.y * 100) / 100
-    });
   }
-  return positions;
+
+  return {
+    x: Math.round(candidate.x * 100) / 100,
+    y: Math.round(candidate.y * 100) / 100
+  };
+}
+
+function getActiveMapMissionCount(mapState) {
+  if (!mapState || !Array.isArray(mapState.missions)) return 0;
+  return mapState.missions.filter((mission) => mission.state !== "resolved").length;
+}
+
+function getRandomMapMissionSpawnDelayMs() {
+  return Math.floor(1400 + Math.random() * 2200);
+}
+
+function spawnMapMissionIfNeeded(now = Date.now()) {
+  if (!activeMapState || activeMapState.finished) return false;
+  if (getActiveMapMissionCount(activeMapState) >= MAP_MAX_VISIBLE_MISSIONS) return false;
+  if (now < (activeMapState.nextSpawnAt || 0)) return false;
+  const templates = getAvailableBattleMissionTemplates(activeMapState.spawnedTemplateIds);
+  if (templates.length === 0) return false;
+  const template = templates[Math.floor(Math.random() * templates.length)];
+  const existingPositions = activeMapState.missions
+    .filter((mission) => mission.state !== "resolved")
+    .map((mission) => ({ x: mission.x, y: mission.y }));
+  const position = generateMissionPosition(existingPositions);
+  const serial = activeMapState.missionSerial;
+  activeMapState.missionSerial += 1;
+  activeMapState.missions.push({
+    id: `day${activeMapState.dayNumber}-${template.id}-${serial}`,
+    templateId: template.id,
+    title: template.title,
+    text: template.text,
+    indicatedCharacterIds: Array.isArray(template.indicatedCharacterIds) ? [...template.indicatedCharacterIds] : [],
+    successNote: template.successNote || "",
+    reward: template.reward || null,
+    x: position.x,
+    y: position.y,
+    state: "idle",
+    assignedCharacterIds: [],
+    resolvesAt: 0
+  });
+  activeMapState.spawnedTemplateIds.add(template.id);
+  activeMapState.nextSpawnAt = now + getRandomMapMissionSpawnDelayMs();
+  return true;
 }
 
 function getOrCreateDay13MapState(dayNumber) {
   const existing = day13MissionStateByDay.get(dayNumber);
   if (existing) return existing;
-  const randomMissions = [];
-  const missionTemplates = getBattleMissionTemplates();
-  const missionCount = Math.min(MAP_MAX_VISIBLE_MISSIONS, missionTemplates.length);
-  const generatedPositions = generateMissionPositions(missionCount);
-  for (let i = 0; i < missionCount; i += 1) {
-    const template = missionTemplates[i];
-    const position = generatedPositions[i];
-    randomMissions.push({
-      id: `day${dayNumber}-${template.id}`,
-      templateId: template.id,
-      title: template.title,
-      text: template.text,
-      indicatedCharacterIds: Array.isArray(template.indicatedCharacterIds) ? [...template.indicatedCharacterIds] : [],
-      successNote: template.successNote || "",
-      reward: template.reward || null,
-      x: position.x,
-      y: position.y,
-      state: "idle",
-      assignedCharacterId: null,
-      resolvesAt: 0
-    });
-  }
   const mapState = {
     dayNumber,
     startedAt: Date.now(),
     durationMs: 3 * 60 * 1000,
     roster: getMapRosterForCurrentDay(),
-    missions: randomMissions,
+    missions: [],
     busyCharacterIds: new Set(),
     resolvedCount: 0,
+    participatedCount: 0,
+    successCount: 0,
+    reportLines: [],
+    missionSerial: 1,
+    spawnedTemplateIds: new Set(),
+    nextSpawnAt: Date.now() + 700,
     finalReportShown: false,
-    finished: false,
-    reportLines: []
+    finished: false
   };
   day13MissionStateByDay.set(dayNumber, mapState);
   return mapState;
@@ -987,17 +1103,31 @@ function renderMapRoster() {
       card.addEventListener("click", () => {
         if (!activeMissionForDialog || !activeMapState) return;
         if (activeMapState.busyCharacterIds.has(member.id) || isMapTimeExpired()) return;
-        selectedMissionAssigneeId = member.id;
-        if (missionConfirmBtn) missionConfirmBtn.disabled = false;
+        const currentSelection = [...selectedMissionAssigneeIds];
+        const existingIndex = currentSelection.indexOf(member.id);
+        if (existingIndex >= 0) {
+          currentSelection.splice(existingIndex, 1);
+        } else {
+          if (currentSelection.length >= 2) {
+            showRewardToast("Máximo 2 personajes por misión.");
+            return;
+          }
+          currentSelection.push(member.id);
+        }
+        selectedMissionAssigneeIds = currentSelection;
+        if (missionConfirmBtn) missionConfirmBtn.disabled = selectedMissionAssigneeIds.length === 0;
         renderMapRoster();
       });
     }
-    if (selectedMissionAssigneeId === member.id) {
+    if (selectedMissionAssigneeIds.includes(member.id)) {
       card.classList.add("selected");
     }
     const img = document.createElement("img");
     img.src = member.portrait;
     img.alt = member.name;
+    if (member.id === "amanda") {
+      img.classList.add("map-roster-portrait-amanda");
+    }
     const label = document.createElement("div");
     label.textContent = member.name;
     card.appendChild(img);
@@ -1007,11 +1137,12 @@ function renderMapRoster() {
 }
 
 function openMissionDialog(mission) {
+  if (isMapBattleFirstEntryTutorialRunning) return;
   if (!missionModal || !missionTitle || !missionText || !missionAssignOptions || !activeMapState) return;
   activeMissionForDialog = mission;
-  selectedMissionAssigneeId = null;
+  selectedMissionAssigneeIds = [];
   missionTitle.textContent = mission.title;
-  missionText.textContent = `${mission.text} Selecciona abajo a quién enviar y pulsa Confirmar.`;
+  missionText.textContent = `${mission.text}\n\nSelecciona abajo uno o dos personajes y pulsa Confirmar.`;
   missionAssignOptions.innerHTML = "";
   missionAssignOptions.style.display = "none";
   if (missionConfirmBtn) {
@@ -1023,13 +1154,17 @@ function openMissionDialog(mission) {
 }
 
 function getMissionSuccessChance(mission) {
-  if (!mission || !mission.assignedCharacterId) return 0.1;
+  if (!mission || !Array.isArray(mission.assignedCharacterIds) || mission.assignedCharacterIds.length === 0) return 0.1;
   const indicated = Array.isArray(mission.indicatedCharacterIds) ? mission.indicatedCharacterIds : [];
-  const assignedIsIndicated = indicated.includes(mission.assignedCharacterId);
-  return assignedIsIndicated ? 0.8 : 0.1;
+  let total = 0;
+  for (const memberId of mission.assignedCharacterIds) {
+    total += indicated.includes(memberId) ? 0.8 : 0.1;
+  }
+  return Math.min(1, total);
 }
 
 function openRouletteDialog(mission) {
+  if (isMapBattleFirstEntryTutorialRunning) return;
   if (!rouletteModal || !rouletteWheel || !rouletteResult || !rouletteSpinBtn || !activeMapState) return;
   activeMissionForRoulette = mission;
   const successChance = getMissionSuccessChance(mission);
@@ -1064,19 +1199,20 @@ function resolveMissionWithRoulette() {
     const landingAngle = (360 - normalizedRotation) % 360;
     const successMaxAngle = successChance * 360;
     const success = landingAngle <= successMaxAngle;
-    const memberId = mission.assignedCharacterId;
-    if (memberId) {
+    const memberIds = Array.isArray(mission.assignedCharacterIds) ? mission.assignedCharacterIds : [];
+    for (const memberId of memberIds) {
       activeMapState.busyCharacterIds.delete(memberId);
     }
     mission.state = "resolved";
-    mission.assignedCharacterId = null;
+    mission.assignedCharacterIds = [];
     mission.resolvesAt = 0;
     if (success) {
       if (mission.templateId) {
         completedBattleMissionIds.add(mission.templateId);
       }
       applyMissionSuccessRewards(mission);
-      if (activeMapState.reportLines && mission.successNote) {
+      activeMapState.successCount += 1;
+      if (mission.successNote) {
         activeMapState.reportLines.push(mission.successNote);
       }
     }
@@ -1114,6 +1250,7 @@ function renderMapMissions() {
     img.alt = "Misión";
     btn.appendChild(img);
     btn.addEventListener("click", () => {
+      if (isMapBattleFirstEntryTutorialRunning) return;
       if (mission.state === "idle") {
         openMissionDialog(mission);
       } else if (mission.state === "ready") {
@@ -1126,12 +1263,16 @@ function renderMapMissions() {
 
 function tickMapSystems() {
   if (!activeMapState || activeMapState.finished) return;
+  let shouldRenderMissions = false;
+  if (spawnMapMissionIfNeeded(Date.now())) {
+    shouldRenderMissions = true;
+  }
   const missionsChanged = applyReadyMissionsIfNeeded();
   updateMapTimerDisplay();
-  if (missionsChanged) {
+  if (missionsChanged || shouldRenderMissions) {
     renderMapMissions();
   }
-  const reachedTarget = activeMapState.resolvedCount >= MAP_COMPLETION_TARGET_FOR_REPORT;
+  const reachedTarget = activeMapState.resolvedCount >= MAP_PARTICIPATION_TARGET_FOR_REPORT;
   const timeExpired = isMapTimeExpired();
   if (timeExpired || reachedTarget) {
     if (mapTimerIntervalId !== null) {
@@ -1149,8 +1290,9 @@ function tickMapSystems() {
       activeMapState.finalReportShown = true;
       openMapFinalReport(
         reachedTarget
-          ? `Objetivo alcanzado: ${MAP_COMPLETION_TARGET_FOR_REPORT} misiones resueltas.`
+          ? `Objetivo alcanzado: ${MAP_PARTICIPATION_TARGET_FOR_REPORT} misiones resueltas.`
           : "Se acabó el tiempo de la mesa de batalla.",
+        activeMapState.successCount,
         activeMapState.reportLines
       );
     }
@@ -1188,6 +1330,7 @@ function openMapModal() {
     window.clearInterval(mapTimerIntervalId);
   }
   mapTimerIntervalId = window.setInterval(tickMapSystems, 250);
+  maybeStartMapBattleFirstEntryTutorial();
 }
 
 function unlockCamusInRegistro() {
@@ -1253,6 +1396,12 @@ function unlockAmandaInRegistro() {
   showRewardToast("Amanda anotada en el registro.");
 }
 
+function unlockAmandaForBattle() {
+  if (hasUnlockedAmandaForBattle) return;
+  hasUnlockedAmandaForBattle = true;
+  showRewardToast("Amanda añadida a la mesa de batalla.");
+}
+
 function unlockRitaInRegistro() {
   if (hasRegisteredRita) return;
   hasRegisteredRita = true;
@@ -1272,6 +1421,26 @@ function startCamusInteractionDialogue() {
     return;
   }
   startDialogue(camus, CAMUS_DIALOGUE, 0, unlockCamusInRegistro);
+}
+
+function startTiendaMagiaJaneDialogue() {
+  if (hasRegisteredJane) {
+    startDialogue(jane, ["¡Hola!"]);
+    return;
+  }
+  pendingTiendaMagiaJaneHello = true;
+  startJaneInteractionDialogue();
+}
+
+function startTiendaMagiaCamusDialogue() {
+  if (hasRegisteredCamus) {
+    startDialogue(camus, ["¡Hola!"]);
+    return;
+  }
+  startDialogue(camus, CAMUS_DIALOGUE, 0, () => {
+    unlockCamusInRegistro();
+    startDialogue(camus, ["¡Hola!"]);
+  });
 }
 
 function getHerreroSpeakerAnchor(speaker) {
@@ -1308,16 +1477,16 @@ function getAmandaSpeakerAnchor(speaker) {
   return amanda;
 }
 
-function runAmandaIntroSequence(index = 0) {
-  const step = AMANDA_INTRO_SEQUENCE[index];
+function runAmandaSequence(sequence, index = 0, onComplete = null) {
+  const step = sequence[index];
   if (!step) {
-    unlockAmandaInRegistro();
+    if (typeof onComplete === "function") onComplete();
     return;
   }
   const anchor = getAmandaSpeakerAnchor(step.speaker);
   startDialogue(anchor, [step.line], 0, () => {
     window.setTimeout(() => {
-      runAmandaIntroSequence(index + 1);
+      runAmandaSequence(sequence, index + 1, onComplete);
     }, 0);
   });
 }
@@ -1326,7 +1495,11 @@ function startAmandaDialogue() {
   if (!amanda) return;
   if (!hasMetAmanda) {
     hasMetAmanda = true;
-    runAmandaIntroSequence(0);
+    runAmandaSequence(AMANDA_INTRO_SEQUENCE, 0, unlockAmandaInRegistro);
+    return;
+  }
+  if (currentDay >= 14 && !hasUnlockedAmandaForBattle) {
+    runAmandaSequence(AMANDA_DAY14_BATTLE_SEQUENCE, 0, unlockAmandaForBattle);
     return;
   }
   startDialogue(amanda, AMANDA_REPEAT_DIALOGUE);
@@ -1531,6 +1704,47 @@ function runDay13DialogueSequence(sequence, onComplete) {
   runStep(0);
 }
 
+function runMapBattleTutorialSequence(sequence, onComplete) {
+  if (!Array.isArray(sequence) || sequence.length === 0 || !mapGuideSpeechText || !mapGuideSpeechNextBtn) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  let index = 0;
+  const renderStep = () => {
+    if (!isMapModalOpen() || !isMapBattleFirstEntryTutorialRunning) return;
+    const step = sequence[index];
+    if (!step) {
+      if (typeof onComplete === "function") onComplete();
+      return;
+    }
+    mapGuideSpeechText.textContent = step.line || "";
+    setMapGuideSpeechVisible(true);
+    mapGuideSpeechNextBtn.onclick = () => {
+      index += 1;
+      renderStep();
+    };
+  };
+  renderStep();
+}
+
+function maybeStartMapBattleFirstEntryTutorial() {
+  if (!isMapModalOpen()) return;
+  if (hasShownMapBattleFirstEntryTutorial || isMapBattleFirstEntryTutorialRunning) return;
+  isMapBattleFirstEntryTutorialRunning = true;
+  closeSpeech();
+  setMapHelenaGuideVisible(true);
+  setMapGuideSpeechVisible(true);
+  runMapBattleTutorialSequence(MAP_BATTLE_FIRST_ENTRY_TUTORIAL_SEQUENCE, () => {
+    hasShownMapBattleFirstEntryTutorial = true;
+    isMapBattleFirstEntryTutorialRunning = false;
+    setMapHelenaGuideVisible(false);
+    setMapGuideSpeechVisible(false);
+    if (mapGuideSpeechNextBtn) {
+      mapGuideSpeechNextBtn.onclick = null;
+    }
+  });
+}
+
 async function startDay13MapIntroEvent() {
   if (currentDay !== 13) return;
   if (hasTriggeredDay13MapIntro || hasCompletedDay13MapIntro) return;
@@ -1712,6 +1926,18 @@ function getFondo3EntryEvelynBottom() {
   return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO3_ENTRY_EXTRA_BOTTOM_PX}px)`;
 }
 
+function getTiendaMagiaLineBottom() {
+  return getFondo3EntryEvelynBottom();
+}
+
+function enforceTiendaMagiaLineAlignment() {
+  if (!isInTiendaMagia()) return;
+  const lineBottom = getTiendaMagiaLineBottom();
+  if (evelyn) evelyn.style.bottom = lineBottom;
+  if (camus && window.getComputedStyle(camus).display !== "none") camus.style.bottom = lineBottom;
+  if (jane && window.getComputedStyle(jane).display !== "none") jane.style.bottom = lineBottom;
+}
+
 function getFondo4EntryEvelynBottom() {
   return `calc(${INITIAL_EVELYN_BOTTOM} + ${FONDO4_ENTRY_EXTRA_BOTTOM_PX}px)`;
 }
@@ -1859,6 +2085,12 @@ function advanceScriptedDialogueSequence() {
     clearScriptedDialogueSequence();
     clearUiHighlight();
     closeSpeech();
+    if (pendingTiendaMagiaJaneHello && isInTiendaMagia()) {
+      pendingTiendaMagiaJaneHello = false;
+      window.setTimeout(() => {
+        startDialogue(jane, ["¡Hola!"]);
+      }, 0);
+    }
     return true;
   }
   renderScriptedDialogueStep();
@@ -2564,11 +2796,16 @@ function moveEvelynTo(targetWorldX, avoidJane = true) {
         ? getFondo0EvelynBottom()
         : isInFondo3()
           ? getFondo3EntryEvelynBottom()
+        : isInTiendaMagia()
+          ? getFondo3EntryEvelynBottom()
         : isInTaberna()
           ? getTabernaEntryEvelynBottom()
         : isInFondo5()
           ? getFondo5EntryEvelynBottom()
         : INITIAL_EVELYN_BOTTOM;
+  if (isInTiendaMagia()) {
+    enforceTiendaMagiaLineAlignment();
+  }
   return Math.abs(clampedX - currentLeft) > 1;
 }
 
@@ -2817,6 +3054,23 @@ function tryConfirmYesByEnter() {
   return false;
 }
 
+function isElementActuallyVisible(el) {
+  if (!(el instanceof HTMLElement)) return false;
+  return el.style.display !== "none" && !el.hidden && el.getClientRects().length > 0;
+}
+
+function tryAdvanceConversationContinueButton() {
+  if (isElementActuallyVisible(mapGuideSpeech) && mapGuideSpeechNextBtn && !mapGuideSpeechNextBtn.disabled) {
+    mapGuideSpeechNextBtn.click();
+    return true;
+  }
+  if (speech && speech.style.display !== "none" && speechNextBtn && speechNextBtn.style.display !== "none" && !speechNextBtn.disabled) {
+    speechNextBtn.click();
+    return true;
+  }
+  return false;
+}
+
 function renderIntroDialogueStep() {
   const step = INTRO_DIALOGUE_SEQUENCE[introDialogueIndex];
   if (!step) {
@@ -2903,15 +3157,19 @@ function isInTaberna() {
   return src.includes("escenarios/taberna.png");
 }
 
+function isInTiendaMagia() {
+  if (!background) return false;
+  const src = background.getAttribute("src") || background.src || "";
+  return src.includes("escenarios/tiendamagia.png");
+}
+
 function cancelPendingAnilloPickup() {
   if (anilloPickupTimeoutId !== null) {
     window.clearTimeout(anilloPickupTimeoutId);
     anilloPickupTimeoutId = null;
   }
   anilloPickupPending = false;
-  if (!hasAnillo) {
-    anilloWorld.style.pointerEvents = "auto";
-  }
+  anilloWorld.style.pointerEvents = "none";
 }
 
 function pickupAnillo() {
@@ -3008,6 +3266,9 @@ function goToFondo2() {
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
   }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
+  }
 }
 
 function goToFondo3() {
@@ -3074,6 +3335,16 @@ function goToFondo3() {
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
   }
+  if (topRightArrow) {
+    if (currentDay >= 1) {
+      topRightArrow.style.display = "block";
+      topRightArrow.style.visibility = "visible";
+      topRightArrow.style.pointerEvents = "auto";
+      topRightArrow.setAttribute("aria-label", "Ir a tienda de magia");
+    } else {
+      topRightArrow.style.display = "none";
+    }
+  }
 }
 
 function goToFondo4() {
@@ -3137,6 +3408,9 @@ function goToFondo4() {
   prevArrow.setAttribute("aria-label", "Volver a fondo 3");
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
+  }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
   }
 }
 
@@ -3206,8 +3480,8 @@ function goToFondo1() {
   if (rey) rey.style.display = "none";
   if (princesa) princesa.style.display = "none";
   if (soldado) soldado.style.display = "none";
-  anilloWorld.style.display = hasAnillo ? "none" : "block";
-  anilloWorld.style.pointerEvents = hasAnillo ? "none" : "auto";
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
   inventory.style.display = "block";
   setArrowMode(nextArrow, null);
   setArrowMode(prevArrow, "arrow-down-center");
@@ -3222,6 +3496,9 @@ function goToFondo1() {
     leftSideArrow.style.visibility = "visible";
     leftSideArrow.style.pointerEvents = "auto";
     leftSideArrow.setAttribute("aria-label", "Ir a fondo 5");
+  }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
   }
   if (currentDay === 12 && !hasCompletedDay12RoyalEvent && !hasTriggeredDay12RoyalEvent) {
     void startDay12RoyalEvent();
@@ -3300,6 +3577,9 @@ function goToFondo5() {
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
   }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
+  }
 }
 
 function goToTaberna() {
@@ -3346,6 +3626,66 @@ function goToTaberna() {
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
   }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
+  }
+}
+
+function goToTiendaMagia() {
+  clearPendingSceneChange();
+  closeItemModal();
+  closeSpeech();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  cancelPendingAnilloPickup();
+  stopEvelynWalkAnimation();
+  clearPendingSpeechFlags();
+
+  const tiendaMagiaBottom = consumePendingSceneEntryBottom(getTiendaMagiaLineBottom());
+  snapEvelynToPosition("58%", tiendaMagiaBottom);
+  evelyn.style.transform = "scaleX(-1)";
+  evelyn.style.bottom = tiendaMagiaBottom;
+
+  background.src = asset("escenarios/tiendamagia.png");
+  background.alt = "Tienda de magia";
+  setSceneBackgroundClass("in-tiendamagia");
+
+  jane.style.display = currentDay >= 1 ? "block" : "none";
+  if (camus) {
+    camus.style.display = currentDay >= 1 ? "block" : "none";
+  }
+  if (jane) {
+    jane.style.left = "76%";
+    jane.style.bottom = tiendaMagiaBottom;
+  }
+  if (camus) {
+    camus.style.left = "52%";
+    camus.style.bottom = tiendaMagiaBottom;
+  }
+  enforceTiendaMagiaLineAlignment();
+  if (helena) helena.style.display = "none";
+  if (darren) darren.style.display = "none";
+  if (mercenario) mercenario.style.display = "none";
+  if (eliot) eliot.style.display = "none";
+  if (herrero) herrero.style.display = "none";
+  if (amanda) amanda.style.display = "none";
+  if (rita) rita.style.display = "none";
+  if (rey) rey.style.display = "none";
+  if (princesa) princesa.style.display = "none";
+  if (soldado) soldado.style.display = "none";
+  anilloWorld.style.display = "none";
+  anilloWorld.style.pointerEvents = "none";
+  inventory.style.display = "block";
+
+  setArrowMode(nextArrow, "arrow-down-center");
+  setArrowMode(prevArrow, null);
+  nextArrow.style.display = "block";
+  nextArrow.style.visibility = "visible";
+  nextArrow.style.pointerEvents = "auto";
+  nextArrow.setAttribute("aria-label", "Volver a fondo 3");
+  prevArrow.style.display = "none";
+  if (leftSideArrow) leftSideArrow.style.display = "none";
+  if (topRightArrow) topRightArrow.style.display = "none";
 }
 
 function goToFondo0() {
@@ -3407,11 +3747,17 @@ function goToFondo0() {
   if (leftSideArrow) {
     leftSideArrow.style.display = "none";
   }
+  if (topRightArrow) {
+    topRightArrow.style.display = "none";
+  }
 }
 
 if (jane) {
   jane.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInTiendaMagia()) {
+      enforceTiendaMagiaLineAlignment();
+    }
     closeSpeech();
     clearPendingSpeechFlags();
     pendingSpeechForJane = true;
@@ -3419,7 +3765,11 @@ if (jane) {
     if (isEvelynBeside(jane)) {
       faceEvelynToward(jane);
       faceJaneTowardEvelyn();
-      startJaneInteractionDialogue();
+      if (isInTiendaMagia()) {
+        startTiendaMagiaJaneDialogue();
+      } else {
+        startJaneInteractionDialogue();
+      }
       pendingSpeechForJane = false;
     }
   });
@@ -3428,6 +3778,9 @@ if (jane) {
 if (camus) {
   camus.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInTiendaMagia()) {
+      enforceTiendaMagiaLineAlignment();
+    }
     closeSpeech();
     clearPendingSpeechFlags();
     pendingSpeechForCamus = true;
@@ -3435,7 +3788,11 @@ if (camus) {
     if (isEvelynBeside(camus)) {
       faceEvelynToward(camus);
       faceCamusTowardEvelyn();
-      startCamusInteractionDialogue();
+      if (isInTiendaMagia()) {
+        startTiendaMagiaCamusDialogue();
+      } else {
+        startCamusInteractionDialogue();
+      }
       pendingSpeechForCamus = false;
     }
   });
@@ -3706,6 +4063,11 @@ if (mercenaryModal) {
 if (nextArrow) {
   nextArrow.addEventListener("click", () => {
     if (isInteractionLocked()) return;
+    if (isInTiendaMagia()) {
+      setPendingSceneEntry(ENTRY_FONDO3_FROM_FONDO2, getFondo3EntryEvelynBottom());
+      moveEvelynToArrowAndChangeScene(nextArrow, goToFondo3);
+      return;
+    }
     if (isInTaberna()) {
       setPendingSceneEntry(ENTRY_FONDO5_FROM_TABERNA, getFondo5EntryEvelynBottom());
       moveEvelynToArrowAndChangeScene(nextArrow, goToFondo5);
@@ -3791,8 +4153,18 @@ if (leftSideArrow) {
   });
 }
 
+if (topRightArrow) {
+  topRightArrow.addEventListener("click", () => {
+    if (isInteractionLocked()) return;
+    if (!isInFondo3()) return;
+    setPendingSceneEntry(ENTRY_CENTER, getFondo3EntryEvelynBottom());
+    moveEvelynToArrowAndChangeScene(topRightArrow, goToTiendaMagia);
+  });
+}
+
 if (anilloWorld) {
   anilloWorld.addEventListener("click", () => {
+    return;
     if (isInteractionLocked()) return;
     if (hasAnillo || anilloPickupPending) return;
 
@@ -3863,7 +4235,11 @@ if (evelyn) {
     if (pendingSpeechForJane && isEvelynBeside(jane)) {
       faceEvelynToward(jane);
       faceJaneTowardEvelyn();
-      startJaneInteractionDialogue();
+      if (isInTiendaMagia()) {
+        startTiendaMagiaJaneDialogue();
+      } else {
+        startJaneInteractionDialogue();
+      }
       clearPendingSpeechFlags();
     } else if (
       pendingSpeechForCamus
@@ -3872,7 +4248,11 @@ if (evelyn) {
     ) {
       faceEvelynToward(camus);
       faceCamusTowardEvelyn();
-      startCamusInteractionDialogue();
+      if (isInTiendaMagia()) {
+        startTiendaMagiaCamusDialogue();
+      } else {
+        startCamusInteractionDialogue();
+      }
       clearPendingSpeechFlags();
     } else if (
       pendingSpeechForDarren
@@ -3993,6 +4373,14 @@ if (registroTutorialGestionToggle) {
   });
 }
 
+if (registroTutorialMesaBatallaToggle) {
+  registroTutorialMesaBatallaToggle.addEventListener("click", () => {
+    if (tutorialMesaBatallaLines.length === 0) return;
+    isMesaBatallaExpanded = !isMesaBatallaExpanded;
+    renderRegistroTutorialPanel();
+  });
+}
+
 if (registroCharJane) {
   registroCharJane.addEventListener("click", () => {
     openRegistroCharacterModal("jane");
@@ -4094,6 +4482,7 @@ if (fullscreenBtn) {
 
 if (mapCloseBtn) {
   mapCloseBtn.addEventListener("click", () => {
+    if (isMapBattleFirstEntryTutorialRunning) return;
     if (!mapAbandonConfirm) return;
     mapAbandonConfirm.classList.add("open");
     mapAbandonConfirm.setAttribute("aria-hidden", "false");
@@ -4108,6 +4497,7 @@ if (mapModal) {
 
 if (mapAbandonNoBtn) {
   mapAbandonNoBtn.addEventListener("click", () => {
+    if (isMapBattleFirstEntryTutorialRunning) return;
     if (!mapAbandonConfirm) return;
     mapAbandonConfirm.classList.remove("open");
     mapAbandonConfirm.setAttribute("aria-hidden", "true");
@@ -4116,7 +4506,11 @@ if (mapAbandonNoBtn) {
 
 if (mapAbandonYesBtn) {
   mapAbandonYesBtn.addEventListener("click", () => {
-    resetCurrentDayMapProgress();
+    if (isMapBattleFirstEntryTutorialRunning) return;
+    if (activeMapState) {
+      activeMapState.finished = true;
+      activeMapState.finalReportShown = true;
+    }
     closeMapModal();
   });
 }
@@ -4150,12 +4544,17 @@ if (missionCloseBtn) {
 if (missionConfirmBtn) {
   missionConfirmBtn.addEventListener("click", () => {
     if (!activeMissionForDialog || !activeMapState) return;
-    if (!selectedMissionAssigneeId || isMapTimeExpired()) return;
-    if (activeMapState.busyCharacterIds.has(selectedMissionAssigneeId)) return;
-    activeMissionForDialog.assignedCharacterId = selectedMissionAssigneeId;
+    if (!Array.isArray(selectedMissionAssigneeIds) || selectedMissionAssigneeIds.length === 0 || isMapTimeExpired()) return;
+    for (const memberId of selectedMissionAssigneeIds) {
+      if (activeMapState.busyCharacterIds.has(memberId)) return;
+    }
+    activeMissionForDialog.assignedCharacterIds = [...selectedMissionAssigneeIds];
     activeMissionForDialog.state = "assigned";
     activeMissionForDialog.resolvesAt = Date.now() + 10_000;
-    activeMapState.busyCharacterIds.add(selectedMissionAssigneeId);
+    for (const memberId of selectedMissionAssigneeIds) {
+      activeMapState.busyCharacterIds.add(memberId);
+    }
+    activeMapState.participatedCount += 1;
     closeMissionModal();
     renderMapRoster();
     renderMapMissions();
@@ -4322,6 +4721,10 @@ window.addEventListener("keydown", (event) => {
     return;
   }
   if (event.key === "Enter") {
+    if (tryAdvanceConversationContinueButton()) {
+      event.preventDefault();
+      return;
+    }
     if (tryConfirmYesByEnter()) {
       event.preventDefault();
       return;
@@ -4359,11 +4762,29 @@ window.addEventListener("keydown", (event) => {
 
 window.addEventListener("pointerdown", (event) => {
   if (isDayTransitionRunning) return;
-  if (isForcedSceneLockActive()) return;
-  if (speech && speech.style.display !== "none" && !speech.contains(event.target)) {
+  const target = event.target;
+  if (
+    isElementActuallyVisible(mapGuideSpeech)
+    && mapGuideSpeechNextBtn
+    && !mapGuideSpeechNextBtn.disabled
+    && !mapGuideSpeech.contains(target)
+  ) {
     event.preventDefault();
     event.stopPropagation();
-    tryAdvanceDialogueFromUserInput();
+    mapGuideSpeechNextBtn.click();
+    return;
+  }
+  if (
+    speech
+    && speech.style.display !== "none"
+    && speechNextBtn
+    && speechNextBtn.style.display !== "none"
+    && !speechNextBtn.disabled
+    && !speech.contains(target)
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    speechNextBtn.click();
     return;
   }
   if (missionModal && missionModal.classList.contains("open") && missionModal.contains(event.target)) return;

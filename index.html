@@ -50,6 +50,7 @@
         <button id="next-arrow" type="button" aria-label="Ir a fondo 2"></button>
         <button id="prev-arrow" type="button" aria-label="Ir a fondo 0"></button>
         <button id="left-side-arrow" type="button" aria-label="Ir a fondo 5"></button>
+        <button id="top-right-arrow" type="button" aria-label="Ir arriba"></button>
       </div>
     </div>
     <div id="day-transition-overlay" aria-hidden="true"></div>
@@ -99,7 +100,11 @@
         <div id="registro-panel-tutorial" class="registro-panel">
           <button id="registro-tutorial-gestion-toggle" type="button" aria-expanded="false">Gestión diaria</button>
           <div id="registro-tutorial-gestion-content">
-            <div id="registro-tutorial-list"></div>
+            <div id="registro-tutorial-gestion-list"></div>
+          </div>
+          <button id="registro-tutorial-mesabatalla-toggle" type="button" aria-expanded="false">Mesa de batalla</button>
+          <div id="registro-tutorial-mesabatalla-content">
+            <div id="registro-tutorial-mesabatalla-list"></div>
           </div>
           <p id="registro-tutorial-empty">Sin entradas de tutorial por ahora.</p>
         </div>
@@ -137,6 +142,13 @@
           <div id="map-mission-spawn-zone" aria-hidden="true"></div>
           <div id="map-missions-layer"></div>
           <div id="map-roster"></div>
+          <div id="map-helena-guide" aria-hidden="true">
+            <img src="personajes/helena.png?v=20260312" alt="Helena" />
+          </div>
+          <div id="map-guide-speech" aria-hidden="true">
+            <p id="map-guide-speech-text"></p>
+            <button id="map-guide-speech-next" type="button">Continuar</button>
+          </div>
         </div>
         <div id="map-abandon-confirm" aria-hidden="true">
           <p>¿Seguro que quieres abandonar? Perderás todo el progreso del día.</p>
