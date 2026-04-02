@@ -412,7 +412,7 @@ let mapGuideTypingDone = true;
 const REGISTRO_CHARACTER_DATA = {
   jane: {
     name: "Jane",
-    imageSrc: asset("personajes/Retratos/jane%20retrato.PNG"),
+    imageSrc: asset("personajes/Retratos/jane%20retrato.png"),
     imageAlt: "Jane",
     text: "PRUEBA"
   },
@@ -1343,7 +1343,7 @@ function resetCurrentDayMapProgress() {
 function getMapRosterForCurrentDay() {
   const roster = [
     { id: "camus", name: "Camus", portrait: asset("personajes/Retratos/camus%20retrato.png") },
-    { id: "jane", name: "Jane", portrait: asset("personajes/Retratos/jane%20retrato.PNG") },
+    { id: "jane", name: "Jane", portrait: asset("personajes/Retratos/jane%20retrato.png") },
     { id: "helena", name: "Helena", portrait: asset("personajes/Retratos/helena%20retrato.png") }
   ];
   if (hasUnlockedAmandaForBattle) {
