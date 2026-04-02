@@ -46,6 +46,84 @@
         background: #000;
       }
 
+      #start-screen {
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        background: #000;
+      }
+
+      #start-screen.hidden {
+        display: none;
+      }
+
+      #start-screen-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        opacity: 1;
+        transition: opacity 460ms ease;
+        pointer-events: none;
+      }
+
+      #start-screen-menu {
+        position: absolute;
+        left: 50%;
+        bottom: 4.6%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 2;
+        opacity: 1;
+        transition: opacity 220ms ease;
+        align-items: center;
+      }
+
+      #start-fullscreen-btn {
+        position: absolute;
+        left: 1260px;
+        bottom: 50px;
+        width: 34px;
+        height: 34px;
+        z-index: 3;
+        border: 2px solid #3d2516;
+        border-radius: 8px;
+        background: rgba(248, 236, 210, 0.92);
+        color: #2f1a0f;
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      #start-screen.starting #start-screen-image,
+      #start-screen.starting #start-screen-menu {
+        opacity: 0;
+      }
+
+      #start-new-game,
+      #start-load-game,
+      #start-options {
+        min-width: 220px;
+        border: 2px solid rgba(38, 22, 10, 0.84);
+        border-radius: 10px;
+        background: rgba(245, 226, 189, 0.94);
+        color: #2f1a0f;
+        padding: 10px 14px;
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        cursor: pointer;
+      }
+
       #scene {
         position: absolute;
         left: 0;
@@ -492,6 +570,27 @@
         animation: registro-pulse 1.1s ease-in-out infinite;
       }
 
+      #icono-ajustes {
+        position: absolute;
+        left: 30px;
+        bottom: 48px;
+        width: 36px;
+        height: 36px;
+        z-index: 27;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: rgba(248, 236, 210, 0.92);
+        color: #2f1a0f;
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
       #iconopantallacompleta {
         position: absolute;
         left: 1260px;
@@ -564,6 +663,62 @@
         z-index: 34;
       }
 
+      #intro-sequence {
+        position: fixed;
+        inset: 0;
+        display: none;
+        background: #000;
+        z-index: 90;
+      }
+
+      #intro-sequence.open {
+        display: block;
+      }
+
+      #intro-sequence-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      #intro-sequence-textbox {
+        position: absolute;
+        left: 50%;
+        bottom: 2.2%;
+        transform: translateX(-50%);
+        width: min(94vw, 1100px);
+        min-height: 164px;
+        border: 3px solid rgba(35, 20, 10, 0.95);
+        border-radius: 12px;
+        background: rgba(245, 226, 189, 0.96);
+        color: #2f1a0f;
+        padding: 14px 16px 12px;
+      }
+
+      #intro-sequence-text {
+        margin: 0 0 12px;
+        font-size: 28px;
+        line-height: 1.3;
+        font-weight: 700;
+        white-space: pre-wrap;
+      }
+
+      #intro-sequence-next {
+        display: block;
+        margin: 0 auto;
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #f8ecd2;
+        color: #2f1a0f;
+        padding: 6px 14px;
+        font-size: 19px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
       #day-transition-overlay.active {
         pointer-events: auto;
       }
@@ -617,6 +772,133 @@
         display: flex;
         justify-content: center;
         gap: 12px;
+      }
+
+      #save-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.62);
+        z-index: 140;
+      }
+
+      #save-modal.open {
+        display: flex;
+      }
+
+      #save-modal-content {
+        width: min(92vw, 620px);
+        padding: 18px;
+        border: 3px solid #3d2516;
+        border-radius: 14px;
+        background: #f5e2bd;
+        color: #2f1a0f;
+        text-align: center;
+      }
+
+      #save-modal-title {
+        margin: 0 0 10px;
+        font-size: 30px;
+      }
+
+      #save-modal-main-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      #save-modal-open-save,
+      #save-modal-open-options,
+      #save-modal-close {
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #f8ecd2;
+        color: #2f1a0f;
+        padding: 8px 14px;
+        font-size: 20px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #save-slots-panel {
+        display: none;
+        margin-bottom: 10px;
+      }
+
+      #save-slots-panel.open {
+        display: block;
+      }
+
+      #text-options-panel {
+        display: none;
+        margin-bottom: 10px;
+      }
+
+      #text-options-panel.open {
+        display: block;
+      }
+
+      #text-options-subtitle {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      #text-options-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .text-option-btn {
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #fff4e0;
+        color: #2f1a0f;
+        padding: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .text-option-btn.selected {
+        border-color: #b28746;
+        background: #ffe8b8;
+        box-shadow:
+          0 0 0 2px rgba(178, 135, 70, 0.28),
+          0 0 16px rgba(255, 213, 74, 0.45);
+      }
+
+      #save-slots-subtitle {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      #save-slots-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .save-slot-btn {
+        border: 2px solid #3d2516;
+        border-radius: 10px;
+        background: #fff4e0;
+        color: #2f1a0f;
+        padding: 10px;
+        font-size: 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .save-slot-btn:disabled {
+        opacity: 0.45;
+        filter: grayscale(1);
+        cursor: not-allowed;
       }
 
       #day-end-yes,
@@ -2266,15 +2548,19 @@
 
       @media (pointer: coarse) and (max-width: 540px) and (orientation: portrait) {
         #inventory {
-          width: 118%;
-          left: -9%;
-          bottom: -4px;
+          width: 140%;
+          left: -20%;
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
         }
 
         #alimentos-display,
         #dinero-display,
         #pueblo-display {
           font-size: 22px;
+        }
+
+        #scene-viewport {
+          padding-bottom: env(safe-area-inset-bottom, 0px);
         }
       }
 

@@ -1,5 +1,10 @@
 const scene = document.getElementById("scene");
 const sceneViewport = document.getElementById("scene-viewport");
+const startScreen = document.getElementById("start-screen");
+const startNewGameBtn = document.getElementById("start-new-game");
+const startLoadGameBtn = document.getElementById("start-load-game");
+const startOptionsBtn = document.getElementById("start-options");
+const startFullscreenBtn = document.getElementById("start-fullscreen-btn");
 const background = document.getElementById("background");
 const evelyn = document.getElementById("evelyn");
 const jane = document.getElementById("jane");
@@ -32,6 +37,7 @@ const registroIconBtn = document.getElementById("iconoregistro");
 const ejercitoIconBtn = document.getElementById("iconoejercito");
 const mapaIconBtn = document.getElementById("iconomapa");
 const fullscreenBtn = document.getElementById("iconopantallacompleta");
+const settingsBtn = document.getElementById("icono-ajustes");
 const endDayIcon = document.getElementById("icono-fin-dia");
 const dayBanner = document.getElementById("day-banner");
 const dayBannerNumber = document.getElementById("day-banner-number");
@@ -47,6 +53,10 @@ const summaryPueblo = document.getElementById("summary-pueblo");
 const daySummaryNotes = document.getElementById("day-summary-notes");
 const daySummaryCloseBtn = document.getElementById("day-summary-close");
 const dayTransitionOverlay = document.getElementById("day-transition-overlay");
+const introSequence = document.getElementById("intro-sequence");
+const introSequenceImage = document.getElementById("intro-sequence-image");
+const introSequenceText = document.getElementById("intro-sequence-text");
+const introSequenceNextBtn = document.getElementById("intro-sequence-next");
 const rewardToast = document.getElementById("reward-toast");
 const registroModal = document.getElementById("registro-modal");
 const registroTabPersonaje = document.getElementById("registro-tab-personaje");
@@ -105,6 +115,16 @@ const mapFinalReportModal = document.getElementById("map-final-report-modal");
 const mapFinalReportSubtitle = document.getElementById("map-final-report-subtitle");
 const mapFinalReportList = document.getElementById("map-final-report-list");
 const mapFinalReportCloseBtn = document.getElementById("map-final-report-close");
+const saveModal = document.getElementById("save-modal");
+const saveModalTitle = document.getElementById("save-modal-title");
+const saveModalOpenSaveBtn = document.getElementById("save-modal-open-save");
+const saveModalOpenOptionsBtn = document.getElementById("save-modal-open-options");
+const saveSlotsPanel = document.getElementById("save-slots-panel");
+const saveSlotsList = document.getElementById("save-slots-list");
+const textOptionsPanel = document.getElementById("text-options-panel");
+const textOptionCalmBtn = document.getElementById("text-option-calm");
+const textOptionDirectBtn = document.getElementById("text-option-direct");
+const saveModalCloseBtn = document.getElementById("save-modal-close");
 const helenaOptionsModal = document.getElementById("helena-options-modal");
 const helenaOptionCards = [...document.querySelectorAll(".helena-option-card")];
 const helenaOptionsConfirmBtn = document.getElementById("helena-options-confirm");
@@ -126,7 +146,26 @@ const itemModalClose = document.getElementById("item-modal-close");
 const itemModalImage = document.getElementById("item-modal-image");
 const itemModalText = document.getElementById("item-modal-text");
 const ASSET_VERSION = "20260312";
+const SAVE_SLOTS_KEY = "argo_save_slots_v1";
+const SAVE_SLOT_COUNT = 4;
+const TEXT_APPEARANCE_KEY = "argo_text_appearance_v1";
+const TEXT_APPEARANCE_CALM = "calm";
+const TEXT_APPEARANCE_DIRECT = "direct";
 const asset = (path) => `${path}?v=${ASSET_VERSION}`;
+const INTRO_SEQUENCE_STEPS = [
+  {
+    imageSrc: asset("escenas/intro1.png"),
+    text: "El reino de Eredial era grande y próspero, guiado bajo el justo mandato del Rey Alefor II. Sus gentes parecían vivir felices y en paz y las guerras con naciones vecinas eran cosa del pasado. Se podría decir que se vivía bien. Pero, sinceramente, todo eso nos da un poco igual. Nuestra historia se centra en Orbis, un pueblo cercano al castillo real y probablemente uno de los lugares más aburridos que existen."
+  },
+  {
+    imageSrc: asset("escenas/intro2.png"),
+    text: "Nuestra protagonista es Evelyn, la Capitana de la Guardia Real, caída en desgracia. Una figura conocida e importante en el reino, que de la noche a la mañana fue expulsada del castillo bajo el pretexto de que tenía una importante misión que cumplir. Pero sencillamente querían deshacerse de ella, sin tener que lastimarla."
+  },
+  {
+    imageSrc: asset("escenas/intro3.png"),
+    text: "Así es como nuestra querida Evelyn llegó a Orbis, este pueblucho del que no escucharás hablar a los juglares y que no parece importarle a nadie en general. Su misión ahora es regentarlo y hacer que todo funcione a la perfección. ¿Pero qué tiene que funcionar bien en un lugar donde no pasa nada?"
+  }
+];
 const JANE_GAP = 12;
 const EVELYN_IDLE_SRC = asset("personajes/evelyn.png");
 const EVELYN_WALK_FRAMES = [
@@ -351,6 +390,25 @@ let isGestionDiariaExpanded = false;
 let isMesaBatallaExpanded = false;
 let pendingAnilloMissionPopup = false;
 let isPseudoFullscreenMobile = false;
+let hasStartedMainGame = false;
+let saveModalMode = "save";
+let textAppearanceMode = TEXT_APPEARANCE_CALM;
+let isIntroSequenceRunning = false;
+let introSequenceIndex = 0;
+let introSequenceTypingTimerId = null;
+let introSequenceWords = [];
+let introSequenceWordIndex = 0;
+let introSequenceTypingDone = false;
+let introSequenceOnComplete = null;
+let speechTypingTimerId = null;
+let speechTypingWords = [];
+let speechTypingWordIndex = 0;
+let speechTypingDone = true;
+let speechTypingOnComplete = null;
+let mapGuideTypingTimerId = null;
+let mapGuideTypingWords = [];
+let mapGuideTypingWordIndex = 0;
+let mapGuideTypingDone = true;
 const REGISTRO_CHARACTER_DATA = {
   jane: {
     name: "Jane",
@@ -512,13 +570,24 @@ function renderMapaIconState() {
 }
 
 function renderFullscreenButtonState() {
-  if (!fullscreenBtn) return;
   const docAny = document;
   const webkitFullscreenElement = docAny.webkitFullscreenElement || null;
   const isFullscreen = Boolean(document.fullscreenElement || webkitFullscreenElement || isPseudoFullscreenMobile);
-  fullscreenBtn.classList.toggle("fullscreen-active", isFullscreen);
-  fullscreenBtn.setAttribute("aria-label", isFullscreen ? "Salir de pantalla completa" : "Activar pantalla completa");
-  fullscreenBtn.title = isFullscreen ? "Salir de pantalla completa" : "Pantalla completa";
+  if (fullscreenBtn) {
+    fullscreenBtn.classList.toggle("fullscreen-active", isFullscreen);
+    fullscreenBtn.setAttribute("aria-label", isFullscreen ? "Salir de pantalla completa" : "Activar pantalla completa");
+    fullscreenBtn.title = isFullscreen ? "Salir de pantalla completa" : "Pantalla completa";
+  }
+  if (startFullscreenBtn) {
+    startFullscreenBtn.classList.toggle("fullscreen-active", isFullscreen);
+    startFullscreenBtn.setAttribute("aria-label", isFullscreen ? "Salir de pantalla completa" : "Activar pantalla completa");
+    startFullscreenBtn.title = isFullscreen ? "Salir de pantalla completa" : "Pantalla completa";
+  }
+}
+
+function isNativeFullscreenActive() {
+  const docAny = document;
+  return Boolean(document.fullscreenElement || docAny.webkitFullscreenElement);
 }
 
 function setPseudoFullscreenMobile(enabled) {
@@ -534,7 +603,7 @@ async function toggleFullscreenMode() {
   const root = document.documentElement;
   const docAny = document;
   const rootAny = root;
-  const isNativeFullscreen = Boolean(document.fullscreenElement || docAny.webkitFullscreenElement);
+  const isNativeFullscreen = isNativeFullscreenActive();
   try {
     if (isNativeFullscreen) {
       if (document.exitFullscreen) {
@@ -550,11 +619,17 @@ async function toggleFullscreenMode() {
     }
     if (root.requestFullscreen) {
       await root.requestFullscreen({ navigationUI: "hide" });
-      return;
+      await waitForMs(60);
+      if (isNativeFullscreenActive()) {
+        return;
+      }
     }
     if (rootAny.webkitRequestFullscreen) {
       rootAny.webkitRequestFullscreen();
-      return;
+      await waitForMs(60);
+      if (isNativeFullscreenActive()) {
+        return;
+      }
     }
     if (shouldUseMobileTabletLayout()) {
       setPseudoFullscreenMobile(true);
@@ -880,6 +955,365 @@ function closeMapEnterConfirm() {
   mapEnterConfirm.setAttribute("aria-hidden", "true");
 }
 
+function getCurrentSceneId() {
+  if (isInFondo0()) return "fondo0";
+  if (isInFondo1()) return "fondo1";
+  if (isInFondo2()) return "fondo2";
+  if (isInFondo3()) return "fondo3";
+  if (isInFondo4()) return "fondo4";
+  if (isInFondo5()) return "fondo5";
+  if (isInTaberna()) return "taberna";
+  if (isInTiendaMagia()) return "tiendamagia";
+  return "fondo1";
+}
+
+function getSaveSlots() {
+  try {
+    const raw = window.localStorage.getItem(SAVE_SLOTS_KEY);
+    if (!raw) return Array.from({ length: SAVE_SLOT_COUNT }, () => null);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return Array.from({ length: SAVE_SLOT_COUNT }, () => null);
+    return Array.from({ length: SAVE_SLOT_COUNT }, (_, idx) => parsed[idx] || null);
+  } catch (error) {
+    return Array.from({ length: SAVE_SLOT_COUNT }, () => null);
+  }
+}
+
+function setSaveSlots(slots) {
+  const safeSlots = Array.isArray(slots)
+    ? Array.from({ length: SAVE_SLOT_COUNT }, (_, idx) => slots[idx] || null)
+    : Array.from({ length: SAVE_SLOT_COUNT }, () => null);
+  window.localStorage.setItem(SAVE_SLOTS_KEY, JSON.stringify(safeSlots));
+}
+
+function loadTextAppearanceMode() {
+  try {
+    const raw = window.localStorage.getItem(TEXT_APPEARANCE_KEY);
+    if (raw === TEXT_APPEARANCE_DIRECT || raw === TEXT_APPEARANCE_CALM) {
+      return raw;
+    }
+  } catch (error) {
+    // Ignorar errores de lectura.
+  }
+  return TEXT_APPEARANCE_CALM;
+}
+
+function saveTextAppearanceMode(mode) {
+  try {
+    window.localStorage.setItem(TEXT_APPEARANCE_KEY, mode);
+  } catch (error) {
+    // Ignorar errores de escritura.
+  }
+}
+
+function isDirectTextAppearanceMode() {
+  return textAppearanceMode === TEXT_APPEARANCE_DIRECT;
+}
+
+function renderTextAppearanceOptions() {
+  if (textOptionCalmBtn) {
+    const selected = textAppearanceMode === TEXT_APPEARANCE_CALM;
+    textOptionCalmBtn.classList.toggle("selected", selected);
+    textOptionCalmBtn.setAttribute("aria-pressed", selected ? "true" : "false");
+  }
+  if (textOptionDirectBtn) {
+    const selected = textAppearanceMode === TEXT_APPEARANCE_DIRECT;
+    textOptionDirectBtn.classList.toggle("selected", selected);
+    textOptionDirectBtn.setAttribute("aria-pressed", selected ? "true" : "false");
+  }
+}
+
+function setTextAppearanceMode(mode) {
+  textAppearanceMode = mode === TEXT_APPEARANCE_DIRECT ? TEXT_APPEARANCE_DIRECT : TEXT_APPEARANCE_CALM;
+  saveTextAppearanceMode(textAppearanceMode);
+  renderTextAppearanceOptions();
+  if (isDirectTextAppearanceMode()) {
+    renderFullIntroStepText();
+    finishSpeechTyping();
+    finishMapGuideTyping();
+  }
+}
+
+function serializeMissionState(missionState) {
+  if (!missionState) return null;
+  return {
+    ...missionState,
+    busyCharacterIds: [...(missionState.busyCharacterIds || [])]
+  };
+}
+
+function deserializeMissionState(missionState) {
+  if (!missionState) return null;
+  return {
+    ...missionState,
+    busyCharacterIds: new Set(missionState.busyCharacterIds || [])
+  };
+}
+
+function buildCurrentSaveState() {
+  const dayStates = [];
+  for (const [dayKey, state] of day13MissionStateByDay.entries()) {
+    dayStates.push([dayKey, serializeMissionState(state)]);
+  }
+  return {
+    version: 1,
+    savedAt: Date.now(),
+    sceneId: getCurrentSceneId(),
+    ALIMENTOS,
+    DINERO,
+    PUEBLO,
+    currentDay,
+    hasAnillo,
+    hasCompletedDarrenIntroDialogue,
+    hasReceivedHelenaFoodBonus,
+    hasCompletedHelenaDay2Dialogue,
+    hasQueuedDay2HelenaDecision,
+    hasMetEliot,
+    hasHiredEliot,
+    hasStartedMercenaryDay10Encounter,
+    hasMercenaryBeenDrivenOff,
+    hasAppliedMercenaryRetaliation,
+    hasEliotHelpedAgainstMercenary,
+    hideEliotInFondo5Today,
+    hasEliotLeftTownForever,
+    hasMetHerrero,
+    hasMetAmanda,
+    hasMetRita,
+    hasUnlockedAmandaForBattle,
+    hasTriggeredDay12RoyalEvent,
+    hasCompletedDay12RoyalEvent,
+    hasRegisteredJane,
+    hasRegisteredCamus,
+    hasRegisteredDarren,
+    hasRegisteredHelena,
+    hasRegisteredEliot,
+    hasRegisteredHerrero,
+    hasRegisteredAmanda,
+    hasRegisteredRita,
+    isRegistroHighlighted,
+    activeRegistroTab,
+    hasLoggedDarrenTutorial,
+    hasAskedDarrenDaysQuestion,
+    hasAskedDarrenHelpQuestion,
+    hasUnlockedEndDayByDarrenDays,
+    hasUnlockedArmyIcon,
+    isArmyIconHighlighted,
+    hasUnlockedMapIcon,
+    isMapIconHighlighted,
+    hasTriggeredDay13MapIntro,
+    hasCompletedDay13MapIntro,
+    hasShownMapBattleFirstEntryTutorial,
+    hasLoggedMapBattleTutorial,
+    tutorialGestionDiariaLines,
+    tutorialMesaBatallaLines,
+    completedBattleMissionIds: [...completedBattleMissionIds],
+    day13MissionStates: dayStates
+  };
+}
+
+function applyLoadedSaveState(state) {
+  if (!state || typeof state !== "object") return false;
+  closeSpeech();
+  closeItemModal();
+  closeRegistroCharacterModal();
+  closeRegistroModal();
+  closeArmyModal();
+  closeMapModal();
+  closeMapEnterConfirm();
+  closeMapFinalReport();
+  closeEliotOptionsModal();
+  closeMercenaryModal();
+  closeHelenaOptionsModal();
+
+  currentDay = Number.isFinite(state.currentDay) ? state.currentDay : currentDay;
+  setALIMENTOS(Number.isFinite(state.ALIMENTOS) ? state.ALIMENTOS : ALIMENTOS);
+  setDINERO(Number.isFinite(state.DINERO) ? state.DINERO : DINERO);
+  setPUEBLO(Number.isFinite(state.PUEBLO) ? state.PUEBLO : PUEBLO);
+  hasAnillo = Boolean(state.hasAnillo);
+  hasCompletedDarrenIntroDialogue = Boolean(state.hasCompletedDarrenIntroDialogue);
+  hasReceivedHelenaFoodBonus = Boolean(state.hasReceivedHelenaFoodBonus);
+  hasCompletedHelenaDay2Dialogue = Boolean(state.hasCompletedHelenaDay2Dialogue);
+  hasQueuedDay2HelenaDecision = Boolean(state.hasQueuedDay2HelenaDecision);
+  hasMetEliot = Boolean(state.hasMetEliot);
+  hasHiredEliot = Boolean(state.hasHiredEliot);
+  hasStartedMercenaryDay10Encounter = Boolean(state.hasStartedMercenaryDay10Encounter);
+  hasMercenaryBeenDrivenOff = Boolean(state.hasMercenaryBeenDrivenOff);
+  hasAppliedMercenaryRetaliation = Boolean(state.hasAppliedMercenaryRetaliation);
+  hasEliotHelpedAgainstMercenary = Boolean(state.hasEliotHelpedAgainstMercenary);
+  hideEliotInFondo5Today = Boolean(state.hideEliotInFondo5Today);
+  hasEliotLeftTownForever = Boolean(state.hasEliotLeftTownForever);
+  hasMetHerrero = Boolean(state.hasMetHerrero);
+  hasMetAmanda = Boolean(state.hasMetAmanda);
+  hasMetRita = Boolean(state.hasMetRita);
+  hasUnlockedAmandaForBattle = Boolean(state.hasUnlockedAmandaForBattle);
+  hasTriggeredDay12RoyalEvent = Boolean(state.hasTriggeredDay12RoyalEvent);
+  hasCompletedDay12RoyalEvent = Boolean(state.hasCompletedDay12RoyalEvent);
+  hasRegisteredJane = Boolean(state.hasRegisteredJane);
+  hasRegisteredCamus = Boolean(state.hasRegisteredCamus);
+  hasRegisteredDarren = Boolean(state.hasRegisteredDarren);
+  hasRegisteredHelena = Boolean(state.hasRegisteredHelena);
+  hasRegisteredEliot = Boolean(state.hasRegisteredEliot);
+  hasRegisteredHerrero = Boolean(state.hasRegisteredHerrero);
+  hasRegisteredAmanda = Boolean(state.hasRegisteredAmanda);
+  hasRegisteredRita = Boolean(state.hasRegisteredRita);
+  isRegistroHighlighted = Boolean(state.isRegistroHighlighted);
+  activeRegistroTab = state.activeRegistroTab === "tutorial" ? "tutorial" : "personaje";
+  hasLoggedDarrenTutorial = Boolean(state.hasLoggedDarrenTutorial);
+  hasAskedDarrenDaysQuestion = Boolean(state.hasAskedDarrenDaysQuestion);
+  hasAskedDarrenHelpQuestion = Boolean(state.hasAskedDarrenHelpQuestion);
+  hasUnlockedEndDayByDarrenDays = Boolean(state.hasUnlockedEndDayByDarrenDays);
+  hasUnlockedArmyIcon = Boolean(state.hasUnlockedArmyIcon);
+  isArmyIconHighlighted = Boolean(state.isArmyIconHighlighted);
+  hasUnlockedMapIcon = Boolean(state.hasUnlockedMapIcon);
+  isMapIconHighlighted = Boolean(state.isMapIconHighlighted);
+  hasTriggeredDay13MapIntro = Boolean(state.hasTriggeredDay13MapIntro);
+  hasCompletedDay13MapIntro = Boolean(state.hasCompletedDay13MapIntro);
+  hasShownMapBattleFirstEntryTutorial = Boolean(state.hasShownMapBattleFirstEntryTutorial);
+  hasLoggedMapBattleTutorial = Boolean(state.hasLoggedMapBattleTutorial);
+  tutorialGestionDiariaLines = Array.isArray(state.tutorialGestionDiariaLines) ? [...state.tutorialGestionDiariaLines] : [];
+  tutorialMesaBatallaLines = Array.isArray(state.tutorialMesaBatallaLines) ? [...state.tutorialMesaBatallaLines] : [];
+  completedBattleMissionIds = new Set(Array.isArray(state.completedBattleMissionIds) ? state.completedBattleMissionIds : []);
+  day13MissionStateByDay = new Map(
+    Array.isArray(state.day13MissionStates)
+      ? state.day13MissionStates.map(([dayKey, dayState]) => [Number(dayKey), deserializeMissionState(dayState)])
+      : []
+  );
+  activeMapState = null;
+
+  applyDayState(currentDay);
+  renderDayBanner();
+  renderRegistroEntries();
+  renderRegistroIconState();
+  renderEjercitoIconState();
+  renderMapaIconState();
+  renderArmyModalContent();
+  renderRegistroTutorialPanel();
+  setActiveRegistroTab(activeRegistroTab);
+  setEndDayEnabled(hasUnlockedEndDayByDarrenDays);
+
+  if (hasAnillo) {
+    const firstSlot = inventorySlots[0];
+    if (firstSlot) {
+      firstSlot.appendChild(anilloItem);
+    }
+    applyAnilloInventoryStyle();
+    anilloItem.style.display = "block";
+  } else {
+    anilloItem.style.display = "none";
+  }
+
+  const sceneId = state.sceneId || "fondo1";
+  if (sceneId === "fondo0") goToFondo0();
+  else if (sceneId === "fondo1") goToFondo1();
+  else if (sceneId === "fondo2") goToFondo2();
+  else if (sceneId === "fondo3") goToFondo3();
+  else if (sceneId === "fondo4") goToFondo4();
+  else if (sceneId === "fondo5") goToFondo5();
+  else if (sceneId === "taberna") goToTaberna();
+  else if (sceneId === "tiendamagia") goToTiendaMagia();
+  else goToFondo1();
+
+  isIntroSequenceActive = false;
+  closeSpeech();
+  return true;
+}
+
+function formatSaveSlotLabel(slot, index) {
+  if (!slot || !slot.state) return `Bloque ${index + 1} - Vacío`;
+  const day = Number.isFinite(slot.state.currentDay) ? slot.state.currentDay : 0;
+  const savedAt = slot.savedAt ? new Date(slot.savedAt).toLocaleString() : "sin fecha";
+  return `Bloque ${index + 1} - Día ${day} (${savedAt})`;
+}
+
+function closeSaveModal() {
+  if (!saveModal) return;
+  saveModal.classList.remove("open");
+  saveModal.setAttribute("aria-hidden", "true");
+}
+
+function renderSaveSlots(mode) {
+  if (!saveSlotsList || !saveSlotsPanel || !saveModalTitle) return;
+  const slots = getSaveSlots();
+  saveSlotsList.innerHTML = "";
+  saveModalMode = mode === "load" ? "load" : "save";
+  saveModalTitle.textContent = saveModalMode === "load" ? "Cargar partida" : "Guardar partida";
+  if (saveModalOpenSaveBtn) saveModalOpenSaveBtn.style.display = "none";
+  if (saveModalOpenOptionsBtn) saveModalOpenOptionsBtn.style.display = "none";
+  if (textOptionsPanel) {
+    textOptionsPanel.classList.remove("open");
+    textOptionsPanel.setAttribute("aria-hidden", "true");
+  }
+  saveSlotsPanel.classList.add("open");
+  saveSlotsPanel.setAttribute("aria-hidden", "false");
+  for (let idx = 0; idx < SAVE_SLOT_COUNT; idx += 1) {
+    const slot = slots[idx];
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "save-slot-btn";
+    btn.textContent = formatSaveSlotLabel(slot, idx);
+    if (saveModalMode === "load" && (!slot || !slot.state)) {
+      btn.disabled = true;
+    }
+    btn.addEventListener("click", () => {
+      if (saveModalMode === "save") {
+        slots[idx] = {
+          savedAt: Date.now(),
+          state: buildCurrentSaveState()
+        };
+        setSaveSlots(slots);
+        showRewardToast(`Partida guardada en bloque ${idx + 1}.`);
+        closeSaveModal();
+        return;
+      }
+      if (!slot || !slot.state) return;
+      closeSaveModal();
+      startLoadedGameFromMenu(slot.state);
+    });
+    saveSlotsList.appendChild(btn);
+  }
+}
+
+function openSaveModal(mode = "save") {
+  if (!saveModal) return;
+  saveModalMode = mode === "load" ? "load" : "save";
+  if (saveSlotsPanel) {
+    saveSlotsPanel.classList.remove("open");
+    saveSlotsPanel.setAttribute("aria-hidden", "true");
+  }
+  if (saveSlotsList) {
+    saveSlotsList.innerHTML = "";
+  }
+  if (textOptionsPanel) {
+    textOptionsPanel.classList.remove("open");
+    textOptionsPanel.setAttribute("aria-hidden", "true");
+  }
+  if (saveModalTitle) {
+    saveModalTitle.textContent = saveModalMode === "load" ? "Cargar partida" : "Opciones";
+  }
+  if (saveModalOpenSaveBtn) {
+    saveModalOpenSaveBtn.style.display = saveModalMode === "save" ? "inline-flex" : "none";
+  }
+  if (saveModalOpenOptionsBtn) {
+    saveModalOpenOptionsBtn.style.display = saveModalMode === "save" ? "inline-flex" : "none";
+  }
+  renderTextAppearanceOptions();
+  saveModal.classList.add("open");
+  saveModal.setAttribute("aria-hidden", "false");
+  if (saveModalMode === "load") {
+    renderSaveSlots("load");
+  }
+}
+
+function openTextOptionsPanel() {
+  if (!saveModalTitle || !saveSlotsPanel || !textOptionsPanel) return;
+  saveModalTitle.textContent = "Opciones";
+  saveSlotsPanel.classList.remove("open");
+  saveSlotsPanel.setAttribute("aria-hidden", "true");
+  textOptionsPanel.classList.add("open");
+  textOptionsPanel.setAttribute("aria-hidden", "false");
+  renderTextAppearanceOptions();
+}
+
 function setMapHelenaGuideVisible(visible) {
   if (!mapHelenaGuide) return;
   mapHelenaGuide.classList.toggle("visible", visible);
@@ -888,6 +1322,12 @@ function setMapHelenaGuideVisible(visible) {
 
 function setMapGuideSpeechVisible(visible) {
   if (!mapGuideSpeech) return;
+  if (!visible) {
+    stopMapGuideTyping();
+    mapGuideTypingDone = true;
+    mapGuideTypingWords = [];
+    mapGuideTypingWordIndex = 0;
+  }
   mapGuideSpeech.classList.toggle("visible", visible);
   mapGuideSpeech.setAttribute("aria-hidden", visible ? "false" : "true");
 }
@@ -1763,9 +2203,10 @@ function runMapBattleTutorialSequence(sequence, onComplete) {
       if (typeof onComplete === "function") onComplete();
       return;
     }
-    mapGuideSpeechText.textContent = step.line || "";
+    startMapGuideTyping(step.line || "");
     setMapGuideSpeechVisible(true);
     mapGuideSpeechNextBtn.onclick = () => {
+      if (finishMapGuideTyping()) return;
       index += 1;
       renderStep();
     };
@@ -2419,6 +2860,261 @@ function closeDaySummaryModal() {
   daySummaryModal.setAttribute("aria-hidden", "true");
 }
 
+function isIntroSequenceModalOpen() {
+  return Boolean(introSequence && introSequence.classList.contains("open"));
+}
+
+function stopIntroSequenceTyping() {
+  if (introSequenceTypingTimerId !== null) {
+    window.clearInterval(introSequenceTypingTimerId);
+    introSequenceTypingTimerId = null;
+  }
+}
+
+function stopSpeechTyping() {
+  if (speechTypingTimerId !== null) {
+    window.clearInterval(speechTypingTimerId);
+    speechTypingTimerId = null;
+  }
+}
+
+function finishSpeechTyping() {
+  if (!speechText) return false;
+  if (speechTypingDone) return false;
+  speechText.textContent = speechTypingWords.join(" ");
+  speechTypingDone = true;
+  stopSpeechTyping();
+  if (activeDialogue?.type === "centered") {
+    positionSpeechCenter();
+  } else if (speechAnchor) {
+    positionSpeechAt(speechAnchor);
+  }
+  if (typeof speechTypingOnComplete === "function") {
+    speechTypingOnComplete();
+    speechTypingOnComplete = null;
+  }
+  return true;
+}
+
+function startSpeechTyping(text, onComplete = null) {
+  if (!speechText) return;
+  speechTypingWords = String(text || "").trim().split(/\s+/).filter(Boolean);
+  speechTypingWordIndex = 0;
+  speechTypingDone = speechTypingWords.length === 0;
+  speechTypingOnComplete = onComplete;
+  speechText.textContent = "";
+  stopSpeechTyping();
+  if (isDirectTextAppearanceMode()) {
+    speechText.textContent = speechTypingWords.join(" ");
+    speechTypingWordIndex = speechTypingWords.length;
+    speechTypingDone = true;
+    if (activeDialogue?.type === "centered") {
+      positionSpeechCenter();
+    } else if (speechAnchor) {
+      positionSpeechAt(speechAnchor);
+    }
+    if (typeof speechTypingOnComplete === "function") {
+      speechTypingOnComplete();
+      speechTypingOnComplete = null;
+    }
+    return;
+  }
+  if (speechTypingDone) {
+    if (typeof speechTypingOnComplete === "function") {
+      speechTypingOnComplete();
+      speechTypingOnComplete = null;
+    }
+    return;
+  }
+  speechTypingTimerId = window.setInterval(() => {
+    if (!speechText) return;
+    if (speechTypingWordIndex >= speechTypingWords.length) {
+      speechTypingDone = true;
+      stopSpeechTyping();
+      if (activeDialogue?.type === "centered") {
+        positionSpeechCenter();
+      } else if (speechAnchor) {
+        positionSpeechAt(speechAnchor);
+      }
+      if (typeof speechTypingOnComplete === "function") {
+        speechTypingOnComplete();
+        speechTypingOnComplete = null;
+      }
+      return;
+    }
+    const nextWord = speechTypingWords[speechTypingWordIndex];
+    speechText.textContent = speechTypingWordIndex === 0
+      ? nextWord
+      : `${speechText.textContent} ${nextWord}`;
+    speechTypingWordIndex += 1;
+    if (activeDialogue?.type === "centered") {
+      positionSpeechCenter();
+    } else if (speechAnchor) {
+      positionSpeechAt(speechAnchor);
+    }
+  }, 150);
+}
+
+function stopMapGuideTyping() {
+  if (mapGuideTypingTimerId !== null) {
+    window.clearInterval(mapGuideTypingTimerId);
+    mapGuideTypingTimerId = null;
+  }
+}
+
+function finishMapGuideTyping() {
+  if (!mapGuideSpeechText) return false;
+  if (mapGuideTypingDone) return false;
+  mapGuideSpeechText.textContent = mapGuideTypingWords.join(" ");
+  mapGuideTypingDone = true;
+  stopMapGuideTyping();
+  return true;
+}
+
+function startMapGuideTyping(text) {
+  if (!mapGuideSpeechText) return;
+  mapGuideTypingWords = String(text || "").trim().split(/\s+/).filter(Boolean);
+  mapGuideTypingWordIndex = 0;
+  mapGuideTypingDone = mapGuideTypingWords.length === 0;
+  mapGuideSpeechText.textContent = "";
+  stopMapGuideTyping();
+  if (isDirectTextAppearanceMode()) {
+    mapGuideSpeechText.textContent = mapGuideTypingWords.join(" ");
+    mapGuideTypingWordIndex = mapGuideTypingWords.length;
+    mapGuideTypingDone = true;
+    return;
+  }
+  if (mapGuideTypingDone) return;
+  mapGuideTypingTimerId = window.setInterval(() => {
+    if (!mapGuideSpeechText) return;
+    if (mapGuideTypingWordIndex >= mapGuideTypingWords.length) {
+      mapGuideTypingDone = true;
+      stopMapGuideTyping();
+      return;
+    }
+    const nextWord = mapGuideTypingWords[mapGuideTypingWordIndex];
+    mapGuideSpeechText.textContent = mapGuideTypingWordIndex === 0
+      ? nextWord
+      : `${mapGuideSpeechText.textContent} ${nextWord}`;
+    mapGuideTypingWordIndex += 1;
+  }, 150);
+}
+
+function renderFullIntroStepText() {
+  if (!introSequenceText) return;
+  introSequenceText.textContent = introSequenceWords.join(" ");
+  introSequenceTypingDone = true;
+  stopIntroSequenceTyping();
+}
+
+function runIntroStepTyping() {
+  if (!introSequenceText) return;
+  if (isDirectTextAppearanceMode()) {
+    introSequenceText.textContent = introSequenceWords.join(" ");
+    introSequenceTypingDone = true;
+    introSequenceWordIndex = introSequenceWords.length;
+    stopIntroSequenceTyping();
+    return;
+  }
+  introSequenceText.textContent = "";
+  introSequenceTypingDone = false;
+  introSequenceWordIndex = 0;
+  stopIntroSequenceTyping();
+  introSequenceTypingTimerId = window.setInterval(() => {
+    if (!introSequenceText) return;
+    if (introSequenceWordIndex >= introSequenceWords.length) {
+      introSequenceTypingDone = true;
+      stopIntroSequenceTyping();
+      return;
+    }
+    const nextWord = introSequenceWords[introSequenceWordIndex];
+    introSequenceText.textContent = introSequenceWordIndex === 0
+      ? nextWord
+      : `${introSequenceText.textContent} ${nextWord}`;
+    introSequenceWordIndex += 1;
+  }, 150);
+}
+
+function renderIntroSequenceStep() {
+  if (!introSequence || !introSequenceImage || !introSequenceText) return;
+  const step = INTRO_SEQUENCE_STEPS[introSequenceIndex];
+  if (!step) {
+    isIntroSequenceRunning = false;
+    stopIntroSequenceTyping();
+    introSequence.classList.remove("open");
+    introSequence.setAttribute("aria-hidden", "true");
+    if (typeof introSequenceOnComplete === "function") {
+      introSequenceOnComplete();
+    }
+    introSequenceOnComplete = null;
+    return;
+  }
+  introSequenceImage.src = step.imageSrc;
+  introSequenceWords = String(step.text || "").trim().split(/\s+/);
+  runIntroStepTyping();
+}
+
+function advanceIntroSequenceStep() {
+  if (!isIntroSequenceRunning) return;
+  if (!introSequenceTypingDone) {
+    renderFullIntroStepText();
+    return;
+  }
+  introSequenceIndex += 1;
+  renderIntroSequenceStep();
+}
+
+function startIntroSequenceCutscene(onComplete) {
+  if (!introSequence || !introSequenceImage || !introSequenceText) {
+    if (typeof onComplete === "function") onComplete();
+    return;
+  }
+  introSequenceOnComplete = onComplete;
+  introSequenceIndex = 0;
+  isIntroSequenceRunning = true;
+  introSequence.classList.add("open");
+  introSequence.setAttribute("aria-hidden", "false");
+  renderIntroSequenceStep();
+}
+
+function startMainGameFromMenu() {
+  if (hasStartedMainGame) return;
+  hasStartedMainGame = true;
+  if (startScreen) {
+    startScreen.classList.add("starting");
+    startScreen.setAttribute("aria-hidden", "true");
+  }
+  window.setTimeout(() => {
+    if (startScreen) {
+      startScreen.classList.add("hidden");
+    }
+    startIntroSequenceCutscene(() => {
+      renderDayBanner();
+      goToFondo1();
+      startIntroDialogueSequence();
+    });
+  }, 500);
+}
+
+function startLoadedGameFromMenu(savedState) {
+  if (!savedState || typeof savedState !== "object") return;
+  if (!hasStartedMainGame) {
+    hasStartedMainGame = true;
+    if (startScreen) {
+      startScreen.classList.add("starting");
+      startScreen.setAttribute("aria-hidden", "true");
+    }
+    window.setTimeout(() => {
+      if (startScreen) {
+        startScreen.classList.add("hidden");
+      }
+      applyLoadedSaveState(savedState);
+    }, 500);
+    return;
+  }
+  applyLoadedSaveState(savedState);
+}
+
 async function startNextDayFromSummary() {
   if (!isAwaitingDaySummaryContinue) return;
   if (isStartingNextDayFromSummary) return;
@@ -2966,6 +3662,11 @@ function positionSpeechCenter() {
 function closeSpeech() {
   clearScriptedDialogueSequence();
   clearUiHighlight();
+  stopSpeechTyping();
+  speechTypingDone = true;
+  speechTypingOnComplete = null;
+  speechTypingWords = [];
+  speechTypingWordIndex = 0;
   speech.style.display = "none";
   speech.classList.remove("speech-centered");
   speechAnchor = null;
@@ -2986,10 +3687,10 @@ function renderActiveDialogue() {
   speechAnchor = activeDialogue.anchor || null;
   if (activeDialogue.type === "choice") {
     speech.classList.remove("speech-centered");
-    speechText.textContent = activeDialogue.prompt;
+    speechText.textContent = "";
     if (speechOptions) {
       speechOptions.innerHTML = "";
-      speechOptions.style.display = "block";
+      speechOptions.style.display = "none";
       for (const option of activeDialogue.options) {
         const btn = document.createElement("button");
         btn.type = "button";
@@ -3008,9 +3709,14 @@ function renderActiveDialogue() {
     if (speechNextBtn) {
       speechNextBtn.style.display = "none";
     }
+    startSpeechTyping(activeDialogue.prompt, () => {
+      if (speechOptions) {
+        speechOptions.style.display = "block";
+      }
+    });
   } else if (activeDialogue.type === "centered") {
     speech.classList.add("speech-centered");
-    speechText.textContent = activeDialogue.lines[activeDialogueIndex] || "";
+    speechText.textContent = "";
     if (speechOptions) {
       speechOptions.innerHTML = "";
       speechOptions.style.display = "none";
@@ -3018,9 +3724,10 @@ function renderActiveDialogue() {
     if (speechNextBtn) {
       speechNextBtn.style.display = "none";
     }
+    startSpeechTyping(activeDialogue.lines[activeDialogueIndex] || "");
   } else {
     speech.classList.remove("speech-centered");
-    speechText.textContent = activeDialogue.lines[activeDialogueIndex] || "";
+    speechText.textContent = "";
     if (speechOptions) {
       speechOptions.innerHTML = "";
       speechOptions.style.display = "none";
@@ -3033,6 +3740,7 @@ function renderActiveDialogue() {
         speechNextBtn.textContent = DEFAULT_SPEECH_NEXT_LABEL;
       }
     }
+    startSpeechTyping(activeDialogue.lines[activeDialogueIndex] || "");
   }
   if (activeDialogue.type === "centered") {
     positionSpeechCenter();
@@ -3068,6 +3776,7 @@ function startCenteredDialogue(lines) {
 
 function tryAdvanceDialogueFromUserInput() {
   if (!speech || speech.style.display === "none" || !activeDialogue) return false;
+  if (finishSpeechTyping()) return true;
   if (!speechNextBtn || speechNextBtn.style.display === "none") return false;
   if (isIntroSequenceActive) {
     advanceIntroDialogueSequence();
@@ -4531,6 +5240,132 @@ if (fullscreenBtn) {
   });
 }
 
+if (startFullscreenBtn) {
+  startFullscreenBtn.addEventListener("click", () => {
+    if (startFullscreenBtn.dataset.pointerActivated === "1") {
+      startFullscreenBtn.dataset.pointerActivated = "0";
+      return;
+    }
+    void toggleFullscreenMode();
+  });
+  startFullscreenBtn.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    startFullscreenBtn.dataset.pointerActivated = "1";
+    void toggleFullscreenMode();
+  });
+}
+
+if (startNewGameBtn) {
+  startNewGameBtn.addEventListener("click", () => {
+    if (startNewGameBtn.dataset.pointerActivated === "1") {
+      startNewGameBtn.dataset.pointerActivated = "0";
+      return;
+    }
+    startMainGameFromMenu();
+  });
+  startNewGameBtn.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    startNewGameBtn.dataset.pointerActivated = "1";
+    startMainGameFromMenu();
+  });
+}
+
+if (startLoadGameBtn) {
+  startLoadGameBtn.addEventListener("click", () => {
+    if (startLoadGameBtn.dataset.pointerActivated === "1") {
+      startLoadGameBtn.dataset.pointerActivated = "0";
+      return;
+    }
+    openSaveModal("load");
+  });
+  startLoadGameBtn.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    startLoadGameBtn.dataset.pointerActivated = "1";
+    openSaveModal("load");
+  });
+}
+
+if (startOptionsBtn) {
+  startOptionsBtn.addEventListener("click", () => {
+    if (startOptionsBtn.dataset.pointerActivated === "1") {
+      startOptionsBtn.dataset.pointerActivated = "0";
+      return;
+    }
+    // De momento sin acción.
+  });
+  startOptionsBtn.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    startOptionsBtn.dataset.pointerActivated = "1";
+    // De momento sin acción.
+  });
+}
+
+if (introSequenceNextBtn) {
+  introSequenceNextBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    advanceIntroSequenceStep();
+  });
+}
+
+if (introSequence) {
+  introSequence.addEventListener("click", (event) => {
+    if (!(event.target instanceof HTMLElement)) return;
+    if (introSequenceText && introSequenceText.contains(event.target)) return;
+    advanceIntroSequenceStep();
+  });
+}
+
+if (settingsBtn) {
+  settingsBtn.addEventListener("click", () => {
+    if (isDayTransitionRunning) return;
+    if (!hasStartedMainGame) return;
+    openSaveModal("save");
+  });
+}
+
+if (saveModalOpenSaveBtn) {
+  saveModalOpenSaveBtn.addEventListener("click", () => {
+    renderSaveSlots("save");
+  });
+}
+
+if (saveModalOpenOptionsBtn) {
+  saveModalOpenOptionsBtn.addEventListener("click", () => {
+    openTextOptionsPanel();
+  });
+}
+
+if (textOptionCalmBtn) {
+  textOptionCalmBtn.addEventListener("click", () => {
+    setTextAppearanceMode(TEXT_APPEARANCE_CALM);
+  });
+}
+
+if (textOptionDirectBtn) {
+  textOptionDirectBtn.addEventListener("click", () => {
+    setTextAppearanceMode(TEXT_APPEARANCE_DIRECT);
+  });
+}
+
+if (saveModalCloseBtn) {
+  saveModalCloseBtn.addEventListener("click", () => {
+    closeSaveModal();
+  });
+}
+
+if (saveModal) {
+  saveModal.addEventListener("click", (event) => {
+    if (event.target === saveModal) {
+      closeSaveModal();
+    }
+  });
+}
+
 if (mapCloseBtn) {
   mapCloseBtn.addEventListener("click", () => {
     if (isMapBattleFirstEntryTutorialRunning) return;
@@ -4724,6 +5559,13 @@ if (daySummaryModal) {
 }
 
 window.addEventListener("keydown", (event) => {
+  if (isIntroSequenceModalOpen()) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      advanceIntroSequenceStep();
+    }
+    return;
+  }
   if (isDayTransitionRunning && !(daySummaryModal && daySummaryModal.classList.contains("open"))) return;
   if (event.key === "Escape" && isForcedSceneLockActive()) return;
   if (event.key === "Escape") {
@@ -4812,6 +5654,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("pointerdown", (event) => {
+  if (isIntroSequenceModalOpen()) return;
   if (isDayTransitionRunning) return;
   const target = event.target;
   if (
@@ -4827,9 +5670,9 @@ window.addEventListener("pointerdown", (event) => {
   }
   if (
     speech
-    && speech.style.display !== "none"
+    && isElementActuallyVisible(speech)
     && speechNextBtn
-    && speechNextBtn.style.display !== "none"
+    && isElementActuallyVisible(speechNextBtn)
     && !speechNextBtn.disabled
     && !speech.contains(target)
   ) {
@@ -4848,7 +5691,7 @@ window.addEventListener("pointerdown", (event) => {
   if (dayEndModal && dayEndModal.classList.contains("open") && dayEndModal.contains(event.target)) return;
   if (eliotOptionsModal && eliotOptionsModal.classList.contains("open") && eliotOptionsModal.contains(event.target)) return;
   if (mercenaryModal && mercenaryModal.classList.contains("open") && mercenaryModal.contains(event.target)) return;
-  if (speech.style.display === "none") return;
+  if (!isElementActuallyVisible(speech)) return;
   if (itemModal && itemModal.classList.contains("open") && itemModal.contains(event.target)) return;
   if (speech.contains(event.target)) return;
   event.preventDefault();
@@ -4869,6 +5712,8 @@ document.addEventListener("webkitfullscreenchange", () => {
   renderFullscreenButtonState();
 });
 if (scene && sceneViewport) {
+  textAppearanceMode = loadTextAppearanceMode();
+  renderTextAppearanceOptions();
   setEndDayEnabled(hasUnlockedEndDayByDarrenDays);
   renderRegistroEntries();
   renderRegistroIconState();
@@ -4893,6 +5738,4 @@ if (scene && sceneViewport) {
   preloadEvelynWalkFrames();
   stopEvelynWalkAnimation();
   layoutScene();
-  goToFondo1();
-  startIntroDialogueSequence();
 }

@@ -9,6 +9,15 @@
   <body>
     <div id="scene-viewport">
       <div id="scene" aria-label="Escena">
+        <div id="start-screen" aria-hidden="false">
+          <img id="start-screen-image" src="escenas/inicio.png" alt="Pantalla de inicio" />
+          <button id="start-fullscreen-btn" type="button" aria-label="Activar pantalla completa" title="Pantalla completa">⛶</button>
+          <div id="start-screen-menu">
+            <button id="start-new-game" type="button">Nueva partida</button>
+            <button id="start-load-game" type="button">Cargar partida</button>
+            <button id="start-options" type="button">Opciones</button>
+          </div>
+        </div>
         <img id="background" src="escenarios/fondo1.png?v=20260312" alt="Fondo" />
 
         <img id="evelyn" class="entity" src="personajes/evelyn.png?v=20260312" alt="Evelyn" />
@@ -44,6 +53,7 @@
         <img id="iconoregistro" src="objetos/iconoregistro.png?v=20260316" alt="Abrir registro" />
         <img id="iconoejercito" src="objetos/iconoejercito.png?v=20260326" alt="Abrir ejército" />
         <img id="iconomapa" src="objetos/iconomapa.png?v=20260328" alt="Abrir mapa de misiones" />
+        <button id="icono-ajustes" type="button" aria-label="Opciones de guardado" title="Opciones">⚙</button>
         <button id="iconopantallacompleta" type="button" aria-label="Activar pantalla completa" title="Pantalla completa">⛶</button>
         <img id="icono-fin-dia" src="objetos/iconofindia.png?v=20260323" alt="Finalizar día" />
 
@@ -54,6 +64,13 @@
       </div>
     </div>
     <div id="day-transition-overlay" aria-hidden="true"></div>
+    <div id="intro-sequence" aria-hidden="true">
+      <img id="intro-sequence-image" src="" alt="Introducción" />
+      <div id="intro-sequence-textbox">
+        <p id="intro-sequence-text"></p>
+        <button id="intro-sequence-next" type="button">Continuar</button>
+      </div>
+    </div>
     <div id="day-banner" aria-live="polite">Día <span id="day-banner-number">1</span></div>
     <button id="dev-day13-btn" type="button">Ir a día 13</button>
 
@@ -199,6 +216,27 @@
         <button id="map-final-report-close" type="button">Continuar</button>
       </div>
     </div>
+    <div id="save-modal" aria-hidden="true">
+      <div id="save-modal-content" role="dialog" aria-modal="true" aria-label="Guardar o cargar partida">
+        <h3 id="save-modal-title">Opciones</h3>
+        <div id="save-modal-main-actions">
+          <button id="save-modal-open-save" type="button">Guardar partida</button>
+          <button id="save-modal-open-options" type="button">Opciones</button>
+        </div>
+        <div id="save-slots-panel" aria-hidden="true">
+          <p id="save-slots-subtitle">Elige un bloque</p>
+          <div id="save-slots-list"></div>
+        </div>
+        <div id="text-options-panel" aria-hidden="true">
+          <p id="text-options-subtitle">Aparición de textos</p>
+          <div id="text-options-list">
+            <button id="text-option-calm" class="text-option-btn" type="button">Aparición calmada</button>
+            <button id="text-option-direct" class="text-option-btn" type="button">Aparición directa</button>
+          </div>
+        </div>
+        <button id="save-modal-close" type="button">Cerrar</button>
+      </div>
+    </div>
     <div id="helena-options-modal" aria-hidden="true">
       <div id="helena-options-content" role="dialog" aria-modal="true" aria-label="Opciones de gestión">
         <h2 id="helena-options-title">Opciones del día</h2>
@@ -254,6 +292,6 @@
 
     <script src="dialogues.js?v=20260319"></script>
     <script src="misiones.js?v=20260329"></script>
-    <script src="main.js?v=20260357"></script>
+    <script src="main.js?v=20260360"></script>
   </body>
 </html>
