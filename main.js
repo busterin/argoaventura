@@ -3005,6 +3005,9 @@ function renderFullIntroStepText() {
   introSequenceText.textContent = introSequenceWords.join(" ");
   introSequenceTypingDone = true;
   stopIntroSequenceTyping();
+  if (introSequenceNextBtn) {
+    introSequenceNextBtn.style.display = "block";
+  }
 }
 
 function runIntroStepTyping() {
@@ -3014,7 +3017,13 @@ function runIntroStepTyping() {
     introSequenceTypingDone = true;
     introSequenceWordIndex = introSequenceWords.length;
     stopIntroSequenceTyping();
+    if (introSequenceNextBtn) {
+      introSequenceNextBtn.style.display = "block";
+    }
     return;
+  }
+  if (introSequenceNextBtn) {
+    introSequenceNextBtn.style.display = "none";
   }
   introSequenceText.textContent = "";
   introSequenceTypingDone = false;
@@ -3025,6 +3034,9 @@ function runIntroStepTyping() {
     if (introSequenceWordIndex >= introSequenceWords.length) {
       introSequenceTypingDone = true;
       stopIntroSequenceTyping();
+      if (introSequenceNextBtn) {
+        introSequenceNextBtn.style.display = "block";
+      }
       return;
     }
     const nextWord = introSequenceWords[introSequenceWordIndex];
@@ -3048,6 +3060,9 @@ function renderIntroSequenceStep() {
     }
     introSequenceOnComplete = null;
     return;
+  }
+  if (introSequenceNextBtn) {
+    introSequenceNextBtn.style.display = isDirectTextAppearanceMode() ? "block" : "none";
   }
   introSequenceImage.src = step.imageSrc;
   introSequenceWords = String(step.text || "").trim().split(/\s+/);
@@ -3713,6 +3728,11 @@ function renderActiveDialogue() {
       if (speechOptions) {
         speechOptions.style.display = "block";
       }
+      if (activeDialogue?.type === "centered") {
+        positionSpeechCenter();
+      } else if (speechAnchor) {
+        positionSpeechAt(speechAnchor);
+      }
     });
   } else if (activeDialogue.type === "centered") {
     speech.classList.add("speech-centered");
@@ -3733,14 +3753,23 @@ function renderActiveDialogue() {
       speechOptions.style.display = "none";
     }
     if (speechNextBtn) {
-      speechNextBtn.style.display = "block";
       if (activeDialogue.type === "travel") {
         speechNextBtn.textContent = activeDialogue.nextLabel || TRAVEL_SPEECH_NEXT_LABEL;
       } else {
         speechNextBtn.textContent = DEFAULT_SPEECH_NEXT_LABEL;
       }
+      speechNextBtn.style.display = isDirectTextAppearanceMode() ? "block" : "none";
     }
-    startSpeechTyping(activeDialogue.lines[activeDialogueIndex] || "");
+    startSpeechTyping(activeDialogue.lines[activeDialogueIndex] || "", () => {
+      if (speechNextBtn) {
+        speechNextBtn.style.display = "block";
+      }
+      if (activeDialogue?.type === "centered") {
+        positionSpeechCenter();
+      } else if (speechAnchor) {
+        positionSpeechAt(speechAnchor);
+      }
+    });
   }
   if (activeDialogue.type === "centered") {
     positionSpeechCenter();
